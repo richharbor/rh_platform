@@ -1,0 +1,75 @@
+# Expo & React Native specific
+.expo
+web-build/
+dist/
+
+# OSX
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xccheckout
+*.moved-aside
+
+# Android/Gradle
+.gradle/
+.idea/
+*.iml
+*.hprof
+.cxx/
+local.properties
+
+# Android build output
+android/app/build/
+android/build/
+android/.gradle/
+android/app/release/
+android/app/debug/
+
+# iOS build output
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/xcuserdata/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# BUCK
+buck-out/
+\.buckd/
+*.keystore
+!debug.keystore
+
+# Fastlane
+*/fastlane/report.xml
+*/fastlane/Preview.html
+*/fastlane/screenshots
+*/fastlane/test_output
+
+# Bundle artifacts
+*.jsbundle
+
+# CocoaPods
+Pods/
+
+# Expo generated files
+expo-env.d.ts
+
+# Metro bundler
+.metro-health-check*
