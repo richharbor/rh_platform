@@ -1,0 +1,26 @@
+# env
+.env
+.env.*
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# node
+node_modules/
+
+# builds
+build/
+dist/
+
+# expo
+.expo/
+.expo-shared/
+
+# mac
+.DS_Store
+
+#github
+.github/
