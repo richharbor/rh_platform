@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Button, Separator, XStack, YStack, Text } from '@my/ui'
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/dashboard', label: 'Dashboard' },
   { href: '/admin/leads', label: 'Leads' },
 ]
 
@@ -19,7 +19,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <Text fontWeight="700" fontSize={20} color="$color12">
           Rich Harbor Admin
         </Text>
-        <Link href="/admin/logout" prefetch={false}>
+          <Link href="/admin/logout" prefetch={false}>
           <Button size="$3" borderRadius="$5" bg="$color12" color="white">
             Logout
           </Button>
@@ -47,7 +47,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </YStack>
 
         <YStack flex={1} p="$5" gap="$4">
-          <Separator />
           {children}
         </YStack>
       </XStack>

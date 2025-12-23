@@ -8,7 +8,7 @@ export default function AdminLogoutPage() {
   useEffect(() => {
     clearCookie('admin_token')
     clearCookie('admin_refresh')
-    router.replace('/admin/login')
+    router.replace('/auth/login')
   }, [router])
   return null
 }

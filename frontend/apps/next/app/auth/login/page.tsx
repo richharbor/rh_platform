@@ -16,7 +16,7 @@ export default function AdminLoginPage() {
   useEffect(() => {
     const token = getCookie('admin_token')
     if (token) {
-      router.replace('/admin')
+      router.replace('/admin/dashboard')
     }
   }, [router])
 
@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
       const data = await res.json()
       setCookie('admin_token', data.access_token)
       setCookie('admin_refresh', data.refresh_token || '')
-      router.replace('/admin')
+      router.replace('/admin/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
