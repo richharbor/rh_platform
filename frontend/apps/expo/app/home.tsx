@@ -66,7 +66,8 @@ export default function HomeScreen() {
             shadowOffset={{ width: 0, height: 10 }}
           >
             <Paragraph color="$color11">
-              This is your launchpad. We will surface balances, watchlists, and alerts here next.
+              Your portfolio snapshot and curated alerts will live here. We’ll surface balances,
+              upcoming transfers, and priority insights as you add more data.
             </Paragraph>
             {error ? (
               <Paragraph color="$red10" size="$3">
@@ -80,11 +81,11 @@ export default function HomeScreen() {
               borderRadius="$6"
               pressStyle={{ opacity: 0.85 }}
             >
-              Log out
+              Log out securely
             </Button>
           </YStack>
           <Text color="$color10" fontSize="$2">
-            {refreshing ? 'Refreshing your profile...' : 'Last synced just now.'}
+            {refreshing ? 'Refreshing your profile...' : 'Last synced moments ago.'}
           </Text>
         </YStack>
       </SafeAreaView>

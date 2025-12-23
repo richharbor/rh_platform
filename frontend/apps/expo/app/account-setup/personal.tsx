@@ -35,18 +35,18 @@ export default function AccountSetupPersonal() {
   return (
     <YStack flex={1} bg="$background" justifyContent="center" px="$6" gap="$3">
       <YStack gap="$2">
-        <Text fontSize={22} fontWeight="700" color="$color12">
+        <Text fontSize={24} fontWeight="700" color="$color12">
           Add your personal info
         </Text>
-        <Paragraph color="$color11">This info needs to be accurate with your ID document.</Paragraph>
+        <Paragraph color="$color11">We use this to tailor your experience and stay compliant.</Paragraph>
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Full Name</Text>
-        <Input value={fullName} onChangeText={setFullName} placeholder="Mr. John Doe" />
+        <Input value={fullName} onChangeText={setFullName} placeholder="Jordan Smith" />
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Username</Text>
-        <Input value={username} onChangeText={setUsername} placeholder="@username" autoCapitalize="none" />
+        <Input value={username} onChangeText={setUsername} placeholder="@jordansmith" autoCapitalize="none" />
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Date of Birth</Text>
@@ -54,9 +54,8 @@ export default function AccountSetupPersonal() {
       </YStack>
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
       <Button bg="$blue10" color="white" borderRadius="$6" onPress={handleSubmit} disabled={loading}>
-        {loading ? 'Saving...' : 'Continue'}
+        {loading ? 'Saving profile...' : 'Continue'}
       </Button>
     </YStack>
   )
 }
-

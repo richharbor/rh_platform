@@ -35,28 +35,27 @@ export default function AccountSetupAddress() {
   return (
     <YStack flex={1} bg="$background" justifyContent="center" px="$6" gap="$3">
       <YStack gap="$2">
-        <Text fontSize={22} fontWeight="700" color="$color12">
+        <Text fontSize={24} fontWeight="700" color="$color12">
           Home address
         </Text>
-        <Paragraph color="$color11">This info needs to be accurate with your ID document.</Paragraph>
+        <Paragraph color="$color11">Add the address tied to your legal identity.</Paragraph>
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Address Line</Text>
-        <Input value={addressLine} onChangeText={setAddressLine} placeholder="123 Main St" />
+        <Input value={addressLine} onChangeText={setAddressLine} placeholder="123 Meridian Ave" />
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">City</Text>
-        <Input value={city} onChangeText={setCity} placeholder="City, State" />
+        <Input value={city} onChangeText={setCity} placeholder="San Francisco" />
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Postcode</Text>
-        <Input value={postcode} onChangeText={setPostcode} placeholder="Ex: 00000" keyboardType="number-pad" />
+        <Input value={postcode} onChangeText={setPostcode} placeholder="94105" keyboardType="number-pad" />
       </YStack>
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
       <Button bg="$blue10" color="white" borderRadius="$6" onPress={handleSubmit} disabled={loading}>
-        {loading ? 'Saving...' : 'Continue'}
+        {loading ? 'Saving address...' : 'Continue'}
       </Button>
     </YStack>
   )
 }
-

@@ -43,7 +43,7 @@ export default function LoginScreen() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to continue building your financial future."
+      subtitle="Access your private vault and keep your portfolio in focus."
       footer={
         <XStack justifyContent="center" gap="$2" alignItems="center">
           <Text color="$color11">New here?</Text>
@@ -67,7 +67,7 @@ export default function LoginScreen() {
               setEmail(value)
               if (error) setError('')
             }}
-            placeholder="you@richharbor.com"
+            placeholder="you@coinpay.com"
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -82,7 +82,7 @@ export default function LoginScreen() {
               setPassword(value)
               if (error) setError('')
             }}
-            placeholder="••••••••"
+            placeholder="Enter your secure password"
             secureTextEntry
             textContentType="password"
           />
@@ -100,7 +100,7 @@ export default function LoginScreen() {
           borderRadius="$6"
           pressStyle={{ opacity: 0.85 }}
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? 'Signing you in...' : 'Sign in securely'}
         </Button>
       </YStack>
     </AuthLayout>
