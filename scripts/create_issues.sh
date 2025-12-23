@@ -14,247 +14,180 @@ create_issue () {
   rm -f "$body_file"
 }
 
-create_issue "Bootstrap rh_platform monorepo scaffold (Expo + FastAPI + Docker Compose) + E2E health check" "chore,backend,mobile,docker,docs,testing" <<'EOF'
+create_issue "Mobile Auth MVP: App Loader → Signup/Login (API-backed) → Onboarding → Home" "mobile,backend,security,docs,testing" <<'EOF'
 ## Goal
-Create a working monorepo scaffold that boots locally and supports an end-to-end health check from the mobile app to the API.
+Implement the first complete user journey end-to-end:
 
-This issue is intentionally larger (target ~1 hour) and should result in a runnable baseline.
+**App launch loader → (Login/Signup) → Signup → Onboarding → Home**
 
----
+This must include:
+1) A startup loader (placeholder now; later swapped with branded logo animation)
+2) Backend signup/login APIs
+3) Premium-looking mobile login/signup screens that actually work
+4) Onboarding after signup, then landing on Home
 
-## Required folder structure
-Create these paths exactly (root folder is `rh_platform/`):
-
-- apps/mobile
-- services/api
-- docker
-- infra/terraform
-- scripts
-- .github/workflows
-
-Root-level required files:
-- README.md
-- .env.example
-- Makefile
-- docker-compose.yml
-- .gitignore
+This is a foundational MVP slice and should be implemented in a way that is easy to extend (KYC, wallet, push later).
 
 ---
 
-## Backend requirements (FastAPI)
-Location: `services/api`
+## Scope & Repo Areas
+### Mobile (required)
+- `apps/mobile/**`
 
-### Files (minimum)
-- services/api/app/main.py
-- services/api/app/core/config.py
-- services/api/app/api/v1/router.py
-- services/api/app/api/v1/endpoints/health.py
+### Backend (required)
+- `services/api/**`
 
-### API behavior
-- Add router prefix `/v1`
-- Endpoint: `GET /v1/health` returns: `{"status":"ok"}`
-
-### CORS
-Configure CORS to allow Expo dev origins. Minimum allow list:
-- http://localhost:19006
-- http://localhost:8081
-
-Also document how to test from a physical device (LAN IP). If you allow wildcard origins in local dev, document clearly that it is ONLY for local.
-
-### Run config
-- Use `uvicorn` with `reload=True` in local dev
-- Port: 8000
+### Not in scope (explicitly)
+- Payments, wallet ledger, transactions
+- Push notifications
+- KYC flow (only onboarding placeholder)
+- Password reset (can be a later issue)
 
 ---
 
-## Docker / Compose requirements
-Root: `docker-compose.yml`
+## UX / Flow Requirements (Mobile)
 
-### Services
-1) Postgres 16
-- Expose 5432
-- Use a named volume
+### A) Startup loader
+**When app starts:**
+- Show a full-screen loader for ~1–2 seconds OR until initial checks complete (whichever is longer).
+- Loader must be implemented as a dedicated screen/component so it can be replaced later with a logo animation without rewriting navigation.
 
-2) API container
-- Build from `docker/api.Dockerfile`
-- Expose 8000
-- Must hot reload during dev using a volume mount of `./services/api:/app`
-- Must receive env vars:
-  - DATABASE_URL
-  - CORS_ORIGINS
-  - APP_ENV (optional)
-  - API_HOST / API_PORT (optional)
+**Later replacement note:** Keep the loader layout isolated in its own file, e.g. `src/screens/Splash.tsx` or `src/components/Loader.tsx`.
 
-### Required Dockerfile
-- docker/api.Dockerfile must run the API
+**Acceptance:**
+- On app launch, user always sees the loader briefly before any other screen.
 
 ---
 
-## Mobile requirements (Expo + NativeWind)
-Location: `apps/mobile`
+### B) Auth decision
+After loader:
+- If user is authenticated (valid stored access token) → go to **Home**
+- If not authenticated → go to **Auth stack** (Login/Signup)
 
-### Must include
-- Expo app that starts
-- NativeWind (Tailwind for RN) configured and used on at least one screen
+**Token persistence**
+- Store auth tokens using a secure storage mechanism (Expo SecureStore preferred).
+- On app start, read tokens and decide route.
 
-### Screens (minimum)
-- Login
-- Register
-- Home
-
-### Home screen: end-to-end call
-Add:
-- Button: "Check API Health"
-- On click, call `${API_BASE_URL}/v1/health`
-- Show result on screen
-
-### API base URL config
-Create `apps/mobile/src/lib/config.ts` exporting `API_BASE_URL`.
-Document changing this for physical device testing:
-- Example: http://192.168.x.x:8000
+**Acceptance:**
+- App relaunch keeps user logged in unless token missing/invalid.
 
 ---
 
-## Makefile requirements (root)
-Add these targets:
-- make up        -> docker-compose up --build -d
-- make down      -> docker-compose down
-- make logs      -> docker-compose logs -f --tail=200
-- make api-shell -> docker-compose exec api sh (or bash)
+### C) Signup (working) + premium UI
+Create a **Signup screen**:
+- Inputs:
+  - Full name (optional but recommended)
+  - Email (required)
+  - Password (required)
+  - Confirm password (required)
+- UX:
+  - Clear validation errors
+  - Disable submit button while loading
+  - Premium UI spacing/typography, rounded cards, modern feel
+  - Show server errors in a friendly way
+- On success:
+  - Save tokens
+  - Go to **Onboarding**
+
+**Acceptance:**
+- Signup creates user on backend
+- Tokens saved
+- Navigates to onboarding after signup
 
 ---
 
-## README requirements (root)
-Document step-by-step setup and verification.
+### D) Login (working) + premium UI
+Create a **Login screen**:
+- Inputs:
+  - Email
+  - Password
+- UX:
+  - Loading state
+  - Friendly error states
+  - Premium UI consistency with signup
+- On success:
+  - Save tokens
+  - Go to **Home** (unless onboarding required — see onboarding section)
 
-### Backend run
-- make up
-- curl http://localhost:8000/v1/health
-
-### Mobile run
-- cd apps/mobile
-- install deps
-- start Expo
-- set API_BASE_URL if needed
-- click "Check API Health" and verify output
-
-### Troubleshooting
-Add minimum notes:
-- physical device cannot reach localhost
-- use LAN IP
-- CORS issues
+**Acceptance:**
+- Login works against backend
+- Tokens saved
+- Navigates to home
 
 ---
 
-## CI workflow (basic)
-Add `.github/workflows/ci.yml` with:
-- API job: install deps + run pytest
-- Mobile job: install deps + run minimal check (typecheck/lint if configured)
+### E) Onboarding (after signup)
+Onboarding runs only after signup (first-time user).
+For this issue, onboarding can be minimal but must be real screens + state:
+
+- Onboarding steps (example):
+  1) Welcome / short intro
+  2) Choose preferences (placeholder)
+  3) Confirm and continue
+
+Persist an `onboarding_completed` flag on backend and/or locally:
+- Preferred: backend user profile field `onboarding_completed`
+- Acceptable for MVP: local flag, but document limitations
+
+After onboarding is completed:
+- Mark completed
+- Navigate to **Home**
+
+**Acceptance:**
+- After signup, user is forced through onboarding once
+- After onboarding completion, future launches go straight to Home
 
 ---
 
-## Tests (must include)
-Backend pytest tests in `services/api/tests`:
-1) test_health_ok
-- Use FastAPI TestClient
-- Assert 200
-- Assert json: {"status":"ok"}
+### F) Home screen
+A simple Home screen is enough for this issue:
+- Show a welcome message with the user's email/name from the backend `GET /v1/auth/me` (or profile endpoint)
+- Provide a logout button that clears stored tokens and returns to login
 
-Mobile tests are optional for this issue; include a manual test checklist in README.
-
----
-
-## Acceptance Criteria
-- `make up` brings up Postgres + API successfully
-- `curl http://localhost:8000/v1/health` returns 200 + expected JSON
-- Mobile app runs and Home button successfully calls backend and displays status
-- Backend pytest passes
-- CI workflow is present and runs
-EOF
-
-create_issue "Backend dev environment: DB connectivity health, DB module, and expanded tests (Docker-ready)" "backend,db,docker,docs,testing" <<'EOF'
-## Goal
-Harden the backend development environment so it is ready for fintech features:
-- explicit DB session module
-- health endpoint includes DB connectivity status
-- improved docker-compose reliability
-- expanded test suite
-- better documentation
+**Acceptance:**
+- Home renders correctly with authenticated user data
+- Logout works
 
 ---
 
-## DB wiring (required)
-Add DB module files under `services/api/app/db`:
-- session.py -> SQLAlchemy engine + SessionLocal factory
-- base.py -> Base model (declarative base)
+## Backend Requirements (FastAPI)
 
-Use DATABASE_URL from env (no hardcoding).
+### A) Auth endpoints (required)
+Implement:
+1) `POST /v1/auth/register`
+2) `POST /v1/auth/login`
+3) `POST /v1/auth/refresh` (recommended but optional for MVP)
+4) `GET /v1/auth/me`
 
----
+**Register request**
+- email, password
+- optional: name
 
-## Health endpoint improvement (required)
-Update `GET /v1/health` to include DB status.
+**Responses**
+- Return JWT access token + refresh token (if implemented)
+- Return minimal user object (id, email, name, onboarding_completed)
 
-Preferred:
-- Always return 200 but include db status field:
-  - {"status":"ok", "db":"ok"} OR {"status":"ok", "db":"down"}
+### B) Storage & security requirements
+- Store hashed passwords (bcrypt/argon2)
+- Validate email uniqueness
+- JWT signing keys from env
+- Access token TTL configurable
+- CORS must allow Expo dev origins
 
-Alternative acceptable:
-- Return 503 if DB down.
-If using 503, document the behavior.
-
----
-
-## Docker compose improvements (required)
-Update compose to improve stability:
-- Add Postgres healthcheck
-- Ensure API depends on DB service readiness best-effort
-- Confirm DATABASE_URL uses `db` host inside compose
-
----
-
-## Makefile improvements (required)
-Add:
-- make test-api -> run pytest for backend (locally or in container)
-Optional:
-- make lint-api / fmt-api if you add tooling
+### C) Onboarding flag
+Add user field:
+- `onboarding_completed: bool` default `false`
+Provide endpoint to update after onboarding:
+- `PATCH /v1/profile/onboarding` (or `PUT /v1/profile`)
+Minimum requirement:
+- A backend mechanism exists to persist onboarding completion.
 
 ---
 
-## README improvements (required)
-Add:
-- Running tests
-- Common issues:
-  - mobile cannot call localhost
-  - how to find LAN IP on macOS
-  - CORS debugging
-- Logs commands
+## API Contract (Mobile consumes)
+Define these JSON shapes and keep them consistent.
 
----
-
-## Tests (required)
-Add/expand backend tests:
-1) test_health_includes_db_field
-- assert response JSON contains "db"
-
-2) test_settings_load_env
-- verify Settings reads env vars (can set env in test)
-
-3) test_db_connectivity_ok (integration-ish)
-- If DB is available, assert db == "ok"
-- If DB not available, either:
-  - skip test when DATABASE_URL not set for integration, OR
-  - mark as integration and document running via docker compose
-
-Document how to run integration tests.
-
----
-
-## Acceptance Criteria
-- `docker-compose up --build` is stable and API starts reliably
-- `/v1/health` includes db status field
-- Tests pass (unit tests always; integration tests documented)
-- README includes troubleshooting and test instructions
-EOF
-
-echo "✅ Done. Created 2 big issues in $REPO"
+### Register
+Request:
+```json
+{ "email": "a@b.com", "password": "xxxxxx", "name": "Prabhat" }

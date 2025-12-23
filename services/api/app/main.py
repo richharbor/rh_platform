@@ -1,10 +1,18 @@
+import logging
 import os
+import traceback
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1.router import router as v1_router
 from app.core.config import get_cors_origins
+from app.core.database import Base, engine
+from app.models import user as user_model  # noqa: F401
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="rh_platform API")
 
@@ -19,6 +27,25 @@ app.add_middleware(
 )
 
 app.include_router(v1_router)
+
+
+@app.middleware("http")
+async def log_exceptions(request: Request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        logger.error(f"Exception occurred: {e}", exc_info=True)
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": str(e), "traceback": traceback.format_exc()},
+        )
+
+
+@app.on_event("startup")
+def startup() -> None:
+    Base.metadata.create_all(bind=engine)
 
 
 if __name__ == "__main__":
