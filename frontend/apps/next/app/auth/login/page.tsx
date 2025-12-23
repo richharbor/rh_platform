@@ -55,8 +55,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <YStack minHeight="100vh" alignItems="center" justifyContent="center" bg="$background">
-      <YStack width={360} bg="$color1" p="$5" borderRadius="$7" borderWidth={1} borderColor="$color3" gap="$3">
+    <YStack minHeight="100vh" alignItems="center" justifyContent="center" backgroundColor="$background">
+      <YStack width={360} backgroundColor="$color1" padding="$5" borderRadius="$7" borderWidth={1} borderColor="$color3" gap="$3">
         <Text fontSize={22} fontWeight="700" color="$color12">
           Admin Login
         </Text>
@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
           <Input value={password} onChangeText={setPassword} secureTextEntry />
         </YStack>
         {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
-        <Button bg="$color12" color="white" onPress={handleSubmit} disabled={loading}>
+        <Button backgroundColor="$color12" color="white" onPress={handleSubmit} disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
         </Button>
       </YStack>

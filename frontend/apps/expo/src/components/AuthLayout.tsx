@@ -13,7 +13,7 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       <LinearGradient
         colors={['#F6F1E8', '#ECF4FF', '#F8EAF1']}
         start={{ x: 0, y: 0 }}
@@ -27,7 +27,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
         width={220}
         height={220}
         borderRadius={120}
-        bg="#FFFFFF"
+        backgroundColor="#FFFFFF"
         opacity={0.35}
       />
       <YStack
@@ -37,11 +37,11 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
         width={190}
         height={190}
         borderRadius={120}
-        bg="#FFE6C7"
+        backgroundColor="#FFE6C7"
         opacity={0.35}
       />
       <SafeAreaView style={styles.safe}>
-        <YStack flex={1} px="$5" py="$6" justify="center">
+        <YStack flex={1} padding="$5" justifyContent="center">
           <YStack gap="$5">
             <YStack gap="$2">
               <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
@@ -55,9 +55,9 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
               ) : null}
             </YStack>
             <YStack
-              bg="$color1"
+              backgroundColor="$color1"
               borderRadius="$8"
-              p="$5"
+              padding="$5"
               gap="$4"
               borderWidth={1}
               borderColor="$color3"
@@ -71,7 +71,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
               {children}
             </YStack>
           </YStack>
-          {footer ? <YStack mt="$5">{footer}</YStack> : null}
+          {footer ? <YStack marginTop="$5">{footer}</YStack> : null}
         </YStack>
       </SafeAreaView>
     </YStack>

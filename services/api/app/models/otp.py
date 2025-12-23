@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, func
 
 from app.core.database import Base
 
@@ -15,4 +15,4 @@ class OtpCode(Base):
     expires_at = Column(DateTime(timezone=True), nullable=False)
     attempts = Column(Integer, nullable=False, default=0)
     last_sent_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default="now()", nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

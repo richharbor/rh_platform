@@ -45,7 +45,7 @@ export default function LoginScreen() {
       title="Welcome back"
       subtitle="Sign in to continue building your financial future."
       footer={
-        <XStack justify="center" gap="$2" items="center">
+        <XStack justifyContent="center" gap="$2" alignItems="center">
           <Text color="$color11">New here?</Text>
           <Button
             chromeless
@@ -95,7 +95,7 @@ export default function LoginScreen() {
         <Button
           onPress={handleSubmit}
           disabled={isDisabled}
-          bg="$color12"
+          backgroundColor="$color12"
           color="white"
           borderRadius="$6"
           pressStyle={{ opacity: 0.85 }}

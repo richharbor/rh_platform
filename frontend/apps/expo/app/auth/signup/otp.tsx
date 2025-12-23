@@ -45,7 +45,7 @@ export default function SignupOtpScreen() {
   }
 
   return (
-    <YStack flex={1} bg="$background" justifyContent="center" px="$6" gap="$4">
+    <YStack flex={1} backgroundColor="$background" justifyContent="center" padding="$6" gap="$4">
       <YStack gap="$2">
         <Text fontSize={24} fontWeight="700" color="$color12">
           Confirm your email
@@ -65,7 +65,7 @@ export default function SignupOtpScreen() {
 
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
 
-      <Button bg="$blue10" color="white" borderRadius="$6" onPress={handleVerify} disabled={loading}>
+      <Button backgroundColor="$blue10" color="white" borderRadius="$6" onPress={handleVerify} disabled={loading}>
         {loading ? 'Verifying...' : 'Verify'}
       </Button>
       <XStack justifyContent="center">

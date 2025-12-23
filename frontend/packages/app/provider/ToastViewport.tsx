@@ -1,4 +1,4 @@
-import { ToastViewport as ToastViewportOg } from '@my/ui'
+import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
 
 export const ToastViewport = () => {
   return (

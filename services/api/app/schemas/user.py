@@ -13,6 +13,7 @@ class UserPublic(BaseModel):
     role: str = "user"
     created_at: datetime | None = None
     email_verified_at: datetime | None = None
+    is_email_verified: bool = False
     phone: str | None = None
     full_name: str | None = None
     username: str | None = None

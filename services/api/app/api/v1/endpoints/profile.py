@@ -74,5 +74,9 @@ def _is_profile_complete(user: User) -> bool:
 
 def _user_to_public(user: User) -> UserPublic:
     return UserPublic.model_validate(
-        {**user.__dict__, "is_profile_complete": _is_profile_complete(user) or bool(user.profile_completed_at)}
+        {
+            **user.__dict__,
+            "is_profile_complete": _is_profile_complete(user) or bool(user.profile_completed_at),
+            "is_email_verified": bool(user.email_verified_at),
+        }
     )

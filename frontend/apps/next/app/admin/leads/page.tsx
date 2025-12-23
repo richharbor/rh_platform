@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, H2, Paragraph, Text, XStack, YStack } from '@my/ui'
+import { H2, Paragraph, Text, XStack, YStack, Card } from 'tamagui'
 
 type Lead = {
   id: number
@@ -49,7 +49,7 @@ export default function AdminLeadsPage() {
         <YStack gap="$3">
           {leads.map((lead) => (
             <Card key={lead.id} bordered padding="$4">
-              <XStack justify="space-between" alignItems="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <YStack gap="$1">
                   <Text fontWeight="700" color="$color12">
                     {lead.name || 'Unnamed'}

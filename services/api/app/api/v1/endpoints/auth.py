@@ -44,6 +44,7 @@ def _user_to_public(user: User) -> UserPublic:
         {
             **user.__dict__,
             "is_profile_complete": _is_profile_complete(user),
+            "is_email_verified": bool(user.email_verified_at),
         }
     )
 
@@ -232,4 +233,3 @@ def refresh(payload: RefreshRequest, db: Session = Depends(get_db)) -> AuthRespo
 @router.get("/auth/me", response_model=UserPublic)
 def me(current_user: User = Depends(get_current_user)) -> UserPublic:
     return _user_to_public(current_user)
-
