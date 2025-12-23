@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useColorScheme } from 'react-native'
+import { LogBox, useColorScheme } from 'react-native'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
@@ -14,6 +14,7 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
+LogBox.ignoreLogs(['ExceptionsManager should be set up after React DevTools'])
 
 export default function App() {
   const [interLoaded, interError] = useFonts({

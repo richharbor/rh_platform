@@ -1,4 +1,5 @@
-import { useColorScheme } from 'react-native'
+import { Platform, useColorScheme } from 'react-native'
+import { ToastViewport } from './ToastViewport'
 import {
   CustomToast,
   TamaguiProvider,
@@ -7,7 +8,13 @@ import {
   config,
   isWeb,
 } from '@my/ui'
-import { ToastViewport } from './ToastViewport'
+
+// Tamagui dev polyfill causes React DevTools console patching warnings on native;
+// only load it for web/Next.
+if (Platform.OS === 'web') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@tamagui/polyfill-dev')
+}
 
 export function Provider({
   children,

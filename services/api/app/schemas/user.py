@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
@@ -8,3 +10,5 @@ class UserPublic(BaseModel):
     email: EmailStr
     name: str | None = None
     onboarding_completed: bool
+    role: str = "user"
+    created_at: datetime | None = None

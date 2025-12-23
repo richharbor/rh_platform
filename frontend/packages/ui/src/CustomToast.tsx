@@ -1,11 +1,7 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants'
+import { Platform } from 'react-native'
 import { NativeToast as Toast } from './NativeToast'
 
-const isExpo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient
-
 export const CustomToast = () => {
-  if (isExpo) {
-    return null
-  }
+  if (Platform.OS === 'web') return null
   return <Toast />
 }

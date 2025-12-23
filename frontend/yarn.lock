@@ -14657,6 +14657,7 @@ __metadata:
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-native: "npm:0.79.2"
+    react-native-svg: "npm:15.11.2"
     react-native-web: "npm:^0.20.0"
     tamagui: "npm:^1.141.5"
     tree-kill: "npm:^1.2.2"
