@@ -46,25 +46,24 @@ export default function SignupCreateAccount() {
         <Text fontSize={24} fontWeight="700" color="$color12">
           Create account
         </Text>
-        <Paragraph color="$color11">Phone required to secure your account.</Paragraph>
+        <Paragraph color="$color11">Add a phone number to secure your account.</Paragraph>
         {email ? <Paragraph color="$color10">Email: {email}</Paragraph> : null}
       </YStack>
 
       <YStack gap="$2">
         <Text color="$color11">Phone</Text>
-        <Input value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="+880..." />
+        <Input value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="+1 555 000 0000" />
       </YStack>
       <YStack gap="$2">
         <Text color="$color11">Password</Text>
-        <Input value={password} onChangeText={setPassword} secureTextEntry placeholder="********" />
+        <Input value={password} onChangeText={setPassword} secureTextEntry placeholder="Minimum 8 characters" />
       </YStack>
 
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
 
       <Button bg="$blue10" color="white" borderRadius="$6" onPress={handleSubmit} disabled={loading}>
-        {loading ? 'Creating...' : 'Create account'}
+        {loading ? 'Securing account...' : 'Create secure account'}
       </Button>
     </YStack>
   )
 }
-

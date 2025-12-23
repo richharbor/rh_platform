@@ -39,20 +39,19 @@ export default function SignupEmailScreen() {
         <Text fontSize={24} fontWeight="700" color="$color12">
           Confirm your email
         </Text>
-        <Paragraph color="$color11">We’ll send a 6-digit code to verify your email.</Paragraph>
+        <Paragraph color="$color11">We’ll send a secure 6-digit code to verify your email.</Paragraph>
       </YStack>
 
       <YStack gap="$2">
         <Text color="$color11">Email</Text>
-        <Input value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+        <Input value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholder="you@coinpay.com" />
       </YStack>
 
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
 
       <Button bg="$blue10" color="white" borderRadius="$6" onPress={handleRequest} disabled={loading}>
-        {loading ? 'Sending code...' : 'Send code'}
+        {loading ? 'Sending secure code...' : 'Send secure code'}
       </Button>
     </YStack>
   )
 }
-

@@ -8,13 +8,22 @@ import { Button, Text, YStack } from '@my/ui'
 
 const slides = [
   {
-    title: 'Trusted by millions of people, part of one part.',
+    eyebrow: 'Private by design',
+    title: 'Grow wealth with clarity and calm.
+One secure view of every asset.',
+    description: 'A premium vault for balances, plans, and insights—all in one place.',
   },
   {
-    title: 'Spend money abroad, and track your expense.',
+    eyebrow: 'Global access',
+    title: 'Spend abroad with confidence
+and track every transfer.',
+    description: 'Real-time exchange rates and instant notifications at every step.',
   },
   {
-    title: 'Receive money from anywhere in the world.',
+    eyebrow: 'Smart controls',
+    title: 'Receive money anywhere
+with bank-grade protection.',
+    description: 'Built-in verification and fraud protection keep every payment safe.',
   },
 ]
 
@@ -34,6 +43,8 @@ export default function OnboardingIntro() {
     router.replace('/auth/landing')
   }
 
+  const isLastSlide = index === slides.length - 1
+
   return (
     <YStack flex={1} bg="$background" justifyContent="center">
       <ScrollView
@@ -48,8 +59,14 @@ export default function OnboardingIntro() {
       >
         {slides.map((slide) => (
           <YStack key={slide.title} width={width} flex={1} alignItems="center" justifyContent="center" px="$6" gap="$4">
-            <Text textAlign="center" fontSize={22} fontWeight="700" color="$color12">
+            <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
+              {slide.eyebrow}
+            </Text>
+            <Text textAlign="center" fontSize={24} fontWeight="700" color="$color12">
               {slide.title}
+            </Text>
+            <Text textAlign="center" color="$color11" fontSize={15} lineHeight={22} maxWidth={320}>
+              {slide.description}
             </Text>
           </YStack>
         ))}
@@ -69,10 +86,9 @@ export default function OnboardingIntro() {
           ))}
         </YStack>
         <Button bg="$blue10" color="white" borderRadius="$6" onPress={goNext}>
-          Next
+          {isLastSlide ? 'Get started' : 'Next'}
         </Button>
       </YStack>
     </YStack>
   )
 }
-

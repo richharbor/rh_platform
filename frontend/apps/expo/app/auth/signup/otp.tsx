@@ -66,7 +66,7 @@ export default function SignupOtpScreen() {
       {error ? <Paragraph color="$red10">{error}</Paragraph> : null}
 
       <Button backgroundColor="$blue10" color="white" borderRadius="$6" onPress={handleVerify} disabled={loading}>
-        {loading ? 'Verifying...' : 'Verify'}
+        {loading ? 'Verifying code...' : 'Verify & continue'}
       </Button>
       <XStack justifyContent="center">
         <Button chromeless onPress={handleResend} color="$blue10">
@@ -76,4 +76,3 @@ export default function SignupOtpScreen() {
     </YStack>
   )
 }
-
