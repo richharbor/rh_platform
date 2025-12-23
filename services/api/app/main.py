@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.v1.router import router as v1_router
-from app.core.bootstrap import ensure_superadmin, ensure_user_role_column
+from app.core.bootstrap import ensure_superadmin, ensure_user_columns
 from app.core.config import get_cors_origins
 from app.core.database import Base, engine
 from app.models import user as user_model  # noqa: F401
@@ -47,7 +47,7 @@ async def log_exceptions(request: Request, call_next):
 @app.on_event("startup")
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
-    ensure_user_role_column()
+    ensure_user_columns()
     ensure_superadmin()
 
 

@@ -12,15 +12,41 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 
 
-def ensure_user_role_column() -> None:
+def ensure_user_columns() -> None:
     inspector = inspect(engine)
     columns = {col["name"] for col in inspector.get_columns("users")}
-    if "role" in columns:
+    alterations: list[str] = []
+
+    if "role" not in columns:
+        alterations.append("ADD COLUMN role VARCHAR DEFAULT 'user' NOT NULL")
+    if "email_verified_at" not in columns:
+        alterations.append("ADD COLUMN email_verified_at TIMESTAMP WITH TIME ZONE")
+    if "phone" not in columns:
+        alterations.append("ADD COLUMN phone VARCHAR")
+    if "full_name" not in columns:
+        alterations.append("ADD COLUMN full_name VARCHAR")
+    if "username" not in columns:
+        alterations.append("ADD COLUMN username VARCHAR UNIQUE")
+    if "dob" not in columns:
+        alterations.append("ADD COLUMN dob TIMESTAMP WITH TIME ZONE")
+    if "country" not in columns:
+        alterations.append("ADD COLUMN country VARCHAR")
+    if "address_line" not in columns:
+        alterations.append("ADD COLUMN address_line VARCHAR")
+    if "city" not in columns:
+        alterations.append("ADD COLUMN city VARCHAR")
+    if "postcode" not in columns:
+        alterations.append("ADD COLUMN postcode VARCHAR")
+    if "profile_completed_at" not in columns:
+        alterations.append("ADD COLUMN profile_completed_at TIMESTAMP WITH TIME ZONE")
+
+    if not alterations:
         return
 
+    alter_sql = "ALTER TABLE users " + ", ".join(alterations)
     with engine.begin() as conn:
-        conn.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'user' NOT NULL"))
-    logger.info("Added missing 'role' column to users table.")
+        conn.execute(text(alter_sql))
+    logger.info("Ensured user columns: %s", ", ".join(alterations))
 
 
 def ensure_superadmin() -> Optional[User]:

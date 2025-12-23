@@ -9,6 +9,7 @@ JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "30"))
+SIGNUP_TOKEN_EXPIRE_MINUTES = int(os.getenv("SIGNUP_TOKEN_EXPIRE_MINUTES", "15"))
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -39,6 +40,13 @@ def create_refresh_token(subject: str) -> str:
     return _create_token(
         {"sub": subject, "type": "refresh"},
         timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+    )
+
+
+def create_signup_token(email: str) -> str:
+    return _create_token(
+        {"sub": email, "type": "signup"},
+        timedelta(minutes=SIGNUP_TOKEN_EXPIRE_MINUTES),
     )
 
 

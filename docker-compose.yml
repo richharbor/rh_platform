@@ -28,6 +28,10 @@ services:
       API_PORT: 8000
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@richharbor.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-1q2w3e}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER:-cto@richharbor.com}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-gbeg uwye awzv cqbm}
     depends_on:
       - db
 

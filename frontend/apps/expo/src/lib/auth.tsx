@@ -9,6 +9,17 @@ type AuthUser = {
   email: string
   name?: string | null
   onboarding_completed: boolean
+  email_verified_at?: string | null
+  phone?: string | null
+  full_name?: string | null
+  username?: string | null
+  dob?: string | null
+  country?: string | null
+  address_line?: string | null
+  city?: string | null
+  postcode?: string | null
+  profile_completed_at?: string | null
+  is_profile_complete?: boolean
 }
 
 type AuthResponse = {
@@ -26,7 +37,11 @@ type AuthContextValue = {
   signIn: (payload: { email: string; password: string }) => Promise<AuthUser>
   signUp: (payload: { email: string; password: string; name?: string }) => Promise<AuthUser>
   signOut: () => Promise<void>
+  requestSignupOtp: (payload: { email: string }) => Promise<void>
+  verifySignupOtp: (payload: { email: string; otp: string }) => Promise<string>
+  completeSignup: (payload: { signup_token: string; password: string; phone: string }) => Promise<AuthUser>
   completeOnboarding: () => Promise<AuthUser>
+  updateProfile: (payload: Record<string, unknown>) => Promise<AuthUser>
   refreshUser: () => Promise<AuthUser | null>
 }
 
@@ -207,6 +222,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshToken(null)
   }
 
+  const requestSignupOtp = async (payload: { email: string }) => {
+    await apiFetch('/v1/auth/signup/request-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  }
+
+  const verifySignupOtp = async (payload: { email: string; otp: string }) => {
+    const res = await apiFetch<{ signup_token: string }>('/v1/auth/signup/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+    return res.signup_token
+  }
+
+  const completeSignup = async (payload: { signup_token: string; password: string; phone: string }) => {
+    const response = await apiFetch<AuthResponse>('/v1/auth/signup/complete', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+    await saveTokens(response.access_token, response.refresh_token)
+    setSession(response.user, response.access_token, response.refresh_token)
+    return response.user
+  }
+
   const completeOnboarding = async () => {
     if (!accessToken) {
       throw new Error('Not authenticated')
@@ -215,6 +255,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: 'PATCH',
       token: accessToken,
       body: JSON.stringify({ onboarding_completed: true }),
+    })
+    setUser(updated)
+    return updated
+  }
+
+  const updateProfile = async (payload: Record<string, unknown>) => {
+    if (!accessToken) {
+      throw new Error('Not authenticated')
+    }
+    const updated = await apiFetch<AuthUser>('/v1/me/profile', {
+      method: 'PUT',
+      token: accessToken,
+      body: JSON.stringify(payload),
     })
     setUser(updated)
     return updated
@@ -230,7 +283,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
+        requestSignupOtp,
+        verifySignupOtp,
+        completeSignup,
         completeOnboarding,
+        updateProfile,
         refreshUser,
       }}
     >

@@ -12,3 +12,14 @@ class UserPublic(BaseModel):
     onboarding_completed: bool
     role: str = "user"
     created_at: datetime | None = None
+    email_verified_at: datetime | None = None
+    phone: str | None = None
+    full_name: str | None = None
+    username: str | None = None
+    dob: datetime | None = None
+    country: str | None = None
+    address_line: str | None = None
+    city: str | None = None
+    postcode: str | None = None
+    profile_completed_at: datetime | None = None
+    is_profile_complete: bool = False

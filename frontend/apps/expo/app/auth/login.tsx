@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { router } from 'expo-router'
 import { Button, Input, Paragraph, Text, XStack, YStack } from '@my/ui'
 
-import { AuthLayout } from '../src/components/AuthLayout'
-import { getErrorMessage } from '../src/lib/api'
-import { useAuth } from '../src/lib/auth'
+import { AuthLayout } from '../../src/components/AuthLayout'
+import { getErrorMessage } from '../../src/lib/api'
+import { useAuth } from '../../src/lib/auth'
 
 const emailRegex = /.+@.+\..+/
 
