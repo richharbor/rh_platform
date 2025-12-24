@@ -9,20 +9,17 @@ import { Button, Text, YStack } from '@my/ui'
 const slides = [
   {
     eyebrow: 'Private by design',
-    title: 'Grow wealth with clarity and calm.
-One secure view of every asset.',
+    title: 'Grow wealth with clarity and calm. One secure view of every asset.',
     description: 'A premium vault for balances, plans, and insights—all in one place.',
   },
   {
     eyebrow: 'Global access',
-    title: 'Spend abroad with confidence
-and track every transfer.',
+    title: 'Spend abroad with confidence and track every transfer.',
     description: 'Real-time exchange rates and instant notifications at every step.',
   },
   {
     eyebrow: 'Smart controls',
-    title: 'Receive money anywhere
-with bank-grade protection.',
+    title: 'Receive money anywhere with bank-grade protection.',
     description: 'Built-in verification and fraud protection keep every payment safe.',
   },
 ]
@@ -46,7 +43,7 @@ export default function OnboardingIntro() {
   const isLastSlide = index === slides.length - 1
 
   return (
-    <YStack flex={1} bg="$background" justifyContent="center">
+    <YStack flex={1} background="$background" justifyContent="center">
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -58,7 +55,7 @@ export default function OnboardingIntro() {
         }}
       >
         {slides.map((slide) => (
-          <YStack key={slide.title} width={width} flex={1} alignItems="center" justifyContent="center" px="$6" gap="$4">
+          <YStack key={slide.title} width={width} flex={1} alignItems="center" justifyContent="center" padding="$6" gap="$4">
             <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
               {slide.eyebrow}
             </Text>
@@ -72,7 +69,7 @@ export default function OnboardingIntro() {
         ))}
       </ScrollView>
 
-      <YStack gap="$3" p="$6">
+      <YStack gap="$3" padding="$6">
         <YStack flexDirection="row" justifyContent="center" gap="$2">
           {slides.map((_, i) => (
             <YStack
@@ -80,12 +77,12 @@ export default function OnboardingIntro() {
               width={10}
               height={10}
               borderRadius={5}
-              bg={i === index ? '$blue10' : '$color5'}
+              background={i === index ? '$blue10' : '$color5'}
               opacity={i === index ? 1 : 0.5}
             />
           ))}
         </YStack>
-        <Button bg="$blue10" color="white" borderRadius="$6" onPress={goNext}>
+        <Button background="$blue10" color="white" borderRadius="$6" onPress={goNext}>
           {isLastSlide ? 'Get started' : 'Next'}
         </Button>
       </YStack>
