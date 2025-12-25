@@ -14,3 +14,8 @@ class ProfileUpdate(BaseModel):
     username: str | None = None
     country: str | None = None
     phone: str | None = None
+    pan: str | None = None
+    company_name: str | None = None
+    gst_number: str | None = None
+    experience_years: str | None = None
+    existing_client_base: str | None = None

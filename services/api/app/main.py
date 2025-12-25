@@ -10,6 +10,7 @@ from app.api.v1.router import router as v1_router
 from app.core.bootstrap import ensure_superadmin, ensure_user_columns
 from app.core.config import get_cors_origins
 from app.core.database import Base, engine
+from app.models import lead as lead_model  # noqa: F401
 from app.models import user as user_model  # noqa: F401
 
 logging.basicConfig(level=logging.DEBUG)

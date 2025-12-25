@@ -27,12 +27,8 @@ export default function LoginScreen() {
 
     setLoading(true)
     try {
-      const user = await signIn({ email: trimmedEmail, password })
-      if (user.is_profile_complete) {
-        router.replace('/home')
-      } else {
-        router.replace('/account-setup/email')
-      }
+      await signIn({ email: trimmedEmail, password })
+      router.replace('/home')
     } catch (err) {
       setError(getErrorMessage(err))
     } finally {
@@ -43,7 +39,7 @@ export default function LoginScreen() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to continue building your financial future."
+      subtitle="Sign in to raise, refer, and track Richharbor leads."
       footer={
         <XStack justify="center" gap="$2" items="center">
           <Text color="$color11">New here?</Text>

@@ -18,11 +18,23 @@ def ensure_user_columns() -> None:
     alterations: list[str] = []
 
     if "role" not in columns:
-        alterations.append("ADD COLUMN role VARCHAR DEFAULT 'user' NOT NULL")
+        alterations.append("ADD COLUMN role VARCHAR DEFAULT 'customer' NOT NULL")
     if "email_verified_at" not in columns:
         alterations.append("ADD COLUMN email_verified_at TIMESTAMP WITH TIME ZONE")
     if "phone" not in columns:
         alterations.append("ADD COLUMN phone VARCHAR")
+    if "city" not in columns:
+        alterations.append("ADD COLUMN city VARCHAR")
+    if "pan" not in columns:
+        alterations.append("ADD COLUMN pan VARCHAR")
+    if "company_name" not in columns:
+        alterations.append("ADD COLUMN company_name VARCHAR")
+    if "gst_number" not in columns:
+        alterations.append("ADD COLUMN gst_number VARCHAR")
+    if "experience_years" not in columns:
+        alterations.append("ADD COLUMN experience_years VARCHAR")
+    if "existing_client_base" not in columns:
+        alterations.append("ADD COLUMN existing_client_base VARCHAR")
     if "full_name" not in columns:
         alterations.append("ADD COLUMN full_name VARCHAR")
     if "username" not in columns:
