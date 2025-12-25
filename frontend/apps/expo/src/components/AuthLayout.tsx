@@ -45,7 +45,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
           <YStack gap="$5">
             <YStack gap="$2">
               <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
-                Rich Harbor
+                Richharbor
               </Text>
               <H1 color="$color12">{title}</H1>
               {subtitle ? (

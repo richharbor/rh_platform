@@ -10,11 +10,17 @@ class UserPublic(BaseModel):
     email: EmailStr
     name: str | None = None
     onboarding_completed: bool
-    role: str = "user"
+    role: str = "customer"
     created_at: datetime | None = None
     email_verified_at: datetime | None = None
     is_email_verified: bool = False
     phone: str | None = None
+    city: str | None = None
+    pan: str | None = None
+    company_name: str | None = None
+    gst_number: str | None = None
+    experience_years: str | None = None
+    existing_client_base: str | None = None
     full_name: str | None = None
     username: str | None = None
     dob: datetime | None = None

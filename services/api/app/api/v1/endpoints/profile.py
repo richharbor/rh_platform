@@ -39,6 +39,11 @@ def update_profile(
         "username",
         "country",
         "phone",
+        "pan",
+        "company_name",
+        "gst_number",
+        "experience_years",
+        "existing_client_base",
     ]:
         value = getattr(payload, field)
         if value is not None:

@@ -9,8 +9,15 @@ type AuthUser = {
   email: string
   name?: string | null
   onboarding_completed: boolean
+  role?: string | null
   email_verified_at?: string | null
   phone?: string | null
+  city?: string | null
+  pan?: string | null
+  company_name?: string | null
+  gst_number?: string | null
+  experience_years?: string | null
+  existing_client_base?: string | null
   full_name?: string | null
   username?: string | null
   dob?: string | null
@@ -35,7 +42,19 @@ type AuthContextValue = {
   refreshToken: string | null
   isLoading: boolean
   signIn: (payload: { email: string; password: string }) => Promise<AuthUser>
-  signUp: (payload: { email: string; password: string; name?: string }) => Promise<AuthUser>
+  signUp: (payload: {
+    email: string
+    password: string
+    name?: string
+    role: string
+    phone?: string
+    city?: string
+    pan?: string
+    company_name?: string
+    gst_number?: string
+    experience_years?: string
+    existing_client_base?: string
+  }) => Promise<AuthUser>
   signOut: () => Promise<void>
   requestSignupOtp: (payload: { email: string }) => Promise<void>
   verifySignupOtp: (payload: { email: string; otp: string }) => Promise<string>
@@ -205,7 +224,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return response.user
   }
 
-  const signUp = async (payload: { email: string; password: string; name?: string }) => {
+  const signUp = async (payload: {
+    email: string
+    password: string
+    name?: string
+    role: string
+    phone?: string
+    city?: string
+    pan?: string
+    company_name?: string
+    gst_number?: string
+    experience_years?: string
+    existing_client_base?: string
+  }) => {
     const response = await apiFetch<AuthResponse>('/v1/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload),

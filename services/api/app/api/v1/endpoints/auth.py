@@ -139,10 +139,25 @@ def complete_signup(payload: SignupComplete, db: Session = Depends(get_db)) -> A
 
 @router.post("/auth/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> AuthResponse:
+    allowed_roles = {"customer", "partner", "referral_partner"}
+    role = payload.role.lower().strip()
+    if role not in allowed_roles:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role selection.",
+        )
     email = payload.email.lower()
     user = User(
         email=email,
         name=payload.name,
+        role=role,
+        phone=payload.phone,
+        city=payload.city,
+        pan=payload.pan,
+        company_name=payload.company_name,
+        gst_number=payload.gst_number,
+        experience_years=payload.experience_years,
+        existing_client_base=payload.existing_client_base,
         password_hash=get_password_hash(payload.password),
         email_verified_at=datetime.now(timezone.utc),
     )
