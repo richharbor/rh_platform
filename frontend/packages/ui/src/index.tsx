@@ -20,7 +20,7 @@ export {
   type TamaguiProviderProps,
 } from 'tamagui'
 
-export { ToastProvider, Toast, useToastState } from '@tamagui/toast'
+export { ToastProvider, Toast, useToastState, ToastViewport } from '@tamagui/toast'
 
 export { config } from '@my/config'
 

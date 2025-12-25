@@ -8,11 +8,11 @@ export default function RewardsScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$4">
+      <YStack flex={1} background="$background" px="$5" py="$6" gap="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Rewards & Wallet
         </Text>
-        <YStack bg="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$2">
+        <YStack background="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$2">
           <Text fontWeight="700" color="$color12">
             Wallet balance
           </Text>
@@ -23,13 +23,13 @@ export default function RewardsScreen() {
         </YStack>
 
         <XStack gap="$3" flexWrap="wrap">
-          <YStack bg="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3" flexGrow={1}>
+          <YStack background="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3" flexGrow={1}>
             <Text fontWeight="700" color="$color12">
               Active contests
             </Text>
             <Paragraph color="$color10">Leaderboard coming soon.</Paragraph>
           </YStack>
-          <YStack bg="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3" flexGrow={1}>
+          <YStack background="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3" flexGrow={1}>
             <Text fontWeight="700" color="$color12">
               Reward status
             </Text>
@@ -41,7 +41,7 @@ export default function RewardsScreen() {
           </YStack>
         </XStack>
 
-        <YStack bg="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$3">
+        <YStack background="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$3">
           <Text fontWeight="700" color="$color12">
             Incentive mapping
           </Text>

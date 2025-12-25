@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient'
 import { H1, Paragraph, Text, YStack } from '@my/ui'
@@ -41,38 +41,47 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
         opacity={0.35}
       />
       <SafeAreaView style={styles.safe}>
-        <YStack flex={1} padding="$5" justifyContent="center">
-          <YStack gap="$5">
-            <YStack gap="$2">
-              <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
-                Richharbor
-              </Text>
-              <H1 color="$color12">{title}</H1>
-              {subtitle ? (
-                <Paragraph color="$color11" size="$4">
-                  {subtitle}
-                </Paragraph>
-              ) : null}
+        <KeyboardAvoidingView
+          style={styles.safe}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <YStack padding="$5" gap="$5" justifyContent="center" flexGrow={1}>
+              <YStack gap="$2">
+                <Text textTransform="uppercase" letterSpacing={3} fontSize="$2" color="$color10">
+                  Richharbor
+                </Text>
+                <H1 color="$color12">{title}</H1>
+                {subtitle ? (
+                  <Paragraph color="$color11" size="$4">
+                    {subtitle}
+                  </Paragraph>
+                ) : null}
+              </YStack>
+              <YStack
+                backgroundColor="$color1"
+                borderRadius="$8"
+                padding="$5"
+                gap="$4"
+                borderWidth={1}
+                borderColor="$color3"
+                animation="medium"
+                enterStyle={{ opacity: 0, y: 16 }}
+                shadowColor="#000"
+                shadowOpacity={0.08}
+                shadowRadius={20}
+                shadowOffset={{ width: 0, height: 10 }}
+              >
+                {children}
+              </YStack>
+              {footer ? <YStack marginTop="$3">{footer}</YStack> : null}
             </YStack>
-            <YStack
-              backgroundColor="$color1"
-              borderRadius="$8"
-              padding="$5"
-              gap="$4"
-              borderWidth={1}
-              borderColor="$color3"
-              animation="medium"
-              enterStyle={{ opacity: 0, y: 16 }}
-              shadowColor="#000"
-              shadowOpacity={0.08}
-              shadowRadius={20}
-              shadowOffset={{ width: 0, height: 10 }}
-            >
-              {children}
-            </YStack>
-          </YStack>
-          {footer ? <YStack marginTop="$5">{footer}</YStack> : null}
-        </YStack>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </YStack>
   )
@@ -81,5 +90,8 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 })
