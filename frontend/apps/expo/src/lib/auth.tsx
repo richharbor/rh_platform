@@ -12,7 +12,6 @@ type AuthUser = {
   role?: string | null
   email_verified_at?: string | null
   phone?: string | null
-  city?: string | null
   pan?: string | null
   company_name?: string | null
   gst_number?: string | null

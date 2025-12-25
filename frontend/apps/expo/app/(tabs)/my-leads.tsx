@@ -38,7 +38,7 @@ export default function MyLeadsScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$4">
+      <YStack flex={1} background="$background" padding="$5" gap="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           My Leads
         </Text>
@@ -47,7 +47,7 @@ export default function MyLeadsScreen() {
             <Button
               key={status}
               size="$2"
-              bg={filter === status ? '$blue10' : '$color2'}
+              background={filter === status ? '$blue10' : '$color2'}
               color={filter === status ? 'white' : '$color12'}
               onPress={() => setFilter(status)}
             >
@@ -61,7 +61,7 @@ export default function MyLeadsScreen() {
             <Button
               key={lead.id}
               onPress={() => router.push(`/leads/${lead.id}`)}
-              bg="$color1"
+              background="$color1"
               borderRadius="$8"
               borderWidth={1}
               borderColor="$color3"

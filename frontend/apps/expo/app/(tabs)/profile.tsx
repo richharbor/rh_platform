@@ -8,11 +8,11 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$4">
+      <YStack flex={1} background="$background" padding="$5" gap="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Profile & Growth
         </Text>
-        <YStack bg="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$2">
+        <YStack background="$color1" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$color3" gap="$2">
           <Text fontWeight="700" color="$color12">
             {user?.name || 'Richharbor Member'}
           </Text>
@@ -22,14 +22,14 @@ export default function ProfileScreen() {
           {user?.city ? <Text color="$color10">City: {user.city}</Text> : null}
         </YStack>
 
-        <YStack bg="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3" gap="$2">
+        <YStack background="$color1" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$color3" gap="$2">
           <Text fontWeight="700" color="$color12">
             Growth actions
           </Text>
           <Paragraph color="$color10">Upgrade to Partner • Invite others • Training & product explainers</Paragraph>
         </YStack>
 
-        <Button onPress={signOut} bg="$color2" color="$color12">
+        <Button onPress={signOut} background="$color2" color="$color12">
           Log out
         </Button>
       </YStack>

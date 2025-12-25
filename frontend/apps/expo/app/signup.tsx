@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { router } from 'expo-router'
+import { useLocalSearchParams, router } from 'expo-router'
 import { Button, Input, Paragraph, Text, XStack, YStack } from '@my/ui'
 
 import { AuthLayout } from '../src/components/AuthLayout'
@@ -9,12 +9,15 @@ import { useAuth } from '../src/lib/auth'
 const emailRegex = /.+@.+\..+/
 
 export default function SignupScreen() {
+  const { role: initialRole } = useLocalSearchParams<{ role: string }>()
   const { signUp } = useAuth()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [city, setCity] = useState('')
-  const [role, setRole] = useState<'customer' | 'partner' | 'referral_partner'>('customer')
+  const [role, setRole] = useState<'customer' | 'partner' | 'referral_partner'>(
+    (initialRole as 'customer' | 'partner' | 'referral_partner') || 'customer'
+  )
   const [pan, setPan] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [gstNumber, setGstNumber] = useState('')
@@ -73,7 +76,7 @@ export default function SignupScreen() {
       title="Create your Richharbor account"
       subtitle="Register once and unlock lead tracking, payouts, and referrals."
       footer={
-        <XStack justify="center" gap="$2" items="center">
+        <XStack justifyContent="center" gap="$2" alignItems="center">
           <Text color="$color11">Already have an account?</Text>
           <Button
             chromeless
@@ -136,7 +139,7 @@ export default function SignupScreen() {
               <Button
                 key={option.value}
                 size="$3"
-                bg={role === option.value ? '$blue10' : '$color2'}
+                background={role === option.value ? '$blue10' : '$color2'}
                 color={role === option.value ? 'white' : '$color12'}
                 onPress={() => setRole(option.value as typeof role)}
               >
@@ -265,7 +268,7 @@ export default function SignupScreen() {
         <Button
           onPress={handleSubmit}
           disabled={isDisabled}
-          bg="$color12"
+          background="$color12"
           color="white"
           borderRadius="$6"
           pressStyle={{ opacity: 0.85 }}

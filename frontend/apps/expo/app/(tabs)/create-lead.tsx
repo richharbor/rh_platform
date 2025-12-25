@@ -82,7 +82,7 @@ export default function CreateLeadScreen() {
 
   if (successId) {
     return (
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$4">
+      <YStack flex={1} background="$background" padding="$5" gap="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Lead submitted 🎉
         </Text>
@@ -103,7 +103,7 @@ export default function CreateLeadScreen() {
             setConsentConfirmed(false)
             setConvertToReferral(false)
           }}
-          bg="$color12"
+          background="$color12"
           color="white"
         >
           Submit another lead
@@ -114,7 +114,7 @@ export default function CreateLeadScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$5">
+      <YStack flex={1} background="$background" padding="$5" gap="$5">
         <YStack gap="$2">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Create a Lead
@@ -131,7 +131,7 @@ export default function CreateLeadScreen() {
               <Button
                 key={product.value}
                 size="$3"
-                bg={productType === product.value ? '$blue10' : '$color2'}
+                background={productType === product.value ? '$blue10' : '$color2'}
                 color={productType === product.value ? 'white' : '$color12'}
                 onPress={() => setProductType(product.value)}
               >
@@ -150,7 +150,7 @@ export default function CreateLeadScreen() {
               <Button
                 key={type.value}
                 size="$3"
-                bg={leadType === type.value ? '$blue10' : '$color2'}
+                background={leadType === type.value ? '$blue10' : '$color2'}
                 color={leadType === type.value ? 'white' : '$color12'}
                 onPress={() => setLeadType(type.value)}
               >
@@ -163,7 +163,7 @@ export default function CreateLeadScreen() {
           </Paragraph>
         </YStack>
 
-        <YStack gap="$3" bg="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3">
+        <YStack gap="$3" background="$color1" borderRadius="$8" padding="$4" borderWidth={1} borderColor="$color3">
           <Text fontWeight="700" color="$color12">
             Step 3: Lead logic
           </Text>
@@ -172,7 +172,7 @@ export default function CreateLeadScreen() {
               <Paragraph color="$color11">Convert this to a referral opportunity?</Paragraph>
               <Button
                 onPress={() => setConvertToReferral((prev) => !prev)}
-                bg={convertToReferral ? '$blue10' : '$color2'}
+                background={convertToReferral ? '$blue10' : '$color2'}
                 color={convertToReferral ? 'white' : '$color12'}
               >
                 {convertToReferral ? 'Yes, convert' : 'Keep as self lead'}
@@ -197,7 +197,7 @@ export default function CreateLeadScreen() {
             <YStack gap="$2">
               <Button
                 onPress={() => setConsentConfirmed((prev) => !prev)}
-                bg={consentConfirmed ? '$green10' : '$color2'}
+                background={consentConfirmed ? '$green10' : '$color2'}
                 color={consentConfirmed ? 'white' : '$color12'}
               >
                 {consentConfirmed ? 'Consent confirmed' : 'Confirm consent from lead'}
@@ -298,7 +298,7 @@ export default function CreateLeadScreen() {
           </Paragraph>
         ) : null}
 
-        <Button onPress={handleSubmit} bg="$color12" color="white" disabled={loading}>
+        <Button onPress={handleSubmit} background="$color12" color="white" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Lead'}
         </Button>
       </YStack>

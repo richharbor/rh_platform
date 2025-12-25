@@ -33,7 +33,7 @@ export default function LeadDetailScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$4">
+      <YStack flex={1} background="$background" padding="$5" gap="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Lead {lead?.id ?? ''}
         </Text>
@@ -47,7 +47,7 @@ export default function LeadDetailScreen() {
               Incentive: {lead.incentive_type} ({lead.incentive_status})
             </Text>
             <Text color="$color10">Requirement: {lead.requirement || 'Not provided'}</Text>
-            <YStack gap="$2" bg="$color1" borderRadius="$8" p="$4" borderWidth={1} borderColor="$color3">
+            <YStack gap="$2" background="$color1" borderRadius="$8" padding="$4" borderWidth={1} borderColor="$color3">
               <Text fontWeight="700" color="$color12">
                 Lead timeline
               </Text>

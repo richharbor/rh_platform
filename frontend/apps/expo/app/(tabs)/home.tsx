@@ -60,11 +60,11 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack flex={1} bg="$background" px="$5" py="$6" gap="$5">
+      <YStack flex={1} background="$background" padding="$5" gap="$5">
         <YStack
-          bg="$color1"
+          background="$color1"
           borderRadius="$10"
-          p="$5"
+          padding="$5"
           gap="$3"
           borderWidth={1}
           borderColor="$color3"
@@ -77,7 +77,7 @@ export default function HomeScreen() {
             <Text fontSize="$2" color="$color11">
               Role
             </Text>
-            <YStack bg="$blue4" px="$3" py="$1" borderRadius="$4">
+            <YStack background="$blue4" padding="$3" borderRadius="$4">
               <Text color="$blue11" fontSize="$2">
                 {roleLabel}
               </Text>
@@ -94,9 +94,9 @@ export default function HomeScreen() {
           ].map((item) => (
             <YStack
               key={item.label}
-              bg="$color1"
+              background="$color1"
               borderRadius="$8"
-              p="$4"
+              padding="$4"
               minWidth={150}
               flexGrow={1}
               borderWidth={1}
@@ -113,9 +113,9 @@ export default function HomeScreen() {
         </XStack>
 
         <YStack
-          bg="$color12"
+          background="$color12"
           borderRadius="$10"
-          p="$5"
+          padding="$5"
           gap="$3"
           shadowColor="#000"
           shadowOpacity={0.18}
@@ -131,7 +131,7 @@ export default function HomeScreen() {
           <Paragraph color="white" opacity={0.85}>
             Unlisted Shares | Loans | Insurance | Private Markets | Corporate Finance
           </Paragraph>
-          <Button onPress={() => router.push('/create-lead')} bg="white" color="$color12">
+          <Button onPress={() => router.push('/create-lead')} background="white" color="$color12">
             Start lead
           </Button>
         </YStack>
@@ -150,7 +150,7 @@ export default function HomeScreen() {
               <Button
                 key={item.key}
                 onPress={() => router.push('/my-leads')}
-                bg="$color1"
+                background="$color1"
                 color="$color12"
                 borderRadius="$8"
                 borderWidth={1}
@@ -169,7 +169,7 @@ export default function HomeScreen() {
           </XStack>
         </YStack>
 
-        <YStack gap="$3" bg="$color1" borderRadius="$8" p="$5" borderWidth={1} borderColor="$color3">
+        <YStack gap="$3" background="$color1" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$color3">
           <Text fontWeight="700" color="$color12">
             Rewards & engagement
           </Text>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
                 ? 'View gift rewards, vouchers, and referral milestones.'
                 : 'Unlock free add-ons, faster callbacks, and product walkthroughs.'}
           </Paragraph>
-          <Button onPress={() => router.push('/rewards')} bg="$color12" color="white">
+          <Button onPress={() => router.push('/rewards')} background="$color12" color="white">
             View rewards
           </Button>
         </YStack>
@@ -191,7 +191,7 @@ export default function HomeScreen() {
           </Paragraph>
         ) : null}
 
-        <Button onPress={signOut} bg="$color2" color="$color12">
+        <Button onPress={signOut} background="$color2" color="$color12">
           Log out
         </Button>
       </YStack>

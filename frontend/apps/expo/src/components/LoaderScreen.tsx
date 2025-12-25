@@ -6,7 +6,7 @@ import { H2, Paragraph, YStack } from '@my/ui'
 
 export function LoaderScreen() {
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} background="$background">
       <LinearGradient
         colors={['#F8F4EC', '#EAF3FF', '#F3E7F0']}
         start={{ x: 0, y: 0 }}
@@ -14,16 +14,16 @@ export function LoaderScreen() {
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={styles.safe}>
-        <YStack flex={1} justify="center" items="center" gap="$4">
+        <YStack flex={1} justifyContent="center" alignItems="center" gap="$4">
           <YStack
             width={80}
             height={80}
             borderRadius={40}
-            bg="$color1"
+            background="$color1"
             borderWidth={1}
             borderColor="$color3"
-            justify="center"
-            items="center"
+            justifyContent="center"
+            alignItems="center"
             shadowColor="#000"
             shadowOpacity={0.08}
             shadowRadius={12}
