@@ -1,0 +1,54 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
+  presets: [require('nativewind/preset')],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: "#f4f4ff",
+          100: "#e2e0ff",
+          200: "#c2bdff",
+          300: "#9b91ff",
+          400: "#7769ff",
+          500: "#5b46ff",
+          600: "#4f33f0",
+          700: "#3f28c7",
+          800: "#32229b",
+          900: "#2a1f75"
+        },
+        ink: {
+          50: "#f7f7f8",
+          100: "#ececef",
+          200: "#d3d3da",
+          300: "#b3b3c1",
+          400: "#8a8a9c",
+          500: "#6f6f82",
+          600: "#58586a",
+          700: "#464654",
+          800: "#2f2f3a",
+          900: "#1b1b23"
+        },
+        success: {
+          500: "#19c37d",
+          600: "#12a86a"
+        },
+        danger: {
+          500: "#ff5a5f",
+          600: "#e2484d"
+        }
+      },
+      fontFamily: {
+        sans: ["System"]
+      },
+      borderRadius: {
+        xl: "20px",
+        '2xl': "28px"
+      },
+      boxShadow: {
+        card: "0px 10px 30px rgba(15, 15, 25, 0.12)",
+        soft: "0px 6px 20px rgba(15, 15, 25, 0.08)"
+      }
+    }
+  }
+};
