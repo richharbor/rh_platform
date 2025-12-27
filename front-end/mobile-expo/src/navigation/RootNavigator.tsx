@@ -1,23 +1,14 @@
-import { NavigationContainer } from '@react-navigation/native';
-
 import { AppStack } from './AppStack';
 import { AuthStack } from './AuthStack';
 import { useAppState } from '../store/appState';
 
 export function RootNavigator() {
-  const { hasSeenOnboarding, hasSignedUp, isAuthenticated } = useAppState();
+  const { isAuthenticated, user } = useAppState();
 
-  if (isAuthenticated) {
-    return (
-      <NavigationContainer>
-        <AppStack />
-      </NavigationContainer>
-    );
+  // Only allow access to AppStack if authenticated AND onboarding is completed
+  if (isAuthenticated && user?.onboarding_completed) {
+    return <AppStack />;
   }
 
-  return (
-    <NavigationContainer>
-      <AuthStack initialRouteName="Splash" />
-    </NavigationContainer>
-  );
+  return <AuthStack initialRouteName="Splash" />;
 }

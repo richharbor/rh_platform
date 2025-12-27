@@ -5,17 +5,26 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useAppBootstrap } from '../hooks/useAppBootstrap';
 import { storageKeys } from '../utils/storageKeys';
 
+interface User {
+  id: number;
+  name?: string;
+  email?: string;
+  role: string;
+  onboarding_completed?: boolean;
+}
+
 interface AppStateContextValue {
   isLoading: boolean;
   hasSeenOnboarding: boolean;
   hasSignedUp: boolean;
   isAuthenticated: boolean;
   accountType: AccountType;
+  user: User | null;
   markOnboardingComplete: () => Promise<void>;
   markSignedUp: () => Promise<void>;
   setAccountType: (type: AccountType) => void;
-  signIn: () => void;
-  signOut: () => void;
+  signIn: (token: string, user: User) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
@@ -30,6 +39,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [hasSignedUp, setHasSignedUp] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>('Customer');
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (!bootstrap.isLoading) {
@@ -50,8 +60,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setHasSeenOnboarding(true);
   };
 
-  const signIn = () => setIsAuthenticated(true);
-  const signOut = () => setIsAuthenticated(false);
+  const signIn = async (token: string, userData: User) => {
+    await AsyncStorage.setItem('auth_token', token);
+    await AsyncStorage.setItem('user_data', JSON.stringify(userData));
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  const signOut = async () => {
+    await AsyncStorage.removeItem('auth_token');
+    await AsyncStorage.removeItem('user_data');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
   const value = useMemo(
     () => ({
@@ -60,6 +81,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       hasSignedUp,
       isAuthenticated,
       accountType,
+      user,
       markOnboardingComplete,
       markSignedUp,
       setAccountType,
@@ -71,7 +93,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       hasSeenOnboarding,
       hasSignedUp,
       isAuthenticated,
-      accountType
+      accountType,
+      user
     ]
   );
 

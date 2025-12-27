@@ -6,7 +6,7 @@ export type AuthStackParamList = {
   OnboardingTwo: undefined;
   OnboardingThree: undefined;
   Signup: undefined;
-  VerifyOtp: { mode: 'signup' | 'login' };
+  VerifyOtp: { mode: 'signup' | 'login'; identifier: string; method: 'email' | 'phone' };
   Registration: undefined;
   Login: undefined;
 };

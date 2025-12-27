@@ -1,23 +1,17 @@
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, type TextInputProps, View } from 'react-native';
 
-interface TextFieldProps {
+interface TextFieldProps extends TextInputProps {
   label?: string;
-  value?: string;
-  placeholder?: string;
-  onChangeText?: (text: string) => void;
   error?: string;
   helper?: string;
-  secureTextEntry?: boolean;
 }
 
 export function TextField({
   label,
-  value,
-  placeholder,
-  onChangeText,
   error,
   helper,
-  secureTextEntry
+  className,
+  ...props
 }: TextFieldProps) {
   const helperText = error ?? helper;
 
@@ -27,15 +21,12 @@ export function TextField({
         <Text className="mb-2 text-sm font-medium text-ink-700">{label}</Text>
       ) : null}
       <TextInput
-        value={value}
-        placeholder={placeholder}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
         placeholderTextColor="#8a8a9c"
         className={[
           'rounded-2xl border px-4 py-4 text-base text-ink-900',
           error ? 'border-danger-500' : 'border-ink-200'
         ].join(' ')}
+        {...props}
       />
       {helperText ? (
         <Text

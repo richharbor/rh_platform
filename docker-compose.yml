@@ -8,30 +8,37 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5455:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
 
-  api:
+  rhserver:
     build:
-      context: .
-      dockerfile: docker/api.Dockerfile
+      context: ./rhserver
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "5003:5003"
     volumes:
-      - ./services/api:/app
+      - ./rhserver:/app
+      - /app/node_modules
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-      CORS_ORIGINS: http://localhost:19000,http://localhost:19006,http://localhost:8081,http://localhost:3000
-      APP_ENV: local
-      API_HOST: 0.0.0.0
-      API_PORT: 8000
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@richharbor.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-1q2w3e}
-      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
-      EMAIL_PORT: ${EMAIL_PORT:-587}
-      EMAIL_USER: ${EMAIL_USER:-cto@richharbor.com}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-gbeg uwye awzv cqbm}
+      - PORT=5003
+      # Main DB
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=postgres
+      - DB_PORT=5432
+      - DB_SSL=false
+      # Platform DB (Isolated)
+      - PLATFORM_DB_HOST=db
+      - PLATFORM_DB_PORT=5432
+      - PLATFORM_DB_NAME=rh_platform
+      - PLATFORM_DB_USERNAME=postgres
+      - PLATFORM_DB_PASSWORD=postgres
+      - PLATFORM_DB_SSL=false
+      - JWT_SECRET=dev_secret
     depends_on:
       - db
 

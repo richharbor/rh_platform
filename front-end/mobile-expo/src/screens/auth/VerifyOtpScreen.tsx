@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { OtpInput, PrimaryButton } from '../../components';
 import { useAppState } from '../../store/appState';
 import type { AuthStackScreenProps } from '../../navigation/types';
+import { authService } from '../../services/authService';
 
 export function VerifyOtpScreen({
   navigation,
@@ -11,7 +14,10 @@ export function VerifyOtpScreen({
 }: AuthStackScreenProps<'VerifyOtp'>) {
   const [code, setCode] = useState<string[]>([]);
   const [seconds, setSeconds] = useState(45);
-  const isLoginFlow = route.params.mode === 'login';
+  const [loading, setLoading] = useState(false);
+
+  const { mode, identifier, method } = route.params;
+  const isLoginFlow = mode === 'login';
   const { signIn } = useAppState();
 
   const isComplete = useMemo(() => code.filter(Boolean).length === 6, [code]);
@@ -28,12 +34,83 @@ export function VerifyOtpScreen({
     return () => clearTimeout(timer);
   }, [seconds]);
 
+  const handleVerify = async () => {
+    setLoading(true);
+    const otp = code.join('');
+    try {
+      const response = await authService.verifyOtp(identifier, otp, mode);
+
+      const user = response.user;
+      const token = response.access_token;
+
+      // Login/Signup Success
+      await signIn(token, user);
+
+      // Check for Biometric Support and ask to enable
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      if (compatible) {
+        Alert.alert(
+          "Enable Biometrics",
+          "Would you like to use Face ID / Touch ID for faster login next time?",
+          [
+            {
+              text: "No",
+              style: "cancel",
+              onPress: () => navigateNext(user)
+            },
+            {
+              text: "Yes",
+              onPress: async () => {
+                await AsyncStorage.setItem('biometric_enabled', 'true');
+                navigateNext(user);
+              }
+            }
+          ]
+        );
+      } else {
+        navigateNext(user);
+      }
+
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert("Error", error.response?.data?.error || "Invalid OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const navigateNext = (user: any) => {
+    if (isLoginFlow) {
+      if (!user.onboarding_completed) {
+        navigation.replace('Registration');
+      }
+      // If onboarding complete, AppState update (signIn) will auto-redirect to AppStack
+    } else {
+      navigation.replace('Registration');
+    }
+  };
+
+  const handleResend = async () => {
+    setLoading(true);
+    try {
+      await authService.requestOtp(identifier, isLoginFlow ? 'login' : 'signup');
+      Alert.alert("Sent", `OTP sent to ${identifier}`);
+      setSeconds(45);
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert("Error", error.response?.data?.error || "Failed to resend OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View className="flex-1 bg-ink-50 px-6 pb-8 pt-16">
       <Text className="text-3xl font-bold text-ink-900">Verify OTP</Text>
       <Text className="mt-3 text-base text-ink-500">
-        Enter the 6-digit code we sent to your email.
+        Enter the 6-digit code we sent to your {method}.
       </Text>
+      <Text className="text-sm font-medium text-ink-900 mt-1">{identifier}</Text>
 
       <View className="mt-8">
         <OtpInput value={code} onChange={setCode} />
@@ -44,8 +121,8 @@ export function VerifyOtpScreen({
           {seconds > 0 ? `Resend in 0:${seconds.toString().padStart(2, '0')}` : 'Didn’t receive a code?'}
         </Text>
         <Pressable
-          disabled={seconds > 0}
-          onPress={() => setSeconds(45)}
+          disabled={seconds > 0 || loading}
+          onPress={handleResend}
         >
           <Text
             className={[
@@ -53,27 +130,21 @@ export function VerifyOtpScreen({
               seconds > 0 ? 'text-ink-300' : 'text-brand-500'
             ].join(' ')}
           >
-            Resend
+            {loading ? 'Sending...' : 'Resend'}
           </Text>
         </Pressable>
       </View>
 
-      <Pressable className="mt-4" onPress={() => navigation.replace('Signup')}>
-        <Text className="text-sm text-brand-500">Change email</Text>
+      <Pressable className="mt-4" onPress={() => navigation.goBack()}>
+        <Text className="text-sm text-brand-500">Change {method}</Text>
       </Pressable>
 
       <View className="mt-8">
         <PrimaryButton
-          label={isLoginFlow ? 'Verify & login' : 'Verify & continue'}
+          label={loading ? 'Verifying...' : (isLoginFlow ? 'Verify & login' : 'Verify & continue')}
           fullWidth
-          onPress={() => {
-            if (isLoginFlow) {
-              signIn();
-            } else {
-              navigation.replace('Registration');
-            }
-          }}
-          disabled={!isComplete}
+          onPress={handleVerify}
+          disabled={!isComplete || loading}
         />
       </View>
     </View>
