@@ -7,6 +7,8 @@ import { useNotificationPermissionOnce } from './src/hooks/useNotificationPermis
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { AppStateProvider, useAppState } from './src/store/appState';
 
+import "./global.css";
+
 function AppShell() {
   const { isLoading } = useAppState();
 
