@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Pressable, Text, View, Alert, TouchableOpacity } from 'react-native';
+import { Pressable, Text, View, Alert, TouchableOpacity, TextInput } from 'react-native';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
 import { useAppState, type AccountType } from '../../store/appState';
 import { authService } from '../../services/authService';
 import type { AuthStackScreenProps } from '../../navigation/types';
+
+import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 
 export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
   const { setAccountType } = useAppState();
@@ -12,6 +14,10 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
   const [contactMethod, setContactMethod] = useState<'email' | 'phone'>('email');
   const [identifier, setIdentifier] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Phone Input State
+  const [countryCode, setCountryCode] = useState<CountryCode>('IN');
+  const [callingCode, setCallingCode] = useState('91');
 
   const accountTypes: AccountType[] = [
     'Partner',
@@ -29,14 +35,17 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
     try {
       setAccountType(selectedType);
 
+      const finalIdentifier = contactMethod === 'phone' ? `+${callingCode}${identifier}` : identifier;
+
       // Call backend API
-      await authService.requestOtp(identifier, 'signup');
+      await authService.requestOtp(finalIdentifier, 'signup');
 
       // Navigate only on success
       navigation.navigate('VerifyOtp', {
         mode: 'signup',
-        identifier,
-        method: contactMethod
+        identifier: finalIdentifier,
+        method: contactMethod,
+        role: selectedType
       });
     } catch (error: any) {
       console.error(error);
@@ -139,17 +148,47 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
           />
         </View>
         <View style={{ display: contactMethod === 'phone' ? 'flex' : 'none' }}>
-          <TextField
-            label="Phone number"
-            placeholder="+91 98765 43210"
-            value={contactMethod === 'phone' ? identifier : ''}
-            onChangeText={(text) => {
-              if (contactMethod === 'phone') setIdentifier(text);
-            }}
-            keyboardType="phone-pad"
-            autoCapitalize="none"
-            helper="We will send a 6-digit verification code."
-          />
+          <Text className="mb-2 text-sm font-medium text-ink-700">Phone number</Text>
+          <View className="flex-row items-center space-x-3">
+            <View className="rounded-2xl border border-ink-200 pl-3 pr-4 h-[56px] bg-white flex-row items-center justify-center">
+              <CountryPicker
+                countryCode={countryCode}
+                withFilter
+                withFlag
+                withCallingCode={false}
+                withEmoji
+                onSelect={(country: Country) => {
+                  setCountryCode(country.cca2);
+                  setCallingCode(country.callingCode[0]);
+                }}
+                visible={false}
+                containerButtonStyle={{ justifyContent: 'center', alignItems: 'center' }}
+              />
+              <Text className="text-base text-ink-900 ml-1">+{callingCode}</Text>
+            </View>
+            <View className="flex-1">
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#e5e7eb',
+                  borderRadius: 16,
+                  paddingHorizontal: 16,
+                  height: 56,
+                  fontSize: 16,
+                  color: '#111827',
+                  backgroundColor: 'white'
+                }}
+                placeholder="98765 43210"
+                placeholderTextColor="#9ca3af"
+                value={contactMethod === 'phone' ? identifier : ''}
+                onChangeText={(text: string) => {
+                  if (contactMethod === 'phone') setIdentifier(text);
+                }}
+                keyboardType="phone-pad"
+              />
+            </View>
+          </View>
+          <Text className="mt-2 text-xs text-ink-500">We will send a 6-digit verification code.</Text>
         </View>
       </View>
 

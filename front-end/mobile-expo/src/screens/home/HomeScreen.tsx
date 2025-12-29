@@ -1,125 +1,94 @@
-import { ScrollView, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { ScrollView, Text, View, Alert, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import * as LocalAuthentication from 'expo-local-authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { PrimaryButton } from '../../components';
 import { useAppState } from '../../store/appState';
 import type { AppStackScreenProps } from '../../navigation/types';
 
-export function HomeScreen({}: AppStackScreenProps<'Home'>) {
-  const { signOut } = useAppState();
+export function HomeScreen({ }: any) {
+  const navigation = useNavigation<any>();
+  const { user, signOut } = useAppState();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const hasAsked = await AsyncStorage.getItem('has_asked_biometrics');
+        if (hasAsked) return;
+
+        const compatible = await LocalAuthentication.hasHardwareAsync();
+        if (!compatible) return;
+
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
+        if (!enrolled) return;
+
+        Alert.alert(
+          "Enable Biometrics",
+          "Would you like to use Face ID / Touch ID for faster login next time?",
+          [
+            { text: "No", style: "cancel", onPress: async () => { await AsyncStorage.setItem('has_asked_biometrics', 'true'); } },
+            { text: "Yes", onPress: async () => { await AsyncStorage.setItem('biometric_enabled', 'true'); await AsyncStorage.setItem('has_asked_biometrics', 'true'); Alert.alert("Success", "Biometrics enabled!"); } }
+          ]
+        );
+      } catch (error) {
+        console.log('Biometric check error:', error);
+      }
+    })();
+  }, []);
+
+  const QUICK_TILES = [
+    { title: 'Insurance', icon: '🛡️' },
+    { title: 'Loans', icon: '💰' },
+    { title: 'Funding / PE', icon: '🚀' },
+    { title: 'Unlisted Shares', icon: '📈' },
+    { title: 'Bulk Stocks', icon: '📊' }
+  ];
 
   return (
     <View className="flex-1 bg-ink-50">
       <ScrollView
-        contentContainerClassName="px-6 pb-12 pt-14"
+        contentContainerClassName="px-6 pb-24 pt-14"
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center justify-between mb-8">
           <View>
-            <Text className="text-sm font-semibold text-ink-500">
-              Good morning
-            </Text>
-            <Text className="mt-1 text-3xl font-bold text-ink-900">
-              Jordan 👋
+            <Text className="text-sm font-semibold text-ink-500">Welcome,</Text>
+            <Text className="mt-1 text-2xl font-bold text-ink-900">
+              {user?.name || user?.phone || 'Partner'} 👋
             </Text>
           </View>
-          <View className="h-12 w-12 items-center justify-center rounded-full bg-brand-500/10">
-            <Text className="text-lg font-semibold text-brand-600">JL</Text>
+          <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100">
+            <Text className="text-lg font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
           </View>
         </View>
 
-        <View className="mt-8 rounded-3xl bg-ink-900 px-6 py-6">
-          <Text className="text-sm font-semibold text-brand-300">
-            Complete your profile
-          </Text>
-          <Text className="mt-2 text-2xl font-semibold text-white">
-            Unlock premium recommendations
-          </Text>
-          <Text className="mt-2 text-sm text-ink-200">
-            Add your industry and partnership goals to tailor your workspace.
-          </Text>
-          <View className="mt-4">
-            <PrimaryButton label="Finish setup" />
-          </View>
+        {/* Create Lead Callout */}
+        <View className="bg-ink-900 p-6 rounded-2xl mb-8 relative overflow-hidden">
+          <Text className="text-white text-lg font-bold mb-1">Grow your earnings</Text>
+          <Text className="text-brand-200 text-sm mb-4 w-3/4">Submit a new lead and track commissions in real-time.</Text>
+          <PrimaryButton
+            label="+  Create New Lead"
+            onPress={() => navigation.navigate('CreateLead')}
+          />
         </View>
 
-        <View className="mt-8">
-          <Text className="text-lg font-semibold text-ink-900">
-            Quick actions
-          </Text>
-          <View className="mt-4 space-y-4">
-            {[
-              { title: 'Explore services', subtitle: 'Browse curated partners.' },
-              { title: 'Contact support', subtitle: 'Get help in minutes.' },
-              { title: 'View insights', subtitle: 'Latest activity and trends.' }
-            ].map((item) => (
-              <View
-                key={item.title}
-                className="rounded-2xl bg-white px-5 py-4 shadow-soft"
-              >
-                <Text className="text-base font-semibold text-ink-900">
-                  {item.title}
-                </Text>
-                <Text className="mt-1 text-sm text-ink-500">
-                  {item.subtitle}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <View className="mt-8">
-          <Text className="text-lg font-semibold text-ink-900">
-            Updates
-          </Text>
-          <View className="mt-4 space-y-4">
-            {[
-              'New partner match: Atlas Strategy',
-              'Quarterly insights report is ready',
-              'You have 3 new referral requests'
-            ].map((item) => (
-              <View
-                key={item}
-                className="rounded-2xl border border-ink-100 bg-white px-5 py-4"
-              >
-                <Text className="text-sm font-medium text-ink-700">{item}</Text>
-                <Text className="mt-2 text-xs text-ink-400">2 hours ago</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <View className="mt-10">
-          <PrimaryButton label="Sign out" fullWidth onPress={signOut} />
-        </View>
-      </ScrollView>
-
-      <View className="border-t border-ink-100 bg-white px-6 pb-8 pt-3">
-        <View className="flex-row items-center justify-between">
-          {[
-            { label: 'Home', active: true },
-            { label: 'Search' },
-            { label: 'Inbox' },
-            { label: 'Profile' }
-          ].map((item) => (
-            <View key={item.label} className="items-center">
-              <View
-                className={[
-                  'h-2 w-2 rounded-full',
-                  item.active ? 'bg-brand-500' : 'bg-ink-200'
-                ].join(' ')}
-              />
-              <Text
-                className={[
-                  'mt-2 text-xs font-medium',
-                  item.active ? 'text-brand-600' : 'text-ink-400'
-                ].join(' ')}
-              >
-                {item.label}
-              </Text>
-            </View>
+        <Text className="text-lg font-bold text-ink-900 mb-4">Product Categories</Text>
+        <View className="flex-row flex-wrap gap-3">
+          {QUICK_TILES.map((tile) => (
+            <TouchableOpacity
+              key={tile.title}
+              className="w-[48%] bg-white p-4 rounded-xl border border-ink-100 shadow-sm"
+              onPress={() => navigation.navigate('CreateLead')} // Shortcuts to create lead
+            >
+              <Text className="text-2xl mb-2">{tile.icon}</Text>
+              <Text className="font-semibold text-ink-900">{tile.title}</Text>
+            </TouchableOpacity>
           ))}
         </View>
-      </View>
+
+      </ScrollView>
     </View>
   );
 }

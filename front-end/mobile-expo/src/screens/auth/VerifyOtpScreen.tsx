@@ -16,7 +16,7 @@ export function VerifyOtpScreen({
   const [seconds, setSeconds] = useState(45);
   const [loading, setLoading] = useState(false);
 
-  const { mode, identifier, method } = route.params;
+  const { mode, identifier, method, role } = route.params;
   const isLoginFlow = mode === 'login';
   const { signIn } = useAppState();
 
@@ -38,7 +38,7 @@ export function VerifyOtpScreen({
     setLoading(true);
     const otp = code.join('');
     try {
-      const response = await authService.verifyOtp(identifier, otp, mode);
+      const response = await authService.verifyOtp(identifier, otp, mode, role);
 
       const user = response.user;
       const token = response.access_token;
@@ -46,30 +46,8 @@ export function VerifyOtpScreen({
       // Login/Signup Success
       await signIn(token, user);
 
-      // Check for Biometric Support and ask to enable
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      if (compatible) {
-        Alert.alert(
-          "Enable Biometrics",
-          "Would you like to use Face ID / Touch ID for faster login next time?",
-          [
-            {
-              text: "No",
-              style: "cancel",
-              onPress: () => navigateNext(user)
-            },
-            {
-              text: "Yes",
-              onPress: async () => {
-                await AsyncStorage.setItem('biometric_enabled', 'true');
-                navigateNext(user);
-              }
-            }
-          ]
-        );
-      } else {
-        navigateNext(user);
-      }
+      // Navigate to next screen (Registration or Home)
+      navigateNext(user);
 
     } catch (error: any) {
       console.error(error);

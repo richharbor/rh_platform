@@ -21,10 +21,10 @@ export const authService = {
         return api.post('/auth/request-otp', { ...payload, purpose });
     },
 
-    verifyOtp: async (identifier: string, otp: string, purpose: 'login' | 'signup') => {
+    verifyOtp: async (identifier: string, otp: string, purpose: 'login' | 'signup', role?: string) => {
         const type = identifier.includes('@') ? 'email' : 'phone';
         const payload = type === 'email' ? { email: identifier } : { phone: identifier };
-        const response = await api.post<VerifyOtpResponse>('/auth/verify-otp', { ...payload, otp, purpose });
+        const response = await api.post<VerifyOtpResponse>('/auth/verify-otp', { ...payload, otp, purpose, role });
         return response.data;
     },
 

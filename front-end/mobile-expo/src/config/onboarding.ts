@@ -31,9 +31,24 @@ const PARTNER_FLOW: OnboardingFlow = {
             title: 'Professional Profile',
             questions: [
                 {
+                    id: 'profession',
+                    type: 'select',
+                    question: 'Which best describes you?',
+                    options: [
+                        'Wealth Manager / Investment Advisor',
+                        'Insurance Advisor / POSP',
+                        'Banker / Relationship Manager',
+                        'CA / CS / Tax Consultant',
+                        'Entrepreneur / Business Owner',
+                        'Working Professional (Exploring Wealth Business)',
+                        'Other'
+                    ],
+                    required: true
+                },
+                {
                     id: 'activityStatus',
                     type: 'select',
-                    question: 'Are you active in wealth/financial distribution?',
+                    question: 'Are you currently active in wealth or financial product distribution?',
                     options: [
                         'Yes, actively managing clients',
                         'Somewhat active (side income)',
@@ -50,7 +65,7 @@ const PARTNER_FLOW: OnboardingFlow = {
                 {
                     id: 'products',
                     type: 'multiselect',
-                    question: 'Which products would you like to offer?',
+                    question: 'Which products would you like to offer to your clients through Rich Harbor?',
                     options: [
                         'Unlisted Shares',
                         'Pre-IPO Opportunities',
@@ -66,7 +81,13 @@ const PARTNER_FLOW: OnboardingFlow = {
                     id: 'clientBase',
                     type: 'select',
                     question: 'Approximate client base you can tap into?',
-                    options: ['0-10', '10-50', '50-100', '100+', 'Corporate / HNI network'],
+                    options: [
+                        '0-10',
+                        '10-50',
+                        '50-100',
+                        '100+',
+                        'Corporate / HNI network'
+                    ],
                     required: true
                 }
             ]
@@ -79,11 +100,11 @@ const PARTNER_FLOW: OnboardingFlow = {
                     type: 'multiselect',
                     question: 'What are you looking for from Rich Harbor?',
                     options: [
-                        'Free tech platform',
+                        'Free tech platform to manage wealth business',
                         'Additional income source',
-                        'Access to Pre-IPO / Unlisted',
+                        'Access to Pre-IPO / Unlisted opportunities',
                         'Faster execution & better deals',
-                        'White-label / scalable business',
+                        'White-label / scalable business setup',
                         'Learning & support'
                     ],
                     required: true
@@ -92,7 +113,12 @@ const PARTNER_FLOW: OnboardingFlow = {
                     id: 'timeline',
                     type: 'select',
                     question: 'How soon would you like to start?',
-                    options: ['Immediately', 'Within 30 days', 'In 1–3 months', 'Just exploring'],
+                    options: [
+                        'Immediately',
+                        'Within 30 days',
+                        'In 1–3 months',
+                        'Just exploring'
+                    ],
                     required: true
                 }
             ]
@@ -103,8 +129,12 @@ const PARTNER_FLOW: OnboardingFlow = {
                 {
                     id: 'connectPreference',
                     type: 'select',
-                    question: 'Would you like a quick walkthrough?',
-                    options: ['Yes, please call me', 'Yes, WhatsApp is fine', 'Not now'],
+                    question: 'Would you like our team to connect with you for a quick walkthrough?',
+                    options: [
+                        'Yes, please call me',
+                        'Yes, WhatsApp is fine',
+                        'Not now'
+                    ],
                     required: true
                 }
             ]
@@ -119,34 +149,7 @@ const REFERRAL_PARTNER_FLOW: OnboardingFlow = {
 
 const CUSTOMER_FLOW: OnboardingFlow = {
     type: 'Customer',
-    steps: [
-        {
-            title: 'Basic Details',
-            questions: [
-                { id: 'fullName', type: 'text', question: 'Full Name', required: true },
-                { id: 'location', type: 'text', question: 'Location', required: true },
-            ]
-        },
-        {
-            title: 'Interests',
-            questions: [
-                {
-                    id: 'interests',
-                    type: 'multiselect',
-                    question: 'What are you interested in?',
-                    options: [
-                        'Unlisted Shares',
-                        'Pre-IPO Opportunities',
-                        'Wealth Management',
-                        'Insurance',
-                        'Loans',
-                        'Just exploring'
-                    ],
-                    required: true
-                }
-            ]
-        }
-    ]
+    steps: PARTNER_FLOW.steps // Unified flow for all users as requested
 };
 
 export const ONBOARDING_CONFIG: Record<string, OnboardingFlow> = {

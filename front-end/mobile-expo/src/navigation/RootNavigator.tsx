@@ -10,5 +10,10 @@ export function RootNavigator() {
     return <AppStack />;
   }
 
+  // If authenticated but not completed onboarding, go directly to Registration
+  if (isAuthenticated && !user?.onboarding_completed) {
+    return <AuthStack initialRouteName="Registration" />;
+  }
+
   return <AuthStack initialRouteName="Splash" />;
 }

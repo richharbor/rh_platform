@@ -5,12 +5,15 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useAppBootstrap } from '../hooks/useAppBootstrap';
 import { storageKeys } from '../utils/storageKeys';
 
-interface User {
+export interface User {
   id: number;
   name?: string;
   email?: string;
-  role: string;
+  phone?: string;
+  role?: string;
   onboarding_completed?: boolean;
+  onboarding_step?: number;
+  signup_data?: any;
 }
 
 interface AppStateContextValue {
@@ -58,6 +61,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setHasSignedUp(true);
     await AsyncStorage.setItem(storageKeys.hasSeenOnboarding, 'true');
     setHasSeenOnboarding(true);
+
+    if (user) {
+      const updatedUser = { ...user, onboarding_completed: true };
+      setUser(updatedUser);
+      await AsyncStorage.setItem('user_data', JSON.stringify(updatedUser));
+    }
   };
 
   const signIn = async (token: string, userData: User) => {
@@ -65,6 +74,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.setItem('user_data', JSON.stringify(userData));
     setUser(userData);
     setIsAuthenticated(true);
+
+    // Map backend role to AccountType for onboarding flow config
+    if (userData.role) {
+      const role = userData.role.toLowerCase();
+      if (role === 'partner') setAccountType('Partner');
+      else if (role === 'referral_partner') setAccountType('Referral Partner');
+      else setAccountType('Customer');
+    }
   };
 
   const signOut = async () => {

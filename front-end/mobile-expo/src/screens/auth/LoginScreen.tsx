@@ -8,12 +8,18 @@ import { useAppState } from '../../store/appState';
 import type { AuthStackScreenProps } from '../../navigation/types';
 import { authService } from '../../services/authService';
 
+import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
+
 export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
   const { signIn } = useAppState();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const [identifier, setIdentifier] = useState('');
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Phone Input State
+  const [countryCode, setCountryCode] = useState<CountryCode>('IN');
+  const [callingCode, setCallingCode] = useState('91');
 
   useEffect(() => {
     (async () => {
@@ -57,10 +63,12 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
 
     setLoading(true);
     try {
-      await authService.requestOtp(identifier, 'login');
+      const finalIdentifier = method === 'phone' ? `+${callingCode}${identifier}` : identifier;
+
+      await authService.requestOtp(finalIdentifier, 'login');
       navigation.navigate('VerifyOtp', {
         mode: 'login',
-        identifier,
+        identifier: finalIdentifier,
         method
       });
     } catch (error: any) {
@@ -136,26 +144,48 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
             helper="We will send a 6-digit verification code."
           />
         ) : (
-          <View style={{ display: method === 'phone' ? 'flex' : 'none' }}>
-            <Text style={{ marginBottom: 8, fontWeight: '500' }}>Phone number</Text>
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: '#e5e7eb',
-                borderRadius: 12,
-                padding: 16,
-                fontSize: 16,
-                color: '#000'
-              }}
-              placeholder="+91 98765 43210"
-              value={method === 'phone' ? identifier : ''}
-              onChangeText={(text) => {
-                if (method === 'phone') setIdentifier(text);
-              }}
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          </View>)}
+          <View>
+            <Text className="mb-2 text-sm font-medium text-ink-700">Phone number</Text>
+            <View className="flex-row items-center space-x-3">
+              <View className="rounded-2xl border border-ink-200 pl-3 pr-4 h-[56px] bg-white flex-row items-center justify-center">
+                <CountryPicker
+                  countryCode={countryCode}
+                  withFilter
+                  withFlag
+                  withCallingCode={false}
+                  withEmoji
+                  onSelect={(country: Country) => {
+                    setCountryCode(country.cca2);
+                    setCallingCode(country.callingCode[0]);
+                  }}
+                  visible={false}
+                  containerButtonStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                />
+                <Text className="text-base text-ink-900 ml-1">+{callingCode}</Text>
+              </View>
+              <View className="flex-1">
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: '#e5e7eb',
+                    borderRadius: 16,
+                    paddingHorizontal: 16,
+                    height: 56, // Fixed height for alignment
+                    fontSize: 16,
+                    color: '#111827',
+                    backgroundColor: 'white'
+                  }}
+                  placeholder="98765 43210"
+                  placeholderTextColor="#9ca3af"
+                  value={identifier}
+                  onChangeText={setIdentifier}
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </View>
+            <Text className="mt-2 text-xs text-ink-500">We will send a 6-digit verification code.</Text>
+          </View>
+        )}
       </View>
 
       <View className="mt-8 space-y-4">

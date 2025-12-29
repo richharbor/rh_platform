@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { HomeScreen } from '../screens/home/HomeScreen';
+import { MainTabNavigator } from './MainTabNavigator';
+import { CreateLeadScreen } from '../screens/leads/CreateLeadScreen';
 import type { AppStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -8,7 +9,12 @@ const Stack = createNativeStackNavigator<AppStackParamList>();
 export function AppStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Main" component={MainTabNavigator} />
+      <Stack.Screen
+        name="CreateLead"
+        component={CreateLeadScreen}
+        options={{ presentation: 'modal' }}
+      />
     </Stack.Navigator>
   );
 }
