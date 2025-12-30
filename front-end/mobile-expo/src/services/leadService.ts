@@ -6,7 +6,7 @@ export interface Lead {
     lead_type: string;
     name: string;
     status: string;
-    expected_payout?: string;
+
     created_at: string;
     [key: string]: any;
 }

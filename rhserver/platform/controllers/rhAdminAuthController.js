@@ -109,8 +109,103 @@ const seed = async (req, res) => {
     }
 };
 
+// Verify Invite Token
+const verifyInviteToken = async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({
+                valid: false,
+                error: "Token is required"
+            });
+        }
+
+        const { Op } = require("sequelize");
+        const admin = await Admin.findOne({
+            where: {
+                invite_token: token,
+                is_active: false,
+                invite_expires: { [Op.gt]: new Date() }
+            },
+            include: [{ model: AdminRole, as: 'role' }]
+        });
+
+        if (!admin) {
+            return res.status(400).json({
+                valid: false,
+                error: "Invalid or expired invitation token"
+            });
+        }
+
+        res.json({
+            valid: true,
+            admin: {
+                email: admin.email,
+                name: admin.name,
+                role: admin.role.name
+            }
+        });
+    } catch (error) {
+        console.error("Verify invite token error:", error);
+        res.status(500).json({
+            valid: false,
+            error: "Failed to verify token"
+        });
+    }
+};
+
+// Complete Invite Signup
+const completeInvite = async (req, res) => {
+    try {
+        const { token, password, name } = req.body;
+
+        if (!token || !password) {
+            return res.status(400).json({ error: "Token and password are required" });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ error: "Password must be at least 8 characters" });
+        }
+
+        const { Op } = require("sequelize");
+        const admin = await Admin.findOne({
+            where: {
+                invite_token: token,
+                is_active: false,
+                invite_expires: { [Op.gt]: new Date() }
+            }
+        });
+
+        if (!admin) {
+            return res.status(400).json({ error: "Invalid or expired token" });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Update admin
+        admin.password_hash = hashedPassword;
+        admin.is_active = true;
+        admin.invite_token = null;
+        admin.invite_expires = null;
+        if (name) admin.name = name;
+
+        await admin.save();
+
+        console.log(`[INVITE] Admin account activated: ${admin.email}`);
+
+        res.json({ message: "Account activated successfully" });
+    } catch (error) {
+        console.error("Complete invite error:", error);
+        res.status(500).json({ error: "Failed to complete invitation" });
+    }
+};
+
 module.exports = {
     login,
     getMe,
-    seed
+    seed,
+    verifyInviteToken,
+    completeInvite
 };

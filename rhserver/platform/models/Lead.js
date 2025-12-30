@@ -2,10 +2,14 @@ module.exports = (sequelize, DataTypes) => {
     const Lead = sequelize.define("Lead", {
         product_type: { type: DataTypes.STRING, allowNull: false },
         lead_type: { type: DataTypes.STRING, allowNull: false }, // self, partner, referral, cold
-        status: { type: DataTypes.STRING, defaultValue: "new" },
-        incentive_type: { type: DataTypes.STRING, defaultValue: "pending" },
-        incentive_status: { type: DataTypes.STRING, defaultValue: "pending" },
-        expected_payout: { type: DataTypes.STRING },
+
+        // Status & Assignment
+        status: {
+            type: DataTypes.ENUM('New', 'In Progress', 'Credit Approved', 'Disbursed', 'Closed', 'Rejected'),
+            defaultValue: "New"
+        },
+        assignee_id: { type: DataTypes.UUID },
+        user_id: { type: DataTypes.INTEGER },
 
         // Client Details
         name: { type: DataTypes.STRING, allowNull: false },
@@ -25,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Lead.associate = function (models) {
-        Lead.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
-        Lead.belongsTo(models.Admin, { foreignKey: 'assigned_rm_id', as: 'assigned_rm' });
+        Lead.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+        Lead.belongsTo(models.Admin, { foreignKey: 'assignee_id', as: 'assigned_admin' });
     };
 
     return Lead;

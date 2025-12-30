@@ -9,7 +9,8 @@ export default function Sidebar() {
     const menuItems = [
         { name: 'Dashboard', path: '/dashboard' },
         { name: 'Leads', path: '/dashboard/leads' },
-        { name: 'RMs / Users', path: '/dashboard/users' },
+        { name: 'Users', path: '/dashboard/users' },
+        { name: 'Team', path: '/dashboard/team' },
         { name: 'Payouts', path: '/dashboard/payouts' },
         { name: 'Reports', path: '/dashboard/reports' },
     ];

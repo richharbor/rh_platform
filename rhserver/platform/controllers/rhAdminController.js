@@ -1,5 +1,6 @@
-const { User, Lead, Admin, AdminRole } = require("../models");
+const { User, Lead, Admin, AdminRole, Incentive } = require("../models");
 const { Op } = require("sequelize");
+const { sendEmail } = require("../services/emailService");
 
 // List all users (Admin only)
 const listUsers = async (req, res) => {
@@ -40,13 +41,13 @@ const getDashboardStats = async (req, res) => {
         const totalLeads = await Lead.count();
         const activeLeads = await Lead.count({
             where: {
-                status: { [Op.notIn]: ['closed', 'rejected'] }
+                status: { [Op.notIn]: ['Closed', 'Rejected'] }
             }
         });
         const totalPartners = await User.count({ where: { role: 'partner' } });
 
         // Calculate Conversion % (Closed / Total * 100)
-        const closedLeads = await Lead.count({ where: { status: 'closed' } });
+        const closedLeads = await Lead.count({ where: { status: 'Closed' } });
         const conversionRate = totalLeads > 0 ? ((closedLeads / totalLeads) * 100).toFixed(1) : 0;
 
         res.json({
@@ -74,13 +75,7 @@ const assignLead = async (req, res) => {
         const rm = await Admin.findByPk(rmId);
         if (!rm) return res.status(404).json({ error: "RM not found" });
 
-        lead.assigned_rm_id = rmId;
-        lead.internal_notes = [...(lead.internal_notes || []), {
-            action: "assigned",
-            by: req.user.id,
-            to: rm.name,
-            date: new Date()
-        }];
+        lead.assignee_id = rmId;
 
         await lead.save();
         res.json(lead);
@@ -94,22 +89,12 @@ const assignLead = async (req, res) => {
 const updateLeadInternalStatus = async (req, res) => {
     try {
         const { leadId } = req.params;
-        const { status, reason, priority, notes } = req.body;
+        const { status } = req.body;
 
         const lead = await Lead.findByPk(leadId);
         if (!lead) return res.status(404).json({ error: "Lead not found" });
 
-        if (status) lead.internal_status = status;
-        if (priority) lead.priority = priority;
-        if (reason) lead.rejection_reason = reason;
-
-        if (notes) {
-            lead.internal_notes = [...(lead.internal_notes || []), {
-                note: notes,
-                by: req.user.id,
-                date: new Date()
-            }];
-        }
+        if (status) lead.status = status;
 
         await lead.save();
         res.json(lead);
@@ -126,9 +111,14 @@ const listRMs = async (req, res) => {
             include: [{
                 model: AdminRole,
                 as: 'role',
-                where: { name: ['RM', 'Ops', 'Super Admin'] } // Allow assigning to any operational role
+                where: {
+                    name: {
+                        [Op.in]: ['RM', 'Ops', 'Finance'],
+                        [Op.ne]: 'Super Admin' // Exclude Super Admin from team list
+                    }
+                }
             }],
-            attributes: ['id', 'name', 'email']
+            attributes: ['id', 'name', 'email', 'is_active', 'createdAt']
         });
         res.json(rms);
     } catch (error) {
@@ -143,7 +133,7 @@ const getLead = async (req, res) => {
         const lead = await Lead.findByPk(req.params.id, {
             include: [
                 { model: User, as: 'user', attributes: ['id', 'name', 'email', 'phone', 'city'] },
-                { model: Admin, as: 'assigned_rm', attributes: ['id', 'name', 'email'] }
+                { model: Admin, as: 'assigned_admin', attributes: ['id', 'name', 'email'] }
             ]
         });
 
@@ -177,9 +167,13 @@ const inviteAdmin = async (req, res) => {
         const existing = await Admin.findOne({ where: { email } });
         if (existing) return res.status(400).json({ error: "Admin already exists" });
 
+        // Get role name for email
+        const role = await AdminRole.findByPk(roleId);
+        if (!role) return res.status(400).json({ error: "Invalid role" });
+
         // Generate Token
-        // In real app, use crypto.randomBytes
-        const token = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+        const crypto = require('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date();
         expires.setHours(expires.getHours() + 48); // 48 hours
 
@@ -192,25 +186,190 @@ const inviteAdmin = async (req, res) => {
             is_active: false
         });
 
-        // Mock Email Sending
-        console.log(`[EMAIL MOCK] Sending Invite to ${email}`);
-        console.log(`[EMAIL MOCK] Link: http://localhost:3000/invite?token=${token}`);
+        // Determine the base URL for the invite link
+        const baseUrl = process.env.ADMIN_PANEL_URL || 'http://localhost:3000';
+        const inviteLink = `${baseUrl}/invite?token=${token}`;
 
-        res.json({ message: "Invitation sent", token });
+        // Email HTML template
+        const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .info-box {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to RichHarbor Admin!</h1>
+    </div>
+    <div class="content">
+        <p>Hello${name ? ' ' + name : ''},</p>
+        
+        <p>You've been invited to join the RichHarbor Admin team as a <strong>${role.name}</strong>.</p>
+        
+        <div class="info-box">
+            <p><strong>📧 Your Email:</strong> ${email}</p>
+            <p><strong>👤 Role:</strong> ${role.name}</p>
+        </div>
+        
+        <p>To complete your registration and set up your account, please click the button below:</p>
+        
+        <div style="text-align: center;">
+            <a href="${inviteLink}" class="button">Complete Your Setup</a>
+        </div>
+        
+        <p style="color: #666; font-size: 14px;">
+            Or copy and paste this link into your browser:<br>
+            <a href="${inviteLink}">${inviteLink}</a>
+        </p>
+        
+        <div class="info-box" style="border-left-color: #ff6b6b;">
+            <p style="margin: 0;"><strong>⏰ Important:</strong> This invitation link will expire in 48 hours.</p>
+        </div>
+        
+        <p>If you have any questions or need assistance, please contact your administrator.</p>
+        
+        <p>Best regards,<br>
+        <strong>The RichHarbor Team</strong></p>
+    </div>
+    <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+        <p>&copy; ${new Date().getFullYear()} RichHarbor. All rights reserved.</p>
+    </div>
+</body>
+</html>
+        `;
+
+        // Send actual email
+        try {
+            await sendEmail(
+                email,
+                "You've been invited to RichHarbor Admin",
+                emailHtml,
+                true // isHtml
+            );
+            console.log(`[EMAIL SENT] Invitation sent to ${email}`);
+        } catch (emailError) {
+            console.error(`[EMAIL ERROR] Failed to send invitation to ${email}:`, emailError);
+            // Still return success since admin was created, but log the error
+            // In production, you might want to delete the admin record or handle this differently
+        }
+
+        res.json({ message: "Invitation sent", token }); // Return token for testing
     } catch (error) {
         console.error("Invite admin error:", error);
         res.status(500).json({ error: "Failed to invite admin" });
     }
 };
 
+// Update Incentive (Amount/Status)
+const updateIncentive = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { amount, status, notes } = req.body;
+
+        const incentive = await Incentive.findByPk(id);
+        if (!incentive) return res.status(404).json({ error: "Incentive not found" });
+
+        if (amount !== undefined) incentive.amount = amount;
+        if (status) incentive.status = status;
+        if (notes) incentive.notes = notes;
+
+        await incentive.save();
+        res.json(incentive);
+    } catch (error) {
+        console.error("Update incentive error:", error);
+        res.status(500).json({ error: "Failed to update incentive" });
+    }
+};
+
 // List Roles (for selection)
 const listRoles = async (req, res) => {
     try {
-        const roles = await AdminRole.findAll();
+        // Exclude Super Admin role from the list
+        const roles = await AdminRole.findAll({
+            where: {
+                name: { [Op.ne]: 'Super Admin' } // Hide Super Admin role
+            }
+        });
         res.json(roles);
     } catch (error) {
         console.error("List roles error:", error);
         res.status(500).json({ error: "Failed to fetch roles" });
+    }
+};
+
+// Delete Team Member
+const deleteTeamMember = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const admin = await Admin.findByPk(id, {
+            include: [{ model: AdminRole, as: 'role' }]
+        });
+
+        if (!admin) {
+            return res.status(404).json({ error: "Team member not found" });
+        }
+
+        // Prevent deleting yourself
+        if (admin.id === req.user.id) {
+            return res.status(400).json({ error: "You cannot delete yourself" });
+        }
+
+        // Prevent deleting Super Admin
+        if (admin.role && admin.role.name === 'Super Admin') {
+            return res.status(403).json({ error: "Cannot delete Super Admin account" });
+        }
+
+        await admin.destroy();
+        console.log(`[ADMIN] Team member deleted: ${admin.email}`);
+
+        res.json({ message: "Team member removed successfully" });
+    } catch (error) {
+        console.error("Delete team member error:", error);
+        res.status(500).json({ error: "Failed to delete team member" });
     }
 };
 
@@ -224,6 +383,10 @@ module.exports = {
     getLead,
     createRole,
     inviteAdmin,
-    listRoles
+    createRole,
+    inviteAdmin,
+    listRoles,
+    updateIncentive,
+    deleteTeamMember
 };
 

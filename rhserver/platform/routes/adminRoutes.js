@@ -10,6 +10,10 @@ router.post('/auth/login', rhAdminAuthController.login);
 router.post('/auth/seed', rhAdminAuthController.seed);
 router.get('/auth/me', authenticateAdmin, rhAdminAuthController.getMe);
 
+// Invite Flow (Public endpoints)
+router.get('/auth/verify-invite', rhAdminAuthController.verifyInviteToken);
+router.post('/auth/complete-invite', rhAdminAuthController.completeInvite);
+
 // User Management
 router.get('/users', authenticateAdmin, rhAdminController.listUsers);
 router.put('/users/:id/approve', authenticateAdmin, rhAdminController.approvePartner);
@@ -30,5 +34,7 @@ router.put('/internal-status/:leadId', authenticateAdmin, rhAdminController.upda
 router.get('/roles', authenticateAdmin, rhAdminController.listRoles);
 router.post('/roles', authenticateAdmin, rhAdminController.createRole);
 router.post('/invite', authenticateAdmin, rhAdminController.inviteAdmin);
+router.delete('/team/:id', authenticateAdmin, rhAdminController.deleteTeamMember);
+router.patch('/incentives/:id', authenticateAdmin, rhAdminController.updateIncentive);
 
 module.exports = router;

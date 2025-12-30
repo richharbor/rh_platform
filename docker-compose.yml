@@ -1,18 +1,6 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5455:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
-
   rhserver:
     build:
       context: ./rhserver
@@ -22,25 +10,63 @@ services:
     volumes:
       - ./rhserver:/app
       - /app/node_modules
+    env_file:
+      - .env
     environment:
       - PORT=5003
+      - NODE_ENV=${NODE_ENV}
       # Main DB
-      - DB_HOST=db
-      - DB_USER=postgres
-      - DB_PASS=postgres
-      - DB_NAME=postgres
-      - DB_PORT=5432
-      - DB_SSL=false
-      # Platform DB (Isolated)
-      - PLATFORM_DB_HOST=db
-      - PLATFORM_DB_PORT=5432
-      - PLATFORM_DB_NAME=rh_platform
-      - PLATFORM_DB_USERNAME=postgres
-      - PLATFORM_DB_PASSWORD=postgres
-      - PLATFORM_DB_SSL=false
-      - JWT_SECRET=dev_secret
-    depends_on:
-      - db
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USERNAME}  # Mapped from DB_USERNAME in .env
+      - DB_PASS=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_SSL=true             # Force SSL for AWS
+      # Platform DB
+      - PLATFORM_DB_HOST=${PLATFORM_DB_HOST}
+      - PLATFORM_DB_PORT=${PLATFORM_DB_PORT}
+      - PLATFORM_DB_NAME=${PLATFORM_DB_NAME}
+      - PLATFORM_DB_USERNAME=${PLATFORM_DB_USERNAME}
+      - PLATFORM_DB_PASSWORD=${PLATFORM_DB_PASSWORD}
+      - PLATFORM_DB_SSL=true    # Force SSL for AWS
+      # Auth & Config
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - FRONTEND_URL=${FRONTEND_URL}
+      # Redis
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      # AWS S3
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - AWS_DOCUMENT_BUCKET_URL=${AWS_DOCUMENT_BUCKET_URL}
+      # Email
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      # VAPID (Notifications)
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      # WhatsApp
+      - PHONE_NUMBER_ID=${PHONE_NUMBER_ID}
+      - ACCESS_TOKEN=${ACCESS_TOKEN}
 
-volumes:
-  postgres_data:
+  web-admin:
+    build:
+      context: ./front-end/web-admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front-end/web-admin:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - AUTH_SECRET=${AUTH_SECRET}

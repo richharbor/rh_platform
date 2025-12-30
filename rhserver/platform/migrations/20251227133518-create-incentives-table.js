@@ -29,7 +29,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      partner_id: {
+      user_id: {
         type: Sequelize.INTEGER,
         references: {
           model: 'users',

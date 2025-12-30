@@ -7,7 +7,7 @@ const getWalletStats = async (req, res) => {
         const userId = req.user.id;
 
         const incentives = await Incentive.findAll({
-            where: { partnerId: userId },
+            where: { user_id: userId },
             attributes: ['amount', 'status']
         });
 
@@ -39,7 +39,7 @@ const getTransactions = async (req, res) => {
         const userId = req.user.id;
 
         const transactions = await Incentive.findAll({
-            where: { partnerId: userId },
+            where: { user_id: userId },
             order: [['createdAt', 'DESC']],
             limit: 50,
             include: [

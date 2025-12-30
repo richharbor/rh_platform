@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Local IP (Recommended for Physical Devices & Emulators on same network):
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://10.208.181.34:5003/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://10.159.167.34:5003/v1';
 // const BASE_URL = 'http://10.208.181.34:5003/v1';
 
 // Backups

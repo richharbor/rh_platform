@@ -107,7 +107,7 @@ export default function LeadDetailPage() {
             {activeTab === 'assignment' && (
                 <div className="card max-w-lg">
                     <h3 className="font-bold mb-4">Assign Relationship Manager</h3>
-                    <p className="mb-4">Current RM: <span className="font-bold">{lead.assigned_rm_id ? 'Assigned' : 'None'}</span></p>
+                    <p className="mb-4">Current RM: <span className="font-bold text-blue-700">{lead.assigned_rm ? lead.assigned_rm.name : 'Unassigned'}</span></p>
 
                     <div className="mb-4">
                         <label className="label">Select RM</label>

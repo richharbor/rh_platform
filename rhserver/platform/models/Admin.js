@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             });
             // Optionally link Admin to Leads they are assigned to
             Admin.hasMany(models.Lead, {
-                foreignKey: 'assigned_rm_id',
+                foreignKey: 'assignee_id',
                 as: 'assigned_leads'
             });
         }

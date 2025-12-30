@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Incentive.associate = function (models) {
-        Incentive.belongsTo(models.Lead, { foreignKey: 'leadId', as: 'lead' });
-        Incentive.belongsTo(models.User, { foreignKey: 'partnerId', as: 'partner' });
+        Incentive.belongsTo(models.Lead, { foreignKey: 'lead_id', as: 'lead' });
+        Incentive.belongsTo(models.User, { foreignKey: 'user_id', as: 'partner' });
     };
 
     return Incentive;

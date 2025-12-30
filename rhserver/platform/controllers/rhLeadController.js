@@ -34,18 +34,14 @@ const create = async (req, res) => {
             return res.status(400).json({ error: "Consent required for cold leads" });
         }
 
-        const incentive_type = INCENTIVE_MAP[lead_type] || "standard";
-        let expected_payout = "Calculated based on rules";
+        // Create Lead
 
         // Create Lead
         const lead = await Lead.create({
-            userId: req.user.id,
+            user_id: req.user.id,
             product_type,
             lead_type,
-            status: "new",
-            incentive_type,
-            incentive_status: "pending",
-            expected_payout,
+            status: "New",
             name,
             email,
             phone,
@@ -56,13 +52,28 @@ const create = async (req, res) => {
             convert_to_referral,
         });
 
-        // Incentive Logic (Simplified)
+        // Helper to get lead value
+        const getLeadValue = (details) => {
+            if (!details) return 0;
+            // Keys from mobile app config
+            const val = details.amount || details.capital || details.ticketSize || details.budget || details.coverage || details.sumInsured || 0;
+            return parseFloat(val) || 0;
+        };
+
+        const leadValue = getLeadValue(product_details);
+
+        // Incentive Calculation: 25% of Lead Value (as per strict user request)
+        // If value is 1,00,000 -> Incentive is 25,000
+        const incentiveAmount = leadValue * 0.25;
+
+        // Incentive Logic
         if (lead_type !== "self") {
             await Incentive.create({
-                leadId: lead.id,
-                partnerId: req.user.id,
-                amount: 0.0,
+                lead_id: lead.id,
+                user_id: req.user.id,
+                amount: incentiveAmount,
                 status: "pending",
+                notes: `Calculated as 25% of Lead Value: ${leadValue}`
             });
         }
 
@@ -77,7 +88,7 @@ const create = async (req, res) => {
 const listMyLeads = async (req, res) => {
     try {
         const leads = await Lead.findAll({
-            where: { userId: req.user.id },
+            where: { user_id: req.user.id },
             order: [["createdAt", "DESC"]],
         });
         res.json(leads);
@@ -91,7 +102,7 @@ const listMyLeads = async (req, res) => {
 const get = async (req, res) => {
     try {
         const lead = await Lead.findOne({
-            where: { id: req.params.id, userId: req.user.id },
+            where: { id: req.params.id, user_id: req.user.id },
         });
 
         if (!lead) {

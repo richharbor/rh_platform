@@ -33,7 +33,7 @@ function LeadCard({ lead }: { lead: Lead }) {
 
             <View className="mb-2">
                 <Text className="text-ink-800 font-medium">{lead.name}</Text>
-                <Text className="text-ink-500 text-sm">₹ {lead.expected_payout || 'Calculating...'}</Text>
+
             </View>
 
             <Text className="text-ink-400 text-xs text-right">{date}</Text>
