@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ReactNode } from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 
 import { useAppBootstrap } from '../hooks/useAppBootstrap';
 import { storageKeys } from '../utils/storageKeys';
@@ -28,6 +28,7 @@ interface AppStateContextValue {
   setAccountType: (type: AccountType) => void;
   signIn: (token: string, user: User) => Promise<void>;
   signOut: () => Promise<void>;
+  setUser: Dispatch<SetStateAction<User | null>>;
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
@@ -103,7 +104,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       markSignedUp,
       setAccountType,
       signIn,
-      signOut
+      signOut,
+      setUser,
     }),
     [
       bootstrap.isLoading,

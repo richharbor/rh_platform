@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { PrimaryButton, SecondaryButton } from '../../components';
@@ -15,6 +15,7 @@ export function CreateLeadScreen() {
     const [loading, setLoading] = useState(false);
     const [productType, setProductType] = useState<string | null>(null);
     const [consent, setConsent] = useState(false);
+    const [showErrors, setShowErrors] = useState(false);
 
     // Helper to update data
     const updateData = (key: string, value: any) => {
@@ -31,7 +32,7 @@ export function CreateLeadScreen() {
                     field={field}
                     value={data[field.id]}
                     onChange={(val) => updateData(field.id, val)}
-                    error={!data[field.id] && field.required ? 'Required' : undefined}
+                    error={showErrors && !data[field.id] && field.required ? 'Required' : undefined}
                 />
             ))}
         </View>
@@ -84,7 +85,7 @@ export function CreateLeadScreen() {
                         field={field}
                         value={data[field.id]}
                         onChange={(val) => updateData(field.id, val)}
-                        error={!data[field.id] && field.required ? 'Required' : undefined}
+                        error={showErrors && !data[field.id] && field.required ? 'Required' : undefined}
                     />
                 ))}
             </View>
@@ -115,6 +116,7 @@ export function CreateLeadScreen() {
     );
 
     const handleNext = () => {
+        setShowErrors(true);
         if (step === 0) {
             // Validate common
             const missing = COMMON_LEAD_FIELDS.filter(f => f.required && !data[f.id]);
@@ -122,12 +124,14 @@ export function CreateLeadScreen() {
                 Alert.alert("Required", "Please fill all required fields.");
                 return;
             }
+            setShowErrors(false);
             setStep(1);
         } else if (step === 1) {
             if (!productType) {
                 Alert.alert("Required", "Please select a product.");
                 return;
             }
+            setShowErrors(false);
             setStep(2);
         } else if (step === 2) {
             // Validate dynamic
@@ -139,6 +143,7 @@ export function CreateLeadScreen() {
                     return;
                 }
             }
+            setShowErrors(false);
             setStep(3);
         } else if (step === 3) {
             handleSubmit();
@@ -182,27 +187,35 @@ export function CreateLeadScreen() {
     return (
         <View className="flex-1 bg-ink-50">
             <View className="bg-white pt-14 pb-4 px-6 border-b border-ink-100 flex-row items-center justify-between">
-                <TouchableOpacity onPress={() => step === 0 ? navigation.goBack() : setStep(step - 1)}>
+                <TouchableOpacity onPress={() => {
+                    setShowErrors(false);
+                    step === 0 ? navigation.goBack() : setStep(step - 1);
+                }}>
                     <Text className="text-brand-600 font-medium">Back</Text>
                 </TouchableOpacity>
                 <Text className="font-bold text-lg text-ink-900">Step {step + 1}/4</Text>
                 <View className="w-8" />
             </View>
 
-            <ScrollView contentContainerClassName="p-6 pb-24">
-                {step === 0 && renderBasicDetails()}
-                {step === 1 && renderProductSelect()}
-                {step === 2 && renderDynamicForm()}
-                {step === 3 && renderReview()}
-            </ScrollView>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1"
+            >
+                <ScrollView contentContainerClassName="p-6 pb-6">
+                    {step === 0 && renderBasicDetails()}
+                    {step === 1 && renderProductSelect()}
+                    {step === 2 && renderDynamicForm()}
+                    {step === 3 && renderReview()}
+                </ScrollView>
 
-            <View className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-ink-100 safe-area-bottom">
-                <PrimaryButton
-                    label={loading ? "Submitting..." : step === 3 ? "Submit Lead" : "Next"}
-                    onPress={handleNext}
-                    disabled={loading}
-                />
-            </View>
+                <View className="p-6 bg-white border-t border-ink-100 safe-area-bottom">
+                    <PrimaryButton
+                        label={loading ? "Submitting..." : step === 3 ? "Submit Lead" : "Next"}
+                        onPress={handleNext}
+                        disabled={loading}
+                    />
+                </View>
+            </KeyboardAvoidingView>
         </View>
     );
 }

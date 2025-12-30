@@ -39,7 +39,7 @@ export function VerifyOtpScreen({
     const otp = code.join('');
     try {
       const response = await authService.verifyOtp(identifier, otp, mode, role);
-
+      
       const user = response.user;
       const token = response.access_token;
 
