@@ -8,7 +8,7 @@ import { ONBOARDING_CONFIG, type Question, type OnboardingFlow } from '../../con
 import { authService } from '../../services/authService';
 
 export function RegistrationScreen({ }: AuthStackScreenProps<'Registration'>) {
-  const { accountType, markSignedUp, signIn } = useAppState();
+  const { accountType, markSignedUp, signIn, setUser } = useAppState();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,12 @@ export function RegistrationScreen({ }: AuthStackScreenProps<'Registration'>) {
     setLoading(true);
     try {
       const isFinal = currentStepIndex === steps.length - 1;
+      if (currentStepIndex === 0) {
+        setUser((prev) => ({
+          ...prev!,
+          name: answers.fullName
+        }));
+      }
 
       await authService.updateOnboardingStep(
         currentStepIndex + 1,

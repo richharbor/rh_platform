@@ -139,6 +139,7 @@ const verifyOtp = async (req, res) => {
                     email: user.email,
                     name: user.name,
                     role: user.role,
+                    phone: user.phone,
                     onboarding_completed: user.onboarding_completed,
                 },
             });
@@ -173,6 +174,9 @@ const verifyOtp = async (req, res) => {
                 message: "OTP Verified. Proceed to onboarding.",
                 user: {
                     id: user.id,
+                    email: user.email,
+                    phone: user.phone,
+                    role: user.role,
                     signup_step: user.signup_step,
                     onboarding_completed: user.onboarding_completed,
                 },
