@@ -147,7 +147,7 @@ const startServer = async () => {
       const createDb = async (dbName) => {
         const client = new Client({
           user: process.env.DB_USERNAME || 'postgres',
-          host: 'db',
+          host: process.env.DB_HOST || 'db',
           database: 'postgres',
           password: process.env.DB_PASSWORD || 'postgres',
           port: 5432,
