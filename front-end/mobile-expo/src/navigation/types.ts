@@ -1,3 +1,4 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type AuthStackParamList = {
@@ -11,8 +12,16 @@ export type AuthStackParamList = {
   Login: undefined;
 };
 
+export type MainTabParamList = {
+  Home: undefined;
+  Leads: undefined;
+  Explore: undefined;
+  Wallet: undefined;
+  Profile: undefined;
+};
+
 export type AppStackParamList = {
-  Main: undefined;
+  Main: NavigatorScreenParams<MainTabParamList>;
   CreateLead: undefined;
   Support: undefined;
 };

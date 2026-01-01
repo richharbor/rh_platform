@@ -1,5 +1,5 @@
 import api from './api';
-import * as SecureStore from 'expo-secure-store';
+import { storage } from '../utils/storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export interface VerifyOtpResponse {
@@ -44,15 +44,15 @@ export const authService = {
 
     // Token Management
     setToken: async (token: string) => {
-        await SecureStore.setItemAsync(TOKEN_KEY, token);
+        await storage.setItem(TOKEN_KEY, token);
     },
 
     getToken: async () => {
-        return await SecureStore.getItemAsync(TOKEN_KEY);
+        return await storage.getItem(TOKEN_KEY);
     },
 
     removeToken: async () => {
-        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        await storage.deleteItem(TOKEN_KEY);
     },
 
     // Biometrics

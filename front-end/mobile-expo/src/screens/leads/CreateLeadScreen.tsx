@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { AppStackParamList } from '../../navigation/types';
 
 import { PrimaryButton, SecondaryButton } from '../../components';
 import { DynamicField } from '../../components/inputs/DynamicField';
@@ -9,7 +10,7 @@ import { leadService } from '../../services/leadService';
 
 // Steps: 0=Basic, 1=Product, 2=Dynamic, 3=Review
 export function CreateLeadScreen() {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<AppStackParamList>>();
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
@@ -173,13 +174,24 @@ export function CreateLeadScreen() {
 
             await leadService.createLead(payload);
 
-            Alert.alert("Success", "Lead submitted successfully!", [
-                { text: "OK", onPress: () => navigation.goBack() }
-            ]);
+            if (Platform.OS === 'web') {
+                alert("Lead submitted successfully!");
+                navigation.navigate('Main', { screen: 'Leads' });
+            } else {
+                Alert.alert("Success", "Lead submitted successfully!", [
+                    {
+                        text: "OK", onPress: () => {
+                            // Navigate to Leads tab in Main navigator
+                            navigation.navigate('Main', { screen: 'Leads' });
+                        }
+                    }
+                ]);
+            }
+            // Note: We don't setLoading(false) here because we want the button to stay disabled 
+            // while the user sees the success alert and until navigation happens.
         } catch (error: any) {
             console.error(error);
             Alert.alert("Error", error.response?.data?.error || "Failed to submit lead.");
-        } finally {
             setLoading(false);
         }
     };

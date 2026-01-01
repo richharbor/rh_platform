@@ -6,7 +6,9 @@ import { LeadsScreen } from '../screens/leads/LeadsScreen';
 import { WalletScreen } from '../screens/wallet/WalletScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 
-const Tab = createBottomTabNavigator();
+import { MainTabParamList } from './types';
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function Icon({ label, focused }: { label: string; focused: boolean }) {
     // Placeholder icons using text/circles
@@ -21,7 +23,7 @@ function Icon({ label, focused }: { label: string; focused: boolean }) {
 
 import { ExploreScreen } from '../screens/explore/ExploreScreen';
 import { useAuthStore } from '../store/useAuthStore';
-import { Colors } from '../theme/Colors';
+import { colors } from '../theme/colors';
 
 export function MainTabNavigator() {
     const { accountType } = useAuthStore();
