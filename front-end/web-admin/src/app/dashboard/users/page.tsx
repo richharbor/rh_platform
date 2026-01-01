@@ -196,9 +196,26 @@ export default function UsersPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Onboarding Data */}
+                        {selectedUser.signup_data && (
+                            <div>
+                                <h3 className="text-lg font-bold mb-4 text-gray-800">Onboarding Data</h3>
+                                <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+                                    {Object.entries(selectedUser.signup_data).map(([key, value]) => (
+                                        <div key={key}>
+                                            <label className="text-sm font-medium text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</label>
+                                            <p className="text-gray-900">
+                                                {Array.isArray(value) ? value.join(', ') : String(value)}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
-            </SidePanel>
-        </div>
+            </SidePanel >
+        </div >
     );
 }

@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import { leadService, Lead } from '../../services/leadService';
 import { PrimaryButton } from '../../components';
@@ -59,11 +59,9 @@ export function LeadsScreen() {
         }
     };
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchLeads();
-        }, [])
-    );
+    useEffect(() => {
+        fetchLeads();
+    }, []);
 
     const onRefresh = () => {
         setRefreshing(true);

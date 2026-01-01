@@ -1,59 +1,23 @@
 import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert, Pressable, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
-import { useAppState } from '../../store/appState';
+import { useAuthStore } from '../../store/useAuthStore';
 import type { AuthStackScreenProps } from '../../navigation/types';
 import { authService } from '../../services/authService';
 
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 
 export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
-  const { signIn } = useAppState();
+  const { login } = useAuthStore();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const [identifier, setIdentifier] = useState('');
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Phone Input State
   const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
-
-  useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      const enabled = await AsyncStorage.getItem('biometric_enabled');
-      setIsBiometricSupported(compatible && enabled === 'true');
-    })();
-  }, []);
-
-  const handleBiometricLogin = async () => {
-    try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Login with Biometrics',
-        fallbackLabel: 'Use Password',
-      });
-
-      if (result.success) {
-        // Retrieve stored credentials
-        const token = await AsyncStorage.getItem('auth_token');
-        const userData = await AsyncStorage.getItem('user_data');
-
-        if (token && userData) {
-          Alert.alert("Success", "Welcome back!");
-          await signIn(token, JSON.parse(userData));
-          // Navigation is handled by AppState state change, usually
-        } else {
-          Alert.alert("Notice", "Please login with OTP first to enable biometrics.");
-        }
-      }
-    } catch (error) {
-      Alert.alert("Error", "Biometric authentication failed");
-      console.log(error);
-    }
-  };
 
   const handleSendOtp = async () => {
     if (!identifier) {
@@ -83,18 +47,8 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
     <View className="flex-1 bg-ink-50 px-6 pb-8 pt-16">
       <Text className="text-3xl font-bold text-ink-900">Welcome back</Text>
       <Text className="mt-3 text-base text-ink-500">
-        Log in with a secure OTP or biometrics.
+        Log in with a secure OTP to access your account.
       </Text>
-
-      {isBiometricSupported && (
-        <View className="mt-6">
-          <SecondaryButton
-            label="Login with Face ID / Touch ID"
-            fullWidth
-            onPress={handleBiometricLogin}
-          />
-        </View>
-      )}
 
       <View style={{ marginTop: 24, flexDirection: 'row', marginBottom: 16, backgroundColor: '#e5e7eb', padding: 4, borderRadius: 9999 }}>
         <TouchableOpacity
@@ -180,6 +134,7 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
                   value={identifier}
                   onChangeText={setIdentifier}
                   keyboardType="phone-pad"
+                  textContentType="telephoneNumber"
                 />
               </View>
             </View>

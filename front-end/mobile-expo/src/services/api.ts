@@ -1,11 +1,12 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 // Replace with your actual backend URL. 
 // Local IP (Recommended for Physical Devices & Emulators on same network):
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://10.159.167.34:5003/v1';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5003/v1';
+console.log('API URL:', BASE_URL);
 // const BASE_URL = 'http://10.208.181.34:5003/v1';
 
 // Backups
@@ -21,7 +22,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
     async (config) => {
-        const token = await AsyncStorage.getItem('auth_token');
+        const token = await SecureStore.getItemAsync('auth_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

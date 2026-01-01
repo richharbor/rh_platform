@@ -1,13 +1,13 @@
 import { Text, View } from 'react-native';
 
 import { PrimaryButton, SecondaryButton } from '../../components';
-import { useAppState } from '../../store/appState';
+import { useAuthStore } from '../../store/useAuthStore';
 import type { AuthStackScreenProps } from '../../navigation/types';
 
 export function OnboardingStepThree({
   navigation
 }: AuthStackScreenProps<'OnboardingThree'>) {
-  const { markOnboardingComplete } = useAppState();
+  const { markOnboardingComplete } = useAuthStore();
 
   const handleContinue = async () => {
     await markOnboardingComplete();

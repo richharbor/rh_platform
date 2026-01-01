@@ -1,15 +1,18 @@
+
 import { useState } from 'react';
-import { Pressable, Text, View, Alert, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, Alert, TouchableOpacity, TextInput } from 'react-native';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
-import { useAppState, type AccountType } from '../../store/appState';
 import { authService } from '../../services/authService';
 import type { AuthStackScreenProps } from '../../navigation/types';
 
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
+import { useAuthStore } from '../../store/useAuthStore';
+
+type AccountType = 'Partner' | 'Customer' | 'Referral Partner';
 
 export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
-  const { setAccountType } = useAppState();
+  const { setAccountType } = useAuthStore();
   const [selectedType, setSelectedType] = useState<AccountType>('Customer');
   const [contactMethod, setContactMethod] = useState<'email' | 'phone'>('email');
   const [identifier, setIdentifier] = useState('');
@@ -27,7 +30,7 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
 
   const handleContinue = async () => {
     if (!identifier) {
-      Alert.alert("Error", `Please enter your ${contactMethod}`);
+      Alert.alert("Error", `Please enter your ${contactMethod} `);
       return;
     }
 

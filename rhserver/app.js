@@ -112,6 +112,9 @@ app.use('/v1/admin', platformAdminRoutes); // Using platformAdminRoutes for /api
 const platformRewardRoutes = require("./platform/routes/rewardRoutes");
 app.use("/v1/rewards", platformRewardRoutes);
 
+const platformSupportRoutes = require("./platform/routes/supportRoutes");
+app.use("/v1/support", platformSupportRoutes);
+
 app.use("/v1", (req, res, next) => {
   console.log(`[V1 Debug] ${req.method} ${req.originalUrl}`);
   next();

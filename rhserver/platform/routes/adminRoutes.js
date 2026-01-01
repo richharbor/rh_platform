@@ -37,4 +37,16 @@ router.post('/invite', authenticateAdmin, rhAdminController.inviteAdmin);
 router.delete('/team/:id', authenticateAdmin, rhAdminController.deleteTeamMember);
 router.patch('/incentives/:id', authenticateAdmin, rhAdminController.updateIncentive);
 
+// Product Rules (Rewards Config)
+router.get('/product-rules', authenticateAdmin, rhAdminController.listProductRules);
+router.put('/product-rules/:id', authenticateAdmin, rhAdminController.updateProductRule);
+
+// Payouts
+router.get('/payouts', authenticateAdmin, rhAdminController.listPayouts);
+
+// Support
+const rhSupportController = require('../controllers/rhSupportController');
+router.get('/tickets', authenticateAdmin, rhSupportController.listAllTickets);
+router.put('/tickets/:id', authenticateAdmin, rhSupportController.updateTicket);
+
 module.exports = router;

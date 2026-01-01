@@ -1,4 +1,4 @@
-const { User, Lead, Admin, AdminRole, Incentive } = require("../models");
+const { User, Lead, Admin, AdminRole, Incentive, ProductRule } = require("../models");
 const { Op } = require("sequelize");
 const { sendEmail } = require("../services/emailService");
 
@@ -7,7 +7,7 @@ const listUsers = async (req, res) => {
     try {
         const users = await User.findAll({
             order: [["createdAt", "DESC"]],
-            attributes: { exclude: ["password_hash", "signup_data"] },
+            attributes: { exclude: ["password_hash"] },
         });
         res.json(users);
     } catch (error) {
@@ -89,12 +89,65 @@ const assignLead = async (req, res) => {
 const updateLeadInternalStatus = async (req, res) => {
     try {
         const { leadId } = req.params;
-        const { status } = req.body;
+        const { status, incentive_amount } = req.body;
 
         const lead = await Lead.findByPk(leadId);
         if (!lead) return res.status(404).json({ error: "Lead not found" });
 
-        if (status) lead.status = status;
+        const previousStatus = lead.status;
+        lead.status = status;
+
+        // 1. Handle Incentive Creation / Update (Disbursed/Closed)
+        if (['Disbursed', 'Closed'].includes(status) && lead.lead_type !== 'self' && lead.user_id) {
+
+            // Check if incentive already exists
+            const existing = await Incentive.findOne({ where: { lead_id: lead.id } });
+
+            // Determine Amount
+            let finalAmount = 0;
+            if (incentive_amount !== undefined && incentive_amount !== null) {
+                finalAmount = parseFloat(incentive_amount);
+            } else {
+                // Fallback calculation if not provided
+                const rule = await ProductRule.findOne({ where: { product_type: lead.product_type } });
+                const percentage = rule ? rule.reward_percentage : 0;
+                const details = lead.product_details || {};
+                const val = details.amount || details.capital || details.ticketSize || details.budget || details.coverage || details.sumInsured || 0;
+                const leadValue = parseFloat(val) || 0;
+                finalAmount = leadValue * (percentage / 100);
+            }
+
+            if (finalAmount > 0) {
+                if (existing) {
+                    // Update existing if pending
+                    if (existing.status === 'pending') {
+                        existing.amount = finalAmount;
+                        existing.notes = `Reward: Custom/Calculated (${lead.product_type})`;
+                        await existing.save();
+                        console.log(`[INCENTIVE] Updated reward for Lead #${lead.id}: ₹${finalAmount}`);
+                    }
+                } else {
+                    // Create new
+                    await Incentive.create({
+                        lead_id: lead.id,
+                        user_id: lead.user_id,
+                        amount: finalAmount,
+                        status: "pending",
+                        notes: `Reward: Custom/Calculated (${lead.product_type})`
+                    });
+                    console.log(`[INCENTIVE] Created reward for Lead #${lead.id}: ₹${finalAmount}`);
+                }
+            }
+        }
+
+        // 2. Handle Incentive Reversal (If moving to Rejected/Dropped/New from a paid status? No, usually just Rejected)
+        if (status === 'Rejected' || status === 'Dropped') {
+            const existing = await Incentive.findOne({ where: { lead_id: lead.id } });
+            if (existing && existing.status === 'pending') {
+                await existing.destroy();
+                console.log(`[INCENTIVE] Removed pending reward for Lead #${lead.id} due to Rejection`);
+            }
+        }
 
         await lead.save();
         res.json(lead);
@@ -373,6 +426,56 @@ const deleteTeamMember = async (req, res) => {
     }
 };
 
+// List Product Rules
+const listProductRules = async (req, res) => {
+    try {
+        const rules = await ProductRule.findAll({
+            order: [['product_type', 'ASC']]
+        });
+        res.json(rules);
+    } catch (error) {
+        console.error("List product rules error:", error);
+        res.status(500).json({ error: "Failed to fetch rules" });
+    }
+};
+
+// Update Product Rule
+const updateProductRule = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { reward_percentage, is_active } = req.body;
+
+        const rule = await ProductRule.findByPk(id);
+        if (!rule) return res.status(404).json({ error: "Rule not found" });
+
+        if (reward_percentage !== undefined) rule.reward_percentage = parseFloat(reward_percentage);
+        if (is_active !== undefined) rule.is_active = is_active;
+
+        await rule.save();
+        res.json(rule);
+    } catch (error) {
+        console.error("Update rule error:", error);
+        res.status(500).json({ error: "Failed to update rule" });
+    }
+};
+
+// List Payouts (Incentives)
+const listPayouts = async (req, res) => {
+    try {
+        const payouts = await Incentive.findAll({
+            order: [['createdAt', 'DESC']],
+            include: [
+                { model: User, as: 'partner', attributes: ['id', 'name', 'email', 'phone'] },
+                { model: Lead, as: 'lead', attributes: ['id', 'name', 'product_type'] }
+            ]
+        });
+        res.json(payouts);
+    } catch (error) {
+        console.error("List payouts error:", error);
+        res.status(500).json({ error: "Failed to fetch payouts" });
+    }
+};
+
 module.exports = {
     listUsers,
     approvePartner,
@@ -383,10 +486,11 @@ module.exports = {
     getLead,
     createRole,
     inviteAdmin,
-    createRole,
-    inviteAdmin,
     listRoles,
     updateIncentive,
-    deleteTeamMember
+    deleteTeamMember,
+    listProductRules,
+    updateProductRule,
+    listPayouts
 };
 

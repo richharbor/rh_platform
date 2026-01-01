@@ -36,9 +36,15 @@ const create = async (req, res) => {
 
         // Create Lead
 
+        // Determine User ID (If Admin, allow setting user_id manually, else use own ID)
+        let userId = req.user.id;
+        if (req.user.type === 'admin') {
+            userId = req.body.user_id || null; // Admin can assign to a user or leave unassigned (null)
+        }
+
         // Create Lead
         const lead = await Lead.create({
-            user_id: req.user.id,
+            user_id: userId,
             product_type,
             lead_type,
             status: "New",
@@ -52,30 +58,7 @@ const create = async (req, res) => {
             convert_to_referral,
         });
 
-        // Helper to get lead value
-        const getLeadValue = (details) => {
-            if (!details) return 0;
-            // Keys from mobile app config
-            const val = details.amount || details.capital || details.ticketSize || details.budget || details.coverage || details.sumInsured || 0;
-            return parseFloat(val) || 0;
-        };
 
-        const leadValue = getLeadValue(product_details);
-
-        // Incentive Calculation: 25% of Lead Value (as per strict user request)
-        // If value is 1,00,000 -> Incentive is 25,000
-        const incentiveAmount = leadValue * 0.25;
-
-        // Incentive Logic
-        if (lead_type !== "self") {
-            await Incentive.create({
-                lead_id: lead.id,
-                user_id: req.user.id,
-                amount: incentiveAmount,
-                status: "pending",
-                notes: `Calculated as 25% of Lead Value: ${leadValue}`
-            });
-        }
 
         res.status(201).json(lead);
     } catch (error) {

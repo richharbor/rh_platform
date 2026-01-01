@@ -4,9 +4,9 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { OtpInput, PrimaryButton } from '../../components';
-import { useAppState } from '../../store/appState';
+import { useAuthStore } from '../../store/useAuthStore';
 import type { AuthStackScreenProps } from '../../navigation/types';
-import { authService } from '../../services/authService';
+import { authService, VerifyOtpResponse } from '../../services/authService';
 
 export function VerifyOtpScreen({
   navigation,
@@ -18,7 +18,7 @@ export function VerifyOtpScreen({
 
   const { mode, identifier, method, role } = route.params;
   const isLoginFlow = mode === 'login';
-  const { signIn } = useAppState();
+  const { login } = useAuthStore();
 
   const isComplete = useMemo(() => code.filter(Boolean).length === 6, [code]);
 
@@ -39,15 +39,29 @@ export function VerifyOtpScreen({
     const otp = code.join('');
     try {
       const response = await authService.verifyOtp(identifier, otp, mode, role);
-      
+
       const user = response.user;
       const token = response.access_token;
 
       // Login/Signup Success
-      await signIn(token, user);
+      if (mode === 'login') {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const hasEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-      // Navigate to next screen (Registration or Home)
-      navigateNext(user);
+        if (hasHardware && hasEnrolled) {
+          // Biometric prompt moved to Home Screen (Dashboard-only)
+          await login({ access_token: token, user, token_type: 'Bearer' });
+          navigateNext(user);
+        } else {
+          await login({ access_token: token, user, token_type: 'Bearer' });
+          navigateNext(user);
+        }
+      } else {
+        // Navigate to next screen (Registration or Home)
+        // Ensure token is saved for Registration screens to work
+        await login({ access_token: token, user, token_type: 'Bearer' });
+        navigateNext(user);
+      }
 
     } catch (error: any) {
       console.error(error);

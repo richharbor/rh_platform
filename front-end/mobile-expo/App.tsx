@@ -6,11 +6,12 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 import { Loader } from './src/components';
 import { useNotificationPermissionOnce } from './src/hooks/useNotificationPermissionOnce';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { AppStateProvider, useAppState } from './src/store/appState';
+import { useAuthStore } from './src/store/useAuthStore';
 
 import "./global.css";
 import { LogBox } from 'react-native';
@@ -22,11 +23,15 @@ LogBox.ignoreLogs([
 ]);
 
 function AppShell() {
-  const { isLoading } = useAppState();
+  const { isAppReady, hydrate } = useAuthStore();
 
   useNotificationPermissionOnce();
 
-  if (isLoading) {
+  useEffect(() => {
+    hydrate();
+  }, []);
+
+  if (!isAppReady) {
     return (
       <View className="flex-1 items-center justify-center bg-ink-50">
         <Loader />
@@ -41,11 +46,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <AppStateProvider>
-        <NavigationContainer>
-          <AppShell />
-        </NavigationContainer>
-      </AppStateProvider>
+      <NavigationContainer>
+        <AppShell />
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }

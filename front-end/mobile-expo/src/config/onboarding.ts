@@ -149,7 +149,46 @@ const REFERRAL_PARTNER_FLOW: OnboardingFlow = {
 
 const CUSTOMER_FLOW: OnboardingFlow = {
     type: 'Customer',
-    steps: PARTNER_FLOW.steps // Unified flow for all users as requested
+    steps: [
+        {
+            title: 'Welcome',
+            questions: [
+                { id: 'fullName', type: 'text', question: 'What is your full name?', required: true, placeholder: 'Enter your full name' },
+                { id: 'location', type: 'text', question: 'Where are you located?', required: true, placeholder: 'City, Country' }
+            ]
+        },
+        {
+            title: 'Interests',
+            questions: [
+                {
+                    id: 'products',
+                    type: 'multiselect',
+                    question: 'Which investment opportunities interest you?',
+                    options: [
+                        'Unlisted Shares',
+                        'Pre-IPO Opportunities',
+                        'High-Yield Bonds',
+                        'Real Estate',
+                        'Portfolio Management (PMS)',
+                        'Startups / Angel Investing'
+                    ],
+                    required: true
+                },
+                {
+                    id: 'investmentGoal',
+                    type: 'select',
+                    question: 'What is your primary investment goal?',
+                    options: [
+                        'Wealth Creation (Long Term)',
+                        'Regular Passive Income',
+                        'Short Term Gains',
+                        'Portfolio Diversification'
+                    ],
+                    required: true
+                }
+            ]
+        }
+    ]
 };
 
 export const ONBOARDING_CONFIG: Record<string, OnboardingFlow> = {

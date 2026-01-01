@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View, Alert } from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
-import { useAppState } from '../../store/appState';
 import type { AuthStackScreenProps } from '../../navigation/types';
 import { ONBOARDING_CONFIG, type Question, type OnboardingFlow } from '../../config/onboarding';
+import { useAuthStore } from '../../store/useAuthStore';
 import { authService } from '../../services/authService';
 
-export function RegistrationScreen({ }: AuthStackScreenProps<'Registration'>) {
-  const { accountType, markSignedUp, signIn, setUser } = useAppState();
+export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registration'>) {
+  const { accountType, markSignedUp, login, updateUser } = useAuthStore();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
@@ -48,10 +49,11 @@ export function RegistrationScreen({ }: AuthStackScreenProps<'Registration'>) {
     try {
       const isFinal = currentStepIndex === steps.length - 1;
       if (currentStepIndex === 0) {
-        setUser((prev) => ({
-          ...prev!,
-          name: answers.fullName
-        }));
+        // Update user name in store
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser) {
+          updateUser({ ...currentUser, name: answers.fullName });
+        }
       }
 
       await authService.updateOnboardingStep(
@@ -62,9 +64,32 @@ export function RegistrationScreen({ }: AuthStackScreenProps<'Registration'>) {
       );
 
       if (isFinal) {
-        await markSignedUp();
-        // User is already signed in (token saved in VerifyOtp). 
-        // markSignedUp just updates local storage flag.
+        // Prompt for Biometrics before finishing
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const hasEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+        const finish = async () => {
+          await markSignedUp();
+        };
+
+        if (hasHardware && hasEnrolled) {
+          Alert.alert(
+            "Enable Biometrics",
+            "Would you like to use FaceID / TouchID for faster login next time?",
+            [
+              { text: "No", style: "cancel", onPress: finish },
+              {
+                text: "Yes, Enable",
+                onPress: async () => {
+                  await useAuthStore.getState().enableBiometrics();
+                  finish();
+                }
+              }
+            ]
+          );
+        } else {
+          await finish();
+        }
       } else {
         setCurrentStepIndex((prev) => prev + 1);
       }

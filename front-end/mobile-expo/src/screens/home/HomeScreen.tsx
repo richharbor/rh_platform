@@ -5,12 +5,11 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { PrimaryButton } from '../../components';
-import { useAppState } from '../../store/appState';
+import { useAuthStore } from '../../store/useAuthStore';
 import type { AppStackScreenProps } from '../../navigation/types';
 
-export function HomeScreen({ }: any) {
-  const navigation = useNavigation<any>();
-  const { user, signOut } = useAppState();
+export function HomeScreen({ navigation }: any) {
+  const { user, logout } = useAuthStore();
 
   useEffect(() => {
     (async () => {

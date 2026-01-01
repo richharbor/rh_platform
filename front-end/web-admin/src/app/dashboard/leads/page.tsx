@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { getLeads, assignLead, updateLeadInternalStatus } from '@/services/Leads/leadService';
+import { getLeads, assignLead, updateLeadInternalStatus, createLead, updateLead } from '@/services/Leads/leadService';
 import { getRMs } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
+// import Modal from '@/components/ui/Modal';
+
+import { settingsService } from '@/services/Settings/settingsService';
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
@@ -20,9 +23,32 @@ export default function LeadsPage() {
     const [assigneeId, setAssigneeId] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
 
+    // Reward Confirmation State
+    const [isRewardConfirmOpen, setIsRewardConfirmOpen] = useState(false);
+    const [rewardAmount, setRewardAmount] = useState(0);
+    const [productRules, setProductRules] = useState<any[]>([]);
+
+    // Create/Edit Form State
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isEditRequirements, setIsEditRequirements] = useState(false);
+    const [formData, setFormData] = useState<any>({
+        name: '', email: '', phone: '', city: '',
+        product_type: 'Unlisted Shares',
+        requirement: '',
+        product_details: {}
+    });
+
     useEffect(() => {
         loadData();
+        loadRules();
     }, [filters]);
+
+    const loadRules = async () => {
+        try {
+            const rules = await settingsService.getProductRules();
+            setProductRules(rules);
+        } catch (e) { console.error("Error loading rules", e); }
+    };
 
     const loadData = async () => {
         setLoading(true);
@@ -31,7 +57,6 @@ export default function LeadsPage() {
             setRms(rmsData);
 
             let filtered = leadsData;
-            // Client-side filtering logic remains...
             if (filters.status) filtered = filtered.filter((l: any) => l.internal_status === filters.status);
             if (filters.product) filtered = filtered.filter((l: any) => l.product_type === filters.product);
             if (filters.search) {
@@ -60,18 +85,57 @@ export default function LeadsPage() {
 
     const handleStatusUpdate = async () => {
         if (!selectedLead) return;
+
+        // Check if moving to Disbursed/Closed - Show Confirmation
+        if ((newStatus === 'Disbursed' || newStatus === 'Closed') && selectedLead.status !== newStatus) {
+            // Calculate Estimated Reward
+            const leadType = selectedLead.product_type;
+            const rule = productRules.find(r => r.product_type === leadType || r.product_type.toLowerCase() === leadType.toLowerCase());
+            const percentage = rule ? rule.reward_percentage : 0;
+
+            const details = selectedLead.product_details || {};
+            // Extract value based on known fields or generic amount
+            const val = details.amount || details.capital || details.ticketSize || details.budget || details.coverage || details.sumInsured || details.price || 0;
+            const leadValue = parseFloat(val) || 0;
+            // Also consider quantity if price exists (e.g. Unlisted)
+            const finalValue = (details.price && details.quantity) ? (parseFloat(details.price) * parseFloat(details.quantity)) : leadValue;
+
+            const estAmount = finalValue * (percentage / 100);
+
+            setRewardAmount(estAmount);
+            setIsRewardConfirmOpen(true);
+            return;
+        }
+
+        // Otherwise regular update
+        await finalizeStatusUpdate();
+    };
+
+    const finalizeStatusUpdate = async () => {
         setActionLoading(true);
         try {
             const payload = {
-                status: newStatus
+                status: newStatus,
+                incentive_amount: rewardAmount // Will be 0 if not set via modal, which logic ignores or uses as 0 override?
+                // Actually backend logic: if undefined/null -> calc. If provide -> use. 
+                // We should pass it ONLY if we confirmed it. But if we skip confirmation, we pass 0?
+                // Better: pass it only if isRewardConfirmOpen was true. 
+                // But simplified: pass it always? No, strict check backend checks for undefined.
             };
+
+            // If we are confirming reward, pass it.
+            if (isRewardConfirmOpen) {
+                // @ts-ignore
+                payload.incentive_amount = rewardAmount;
+            }
+
             const updated = await updateLeadInternalStatus(selectedLead.id, payload);
 
-            // Critical Fix: Update local state to reflect change immediately
             setLeads(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
-            setSelectedLead({ ...selectedLead, ...updated }); // Update panel view too
+            setSelectedLead({ ...selectedLead, ...updated });
 
             alert('Status updated successfully');
+            setIsRewardConfirmOpen(false);
         } catch (error) {
             console.error(error);
             alert('Failed to update status');
@@ -105,9 +169,16 @@ export default function LeadsPage() {
     return (
         <div>
             {/* Header & Filters (Keep same structure) */}
+            {/* Header & Filters */}
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Lead Management</h1>
-                <button className="btn btn-primary" onClick={() => loadData()}>Refresh</button>
+                <div className="flex gap-2">
+                    <button className="btn bg-gray-200 text-gray-800" onClick={() => loadData()}>Refresh</button>
+                    <button className="btn btn-primary" onClick={() => {
+                        setFormData({ name: '', email: '', phone: '', city: '', product_type: 'Unlisted Shares', requirement: '', product_details: {} });
+                        setIsCreateOpen(true);
+                    }}>+ Create Lead</button>
+                </div>
             </div>
 
             <div className="card mb-6">
@@ -151,7 +222,7 @@ export default function LeadsPage() {
             </div>
 
             {/* Right Side Panel */}
-            <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)} title={`Lead #${selectedLead?.id} - ${selectedLead?.name}`}>
+            <SidePanel isOpen={isPanelOpen} onClose={() => { setIsPanelOpen(false); setIsRewardConfirmOpen(false); }} title={`Lead #${selectedLead?.id} - ${selectedLead?.name}`}>
                 {selectedLead && (
                     <div className="space-y-6">
                         {/* Tabs */}
@@ -169,13 +240,110 @@ export default function LeadsPage() {
                                     <p>Phone: {selectedLead.phone}</p>
                                     <p>City: {selectedLead.city}</p>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-700 mb-2">Requirement</h4>
-                                    <p className="text-sm border p-2 rounded">{selectedLead.requirement}</p>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-700 mb-2">Product Data</h4>
-                                    <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">{JSON.stringify(selectedLead.product_details, null, 2)}</pre>
+
+                                {/* Requirement & Product Details (Editable) */}
+                                <div className="border p-4 rounded-lg">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h4 className="font-bold text-gray-700">Requirement Details</h4>
+                                        {!isEditRequirements ? (
+                                            <button className="text-blue-600 text-sm hover:underline" onClick={() => {
+                                                setFormData({
+                                                    ...selectedLead,
+                                                    product_details: selectedLead.product_details || {},
+                                                    requirement: selectedLead.requirement || ''
+                                                });
+                                                setIsEditRequirements(true);
+                                            }}>Edit</button>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                <button className="text-gray-500 text-xs" onClick={() => setIsEditRequirements(false)}>Cancel</button>
+                                                <button className="text-green-600 text-xs font-bold" onClick={async () => {
+                                                    const res = await updateLead(selectedLead.id, {
+                                                        product_details: formData.product_details,
+                                                        requirement: formData.requirement
+                                                    });
+                                                    setLeads(prev => prev.map(l => l.id === res.id ? { ...l, ...res } : l));
+                                                    setSelectedLead({ ...selectedLead, ...res });
+                                                    setIsEditRequirements(false);
+                                                    alert('Updated');
+                                                }}>Save</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {!isEditRequirements ? (
+                                        <>
+                                            <div className="mb-2">
+                                                <p className="text-sm font-semibold text-gray-500">Requirement</p>
+                                                <p className="text-sm">{selectedLead.requirement || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-gray-500">Specs</p>
+                                                <pre className="bg-gray-50 p-2 rounded text-xs overflow-x-auto font-mono">
+                                                    {Object.entries(selectedLead.product_details || {}).map(([k, v]) => `${k}: ${v}`).join('\n')}
+                                                </pre>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="animation-fade-in space-y-3">
+                                            {selectedLead.product_type === 'Unlisted Shares' && (
+                                                <>
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Scrip Name</label>
+                                                        <input className="input h-8 text-sm"
+                                                            value={formData.product_details.scripName || ''}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-xs font-semibold text-gray-500">Qty</label>
+                                                            <input className="input h-8 text-sm" type="number"
+                                                                value={formData.product_details.quantity || ''}
+                                                                onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-semibold text-gray-500">Price</label>
+                                                            <input className="input h-8 text-sm" type="number"
+                                                                value={formData.product_details.price || ''}
+                                                                onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                            {selectedLead.product_type === 'Insurance' && (
+                                                <>
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Type</label>
+                                                        <select className="input h-8 text-sm py-0"
+                                                            value={formData.product_details.type || 'Health'}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, type: e.target.value } })}
+                                                        >
+                                                            <option value="Health">Health</option>
+                                                            <option value="Life">Life</option>
+                                                            <option value="Motor">Motor</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Coverage</label>
+                                                        <input className="input h-8 text-sm"
+                                                            value={formData.product_details.coverage || ''}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, coverage: e.target.value } })}
+                                                        />
+                                                    </div>
+                                                </>
+                                            )}
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">General Requirement</label>
+                                                <textarea className="input text-sm p-2 h-20"
+                                                    value={formData.requirement || ''}
+                                                    onChange={e => setFormData({ ...formData, requirement: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -196,7 +364,15 @@ export default function LeadsPage() {
                         {activeTab === 'status' && (
                             <div className="space-y-4">
                                 <label className="block text-sm font-bold">Internal Status</label>
-                                <select className="input" value={newStatus} onChange={e => setNewStatus(e.target.value)}>
+                                <select
+                                    className="input"
+                                    value={newStatus}
+                                    onChange={e => {
+                                        setNewStatus(e.target.value);
+                                        setIsRewardConfirmOpen(false); // Reset on change
+                                    }}
+                                    disabled={isRewardConfirmOpen}
+                                >
                                     <option value="New">New</option>
                                     <option value="In Progress">In Progress</option>
                                     <option value="Credit Approved">Credit Approved</option>
@@ -211,14 +387,184 @@ export default function LeadsPage() {
                                     </div>
                                 )}
 
-                                <button className="btn btn-primary w-full" onClick={handleStatusUpdate} disabled={actionLoading}>
-                                    {actionLoading ? 'Updating...' : 'Update Status'}
-                                </button>
+                                {/* Inline Confirmation for Disbursed/Closed */}
+                                {isRewardConfirmOpen ? (
+                                    <div className="bg-blue-50 p-4 rounded-lg animation-fade-in border border-blue-100">
+                                        <h4 className="font-bold text-blue-900 mb-2 text-sm">Confirm Incentive Payout</h4>
+                                        <p className="text-xs text-blue-700 mb-3">
+                                            Status change to <b>{newStatus}</b> will trigger a payout.
+                                            Please verify the amount.
+                                        </p>
+
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Incentive Amount (₹)</label>
+                                        <input
+                                            type="number"
+                                            className="input text-lg font-bold text-gray-900 w-full mb-4"
+                                            value={rewardAmount}
+                                            onChange={(e) => setRewardAmount(Number(e.target.value))}
+                                        />
+
+                                        <button
+                                            className="btn btn-primary w-full mb-2 bg-green-600 hover:bg-green-700"
+                                            onClick={finalizeStatusUpdate}
+                                            disabled={actionLoading}
+                                        >
+                                            {actionLoading ? 'Processing...' : `Confirm & Update Status`}
+                                        </button>
+                                        <button
+                                            className="btn w-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                                            onClick={() => setIsRewardConfirmOpen(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button className="btn btn-primary w-full" onClick={handleStatusUpdate} disabled={actionLoading}>
+                                        {actionLoading ? 'Updating...' : 'Update Status'}
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
                 )}
             </SidePanel>
-        </div>
-    );
+
+
+
+            {
+                isCreateOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                            <div className="p-6 border-b flex justify-between items-center">
+                                <h2 className="text-xl font-bold">Create New Lead</h2>
+                                <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                {/* Basic Info */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="label">Client Name</label>
+                                        <input className="input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className="label">City</label>
+                                        <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="label">Phone</label>
+                                        <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className="label">Email</label>
+                                        <input className="input" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                                    </div>
+                                </div>
+
+                                {/* Product Type Selection */}
+                                <div>
+                                    <label className="label">Product Type</label>
+                                    <select className="input" value={formData.product_type} onChange={e => setFormData({ ...formData, product_type: e.target.value, product_details: {} })}>
+                                        <option value="Unlisted Shares">Unlisted Shares</option>
+                                        <option value="Pre-IPO">Pre-IPO</option>
+                                        <option value="Insurance">Insurance</option>
+                                        <option value="Loan">Loan</option>
+                                        <option value="generic">Generic / Other</option>
+                                        <option value="insurance">insurance</option>
+                                        <option value="loans">loans</option>
+                                        <option value="equity">equity</option>
+                                        <option value="unlisted">unlisted</option>
+                                        <option value="stocks">stocks</option>
+                                    </select>
+                                </div>
+
+                                {/* Dynamic Requirements */}
+                                <div className="p-4 bg-gray-50 rounded border">
+                                    <h4 className="font-bold text-sm mb-3 text-gray-700">Requirement Details</h4>
+                                    {(formData.product_type === 'Unlisted Shares' || formData.product_type === 'unlisted') && (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">Scrip Name / Company</label>
+                                                <input className="input" placeholder="e.g. Reliance Retail"
+                                                    value={formData.product_details.scripName || ''}
+                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs font-semibold text-gray-500">Quantity</label>
+                                                    <input className="input" type="number"
+                                                        value={formData.product_details.quantity || ''}
+                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-semibold text-gray-500">Target Price</label>
+                                                    <input className="input" type="number"
+                                                        value={formData.product_details.price || ''}
+                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {(formData.product_type === 'Insurance' || formData.product_type === 'insurance') && (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">Insurance Type</label>
+                                                <select className="input"
+                                                    value={formData.product_details.type || 'Health'}
+                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, type: e.target.value } })}
+                                                >
+                                                    <option value="Health">Health</option>
+                                                    <option value="Life">Life / Term</option>
+                                                    <option value="Motor">Motor</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">Sum Insured / Coverage</label>
+                                                <input className="input" placeholder="e.g. 1 Cr"
+                                                    value={formData.product_details.coverage || ''}
+                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, coverage: e.target.value } })}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {(!['Unlisted Shares', 'unlisted', 'Insurance', 'insurance'].includes(formData.product_type)) && (
+                                        <div>
+                                            <label className="text-xs font-semibold text-gray-500">Description / Amount</label>
+                                            <textarea className="input h-20" placeholder="Enter details..."
+                                                value={formData.requirement}
+                                                onChange={e => setFormData({ ...formData, requirement: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button className="btn btn-primary w-full py-3" onClick={async () => {
+                                    setActionLoading(true);
+                                    try {
+                                        await createLead(formData);
+                                        alert('Lead created successfully');
+                                        setIsCreateOpen(false);
+                                        loadData();
+                                    } catch (e) {
+                                        alert('Failed to create lead');
+                                    } finally {
+                                        setActionLoading(false);
+                                    }
+                                }} disabled={actionLoading}>
+                                    {actionLoading ? 'Creating...' : 'Create Lead'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Incentive Confirmation Modal */}
+
+        </div >
+    )
 }

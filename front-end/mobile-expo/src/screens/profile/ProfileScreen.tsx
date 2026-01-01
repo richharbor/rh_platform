@@ -1,14 +1,17 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useAppState } from '../../store/appState';
+import { useAuthStore } from '../../store/useAuthStore';
+
+import { useNavigation } from '@react-navigation/native';
 
 export function ProfileScreen() {
-    const { signOut, user } = useAppState();
+    const navigation = useNavigation<any>();
+    const { logout, user } = useAuthStore();
 
     const menuItems = [
         { label: 'KYC (Partner)', action: () => Alert.alert('Coming Soon') },
         { label: 'Bank Details', action: () => Alert.alert('Coming Soon') },
         { label: 'Partner Agreement', action: () => Alert.alert('Coming Soon') },
-        { label: 'Support / Raise Ticket', action: () => Alert.alert('Coming Soon') },
+        { label: 'Support / Raise Ticket', action: () => navigation.navigate('Support') },
     ];
 
     return (
@@ -34,7 +37,7 @@ export function ProfileScreen() {
                 ))}
 
                 <TouchableOpacity
-                    onPress={signOut}
+                    onPress={logout}
                     className="mt-6 bg-red-50 p-4 rounded-xl border border-red-100 items-center"
                 >
                     <Text className="text-red-600 font-semibold">Log Out</Text>

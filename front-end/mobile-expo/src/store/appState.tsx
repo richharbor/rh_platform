@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 
@@ -71,7 +72,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (token: string, userData: User) => {
-    await AsyncStorage.setItem('auth_token', token);
+    await SecureStore.setItemAsync('auth_token', token);
     await AsyncStorage.setItem('user_data', JSON.stringify(userData));
     setUser(userData);
     setIsAuthenticated(true);
@@ -86,7 +87,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await AsyncStorage.removeItem('auth_token');
+    await SecureStore.deleteItemAsync('auth_token');
     await AsyncStorage.removeItem('user_data');
     setUser(null);
     setIsAuthenticated(false);

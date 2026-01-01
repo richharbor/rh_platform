@@ -20,10 +20,11 @@ function Icon({ label, focused }: { label: string; focused: boolean }) {
 }
 
 import { ExploreScreen } from '../screens/explore/ExploreScreen';
-import { useAppState } from '../store/appState';
+import { useAuthStore } from '../store/useAuthStore';
+import { Colors } from '../theme/Colors';
 
 export function MainTabNavigator() {
-    const { accountType } = useAppState();
+    const { accountType } = useAuthStore();
     const isCustomer = accountType === 'Customer';
 
     return (

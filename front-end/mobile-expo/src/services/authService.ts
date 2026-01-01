@@ -1,4 +1,6 @@
 import api from './api';
+import * as SecureStore from 'expo-secure-store';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export interface VerifyOtpResponse {
     access_token: string;
@@ -13,6 +15,8 @@ export interface VerifyOtpResponse {
     };
     message?: string;
 }
+
+const TOKEN_KEY = 'auth_token';
 
 export const authService = {
     requestOtp: async (identifier: string, purpose: 'login' | 'signup') => {
@@ -36,5 +40,33 @@ export const authService = {
     updateOnboardingStep: async (step: number, data: any, role?: string, is_final?: boolean) => {
         const response = await api.post('/auth/onboarding/step', { step, data, role, is_final });
         return response.data;
+    },
+
+    // Token Management
+    setToken: async (token: string) => {
+        await SecureStore.setItemAsync(TOKEN_KEY, token);
+    },
+
+    getToken: async () => {
+        return await SecureStore.getItemAsync(TOKEN_KEY);
+    },
+
+    removeToken: async () => {
+        await SecureStore.deleteItemAsync(TOKEN_KEY);
+    },
+
+    // Biometrics
+    checkBiometricSupport: async () => {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+        return hasHardware && isEnrolled;
+    },
+
+    authenticateBiometric: async () => {
+        const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: 'Unlock with FaceID / TouchID',
+            fallbackLabel: 'Use Passcode',
+        });
+        return result.success;
     }
 };

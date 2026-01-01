@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile-expo",
+    "name": "RichHarbor",
     "slug": "mobile-expo",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -15,17 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rhinon.richharbor"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B0B0F"
       },
-      "package": "com.anonymous.mobileexpo"
+      "package": "com.rhinon.richharbor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "04066cca-d02b-4cd8-bfa7-ad36a2615b47"
+      }
+    },
+    "owner": "varun2773"
   }
 }

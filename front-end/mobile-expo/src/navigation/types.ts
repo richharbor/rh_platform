@@ -14,6 +14,7 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Main: undefined;
   CreateLead: undefined;
+  Support: undefined;
 };
 
 export type AuthStackScreenProps<T extends keyof AuthStackParamList> =

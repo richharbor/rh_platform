@@ -4,6 +4,8 @@ import { MainTabNavigator } from './MainTabNavigator';
 import { CreateLeadScreen } from '../screens/leads/CreateLeadScreen';
 import type { AppStackParamList } from './types';
 
+import SupportScreen from '../screens/support/SupportScreen';
+
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 export function AppStack() {
@@ -15,6 +17,7 @@ export function AppStack() {
         component={CreateLeadScreen}
         options={{ presentation: 'modal' }}
       />
+      <Stack.Screen name="Support" component={SupportScreen} />
     </Stack.Navigator>
   );
 }

@@ -11,8 +11,9 @@ export default function Sidebar() {
         { name: 'Leads', path: '/dashboard/leads' },
         { name: 'Users', path: '/dashboard/users' },
         { name: 'Team', path: '/dashboard/team' },
+        { name: 'Settings', path: '/dashboard/settings' },
         { name: 'Payouts', path: '/dashboard/payouts' },
-        { name: 'Reports', path: '/dashboard/reports' },
+        { name: 'Reports', path: '/dashboard/support' }, // Renamed from Support
     ];
 
     return (
