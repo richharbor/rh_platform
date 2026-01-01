@@ -42,20 +42,22 @@ services:
     environment:
       - PORT=5003
       - NODE_ENV=${NODE_ENV}
-      - DB_HOST=db
-      - DB_USER=${DB_USERNAME}
-      - DB_PASS=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
-      - DB_PORT=5432
-      - DB_SSL=false
-      - PLATFORM_DB_HOST=db
-      - PLATFORM_DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SSL=${DB_SSL}
+      - PLATFORM_DB_HOST=${PLATFORM_DB_HOST}
+      - PLATFORM_DB_PORT=${PLATFORM_DB_PORT}
       - PLATFORM_DB_NAME=${PLATFORM_DB_NAME}
       - PLATFORM_DB_USERNAME=${PLATFORM_DB_USERNAME}
       - PLATFORM_DB_PASSWORD=${PLATFORM_DB_PASSWORD}
-      - PLATFORM_DB_SSL=false
+      - PLATFORM_DB_SSL=${PLATFORM_DB_SSL}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -80,6 +82,7 @@ services:
       - PORT=3000
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - AUTH_SECRET=${AUTH_SECRET}
+      - NODE_ENV=${NODE_ENV}
     depends_on:
       - rhserver
     networks:
