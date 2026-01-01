@@ -141,6 +141,36 @@ const PORT = process.env.PORT;
 // Start server
 const startServer = async () => {
   try {
+    // --- Ensure Databases Exist ---
+    if (process.env.NODE_ENV === "development") {
+      const { Client } = require('pg');
+      const createDb = async (dbName) => {
+        const client = new Client({
+          user: process.env.DB_USERNAME || 'postgres',
+          host: 'db',
+          database: 'postgres',
+          password: process.env.DB_PASSWORD || 'postgres',
+          port: 5432,
+        });
+        await client.connect();
+        try {
+          const res = await client.query(`SELECT 1 FROM pg_database WHERE datname = '${dbName}'`);
+          if (res.rowCount === 0) {
+            console.log(`  Creating database: ${dbName}`);
+            await client.query(`CREATE DATABASE "${dbName}"`);
+          }
+        } finally {
+          await client.end();
+        }
+      };
+      try {
+        await createDb('richharbor-beta');
+        await createDb('rh_platform');
+      } catch (dbErr) {
+        console.warn("  Note: Database creation check failed (might already exist):", dbErr.message);
+      }
+    }
+
     await sequelize.authenticate();
     console.log("  Database connection established successfully.");
 

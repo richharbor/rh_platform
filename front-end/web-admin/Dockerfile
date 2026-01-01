@@ -9,11 +9,8 @@ RUN npm install
 
 COPY . .
 
-# run the Next.js app
-RUN npm run dev
-
 # Expose port 3000
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Start the application in dev mode for local
+CMD ["npm", "run", "dev"]

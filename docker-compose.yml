@@ -1,6 +1,33 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=postgres
+    ports:
+      - "5455:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rh_network
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - rh_network
+
   rhserver:
     build:
       context: ./rhserver
@@ -15,45 +42,27 @@ services:
     environment:
       - PORT=5003
       - NODE_ENV=${NODE_ENV}
-      # Main DB
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USERNAME}  # Mapped from DB_USERNAME in .env
+      - DB_HOST=db
+      - DB_USER=${DB_USERNAME}
       - DB_PASS=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
-      - DB_SSL=true             # Force SSL for AWS
-      # Platform DB
-      - PLATFORM_DB_HOST=${PLATFORM_DB_HOST}
-      - PLATFORM_DB_PORT=${PLATFORM_DB_PORT}
+      - DB_PORT=5432
+      - DB_SSL=false
+      - PLATFORM_DB_HOST=db
+      - PLATFORM_DB_PORT=5432
       - PLATFORM_DB_NAME=${PLATFORM_DB_NAME}
       - PLATFORM_DB_USERNAME=${PLATFORM_DB_USERNAME}
       - PLATFORM_DB_PASSWORD=${PLATFORM_DB_PASSWORD}
-      - PLATFORM_DB_SSL=true    # Force SSL for AWS
-      # Auth & Config
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - FRONTEND_URL=${FRONTEND_URL}
-      # Redis
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      # AWS S3
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
-      - AWS_DOCUMENT_BUCKET_URL=${AWS_DOCUMENT_BUCKET_URL}
-      # Email
-      - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_PORT=${EMAIL_PORT}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      # VAPID (Notifications)
-      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
-      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
-      # WhatsApp
-      - PHONE_NUMBER_ID=${PHONE_NUMBER_ID}
-      - ACCESS_TOKEN=${ACCESS_TOKEN}
+      - PLATFORM_DB_SSL=false
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - rh_network
 
   web-admin:
     build:
@@ -68,5 +77,29 @@ services:
     env_file:
       - .env
     environment:
+      - PORT=3000
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - AUTH_SECRET=${AUTH_SECRET}
+    depends_on:
+      - rhserver
+    networks:
+      - rh_network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - rhserver
+      - web-admin
+    networks:
+      - rh_network
+
+networks:
+  rh_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

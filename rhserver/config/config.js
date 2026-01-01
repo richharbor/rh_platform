@@ -16,11 +16,12 @@ module.exports = {
       idle: 10000
     },
     dialectOptions: {
-      ssl: {
+      ssl: process.env.DB_SSL === 'true' ? {
         require: true,
         rejectUnauthorized: false
-      }
+      } : false
     }
+
   },
 
   test: {
@@ -47,10 +48,10 @@ module.exports = {
       idle: 10000
     },
     dialectOptions: {
-      ssl: {
+      ssl: process.env.DB_SSL === 'true' ? {
         require: true,
         rejectUnauthorized: false
-      }
+      } : false
     }
   }
 };

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "RichHarbor",
-    "slug": "mobile-expo",
+    "name": "Rfin",
+    "slug": "rfin-mobile",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rhinon.richharbor"
+      "bundleIdentifier": "com.rfin.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B0B0F"
       },
-      "package": "com.rhinon.richharbor"
+      "package": "com.rfin.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

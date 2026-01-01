@@ -9,10 +9,10 @@ const dbConfig = {
     dialect: 'postgres',
     logging: false,
     dialectOptions: {
-        ssl: {
+        ssl: process.env.PLATFORM_DB_SSL === 'true' ? {
             require: true,
             rejectUnauthorized: false
-        }
+        } : false
     }
 };
 
