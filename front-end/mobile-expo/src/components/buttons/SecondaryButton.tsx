@@ -7,6 +7,7 @@ interface SecondaryButtonProps {
   disabled?: boolean;
   icon?: ReactNode;
   fullWidth?: boolean;
+  style?: any;
 }
 
 export function SecondaryButton({
@@ -14,7 +15,8 @@ export function SecondaryButton({
   onPress,
   disabled,
   icon,
-  fullWidth
+  fullWidth,
+  style
 }: SecondaryButtonProps) {
   return (
     <Pressable
@@ -25,6 +27,7 @@ export function SecondaryButton({
         disabled ? 'opacity-60' : 'active:opacity-90',
         fullWidth ? 'w-full' : 'self-start'
       ].join(' ')}
+      style={style}
     >
       <View className="flex-row items-center justify-center">
         {icon ? <View className="mr-3">{icon}</View> : null}

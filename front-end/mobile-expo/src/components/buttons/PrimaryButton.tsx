@@ -7,6 +7,7 @@ interface PrimaryButtonProps {
   disabled?: boolean;
   icon?: ReactNode;
   fullWidth?: boolean;
+  style?: any;
 }
 
 export function PrimaryButton({
@@ -14,7 +15,8 @@ export function PrimaryButton({
   onPress,
   disabled,
   icon,
-  fullWidth
+  fullWidth,
+  style
 }: PrimaryButtonProps) {
   return (
     <Pressable
@@ -25,6 +27,7 @@ export function PrimaryButton({
         disabled ? 'opacity-60' : 'active:opacity-90',
         fullWidth ? 'w-full' : 'self-start'
       ].join(' ')}
+      style={style}
     >
       <View className="flex-row items-center justify-center">
         {icon ? <View className="mr-3">{icon}</View> : null}
