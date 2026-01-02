@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useState, useCallback, useEffect } from 'react';
 import { rewardService } from '../../services/rewardService';
-// import { useFocusEffect } from '@react-navigation/native';
+import { ArrowUpRight, Clock, CheckCircle2, History, Trophy, Wallet } from 'lucide-react-native';
 
 export function WalletScreen() {
     const [stats, setStats] = useState({ totalEarned: 0, pending: 0, paid: 0 });
@@ -33,34 +33,57 @@ export function WalletScreen() {
     }, []);
 
     return (
-        <View className="flex-1 bg-ink-50 pt-14 px-6">
-            <Text className="text-2xl font-bold text-ink-900 mb-6">Wallet</Text>
-
-            {/* Total Earnings Card */}
-            <View className="bg-brand-600 p-6 rounded-2xl mb-6 shadow-md">
-                <Text className="text-brand-100 font-medium mb-1">Total Earnings</Text>
-                <Text className="text-white text-4xl font-bold">₹ {stats.totalEarned?.toLocaleString() || '0.00'}</Text>
-                <TouchableOpacity className="mt-4 bg-white/20 py-2 rounded-lg items-center self-start px-6">
-                    <Text className="text-white font-semibold">Withdraw</Text>
-                </TouchableOpacity>
+        <View className="flex-1 bg-white">
+            <View className="pt-16 pb-6 px-6 bg-white z-10">
+                <Text className="text-3xl font-bold text-ink-900 tracking-tight">Wallet</Text>
             </View>
 
-            {/* Stats Row */}
-            <View className="flex-row gap-4 mb-8">
-                <View className="flex-1 bg-white p-4 rounded-xl border border-ink-100 items-center">
-                    <Text className="text-ink-500 text-xs font-semibold uppercase">Pending</Text>
-                    <Text className="text-ink-900 text-xl font-bold mt-1">₹ {stats.pending?.toLocaleString() || '0'}</Text>
-                </View>
-                <View className="flex-1 bg-white p-4 rounded-xl border border-ink-100 items-center">
-                    <Text className="text-ink-500 text-xs font-semibold uppercase">Paid</Text>
-                    <Text className="text-ink-900 text-xl font-bold mt-1">₹ {stats.paid?.toLocaleString() || '0'}</Text>
-                </View>
-            </View>
+            <ScrollView
+                className="flex-1 px-6"
+                contentContainerStyle={{ paddingBottom: 40 }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+                {/* Total Earnings Card */}
+                <View className="bg-brand-500 p-6 rounded-3xl mb-8 shadow-lg shadow-gray-200">
+                    <View className="flex-row justify-between items-start mb-6">
+                        <View>
+                            <Text className="text-gray-200 font-medium mb-1">Total Earnings</Text>
+                            <Text className="text-white text-4xl font-bold">₹ {stats.totalEarned?.toLocaleString() || '0.00'}</Text>
+                        </View>
+                        <View className="bg-white/10 p-2.5 rounded-full">
+                            <Wallet size={24} color="white" />
+                        </View>
+                    </View>
 
-            {/* Tabs */}
+                    <TouchableOpacity className="bg-white py-3.5 px-6 rounded-xl self-start flex-row items-center space-x-2">
+                        <Text className="text-black font-bold mr-2">Withdraw Funds</Text>
+                        <ArrowUpRight size={18} color="black" strokeWidth={2.5} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Stats Row */}
+                <View className="flex-row gap-4 mb-8">
+                    <View className="flex-1 bg-gray-50 p-4 rounded-2xl border border-gray-100 items-start">
+                        <View className="bg-orange-100 p-2 rounded-lg mb-3">
+                            <Clock size={20} color="#f97316" />
+                        </View>
+                        <Text className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Pending</Text>
+                        <Text className="text-gray-900 text-xl font-bold">₹ {stats.pending?.toLocaleString() || '0'}</Text>
+                    </View>
+                    <View className="flex-1 bg-gray-50 p-4 rounded-2xl border border-gray-100 items-start">
+                        <View className="bg-green-100 p-2 rounded-lg mb-3">
+                            <CheckCircle2 size={20} color="#16a34a" />
+                        </View>
+                        <Text className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Paid</Text>
+                        <Text className="text-gray-900 text-xl font-bold">₹ {stats.paid?.toLocaleString() || '0'}</Text>
+                    </View>
+                </View>
+
+                {/* Tabs */}
             <View style={{ flexDirection: 'row', marginBottom: 24, backgroundColor: '#f3f4f6', padding: 4, borderRadius: 9999 }}>
-                <TouchableOpacity
-                    onPress={() => setActiveTab('history')}
+                    <TouchableOpacity
+                        onPress={() => setActiveTab('history')}
                     style={{
                         flex: 1,
                         paddingVertical: 8,
@@ -72,11 +95,11 @@ export function WalletScreen() {
                         shadowOffset: { width: 0, height: 1 },
                         elevation: activeTab === 'history' ? 2 : 0
                     }}
-                >
+                    >
                     <Text style={{ fontWeight: '500', color: activeTab === 'history' ? '#111827' : '#6b7280' }}>Reward History</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setActiveTab('contests')}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setActiveTab('contests')}
                     style={{
                         flex: 1,
                         paddingVertical: 8,
@@ -88,48 +111,49 @@ export function WalletScreen() {
                         shadowOffset: { width: 0, height: 1 },
                         elevation: activeTab === 'contests' ? 2 : 0
                     }}
-                >
-                    <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Rewards History Tab */}
-            {activeTab === 'history' && (
-                <>
-                    <Text className="text-lg font-bold text-ink-900 mb-4">Payout History</Text>
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     >
+                    <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Rewards History Tab */}
+                {activeTab === 'history' && (
+                    <View>
                         {transactions.length === 0 ? (
-                            <View className="items-center py-8">
-                                <Text className="text-ink-400">No transactions yet.</Text>
+                            <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                <History size={32} color="#9ca3af" />
+                                <Text className="text-gray-400 mt-3 font-medium">No transactions yet.</Text>
                             </View>
                         ) : (
                             transactions.map((tx) => (
-                                <View key={tx.id} className="bg-white p-4 rounded-xl mb-3 border border-ink-100 flex-row justify-between items-center">
-                                    <View>
-                                        <Text className="font-bold text-ink-900">{tx.lead?.name || 'Unknown Lead'}</Text>
-                                        <Text className="text-xs text-ink-500 capitalize">{tx.status} • {new Date(tx.createdAt).toLocaleDateString()}</Text>
+                                <View key={tx.id} className="bg-white p-4 rounded-2xl mb-3 border border-gray-100 flex-row justify-between items-center shadow-sm shadow-gray-100">
+                                    <View className="flex-row items-center gap-3">
+                                        <View className={`p-2.5 rounded-full ${tx.status === 'paid' ? 'bg-green-50' : 'bg-orange-50'}`}>
+                                            {tx.status === 'paid' ? <CheckCircle2 size={18} color="#16a34a" /> : <Clock size={18} color="#f97316" />}
+                                        </View>
+                                        <View>
+                                            <Text className="font-bold text-gray-900 text-[15px]">{tx.lead?.name || 'Unknown Lead'}</Text>
+                                            <Text className="text-xs text-gray-500 mt-0.5">{new Date(tx.createdAt).toLocaleDateString()}</Text>
+                                        </View>
                                     </View>
-                                    <Text className={`font-bold ${tx.status === 'paid' ? 'text-green-600' : 'text-ink-500'}`}>
+                                    <Text className={`text-base font-bold ${tx.status === 'paid' ? 'text-green-600' : 'text-gray-600'}`}>
                                         +₹{tx.amount}
                                     </Text>
                                 </View>
                             ))
                         )}
-                        <View className="h-20" />
-                    </ScrollView>
-                </>
-            )}
+                    </View>
+                )}
 
-            {/* Contests Tab */}
-            {activeTab === 'contests' && (
-                <View className="flex-1 justify-center items-center py-10">
-                    <Text className="text-ink-400 text-lg">No active contests.</Text>
-                    <Text className="text-ink-300 text-sm mt-2">Check back soon!</Text>
-                </View>
-            )}
+                {/* Contests Tab */}
+                {activeTab === 'contests' && (
+                    <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <Trophy size={32} color="#fbbf24" />
+                        <Text className="text-gray-400 mt-3 font-medium text-lg">No active contests.</Text>
+                        <Text className="text-gray-400 text-sm">Check back soon for new challenges!</Text>
+                    </View>
+                )}
+            </ScrollView>
         </View>
     );
 }

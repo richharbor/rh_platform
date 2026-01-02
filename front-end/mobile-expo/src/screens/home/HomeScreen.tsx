@@ -3,6 +3,7 @@ import { ScrollView, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Shield, Banknote, Rocket, TrendingUp, BarChart3, Plus, ChevronRight } from 'lucide-react-native';
 
 import { PrimaryButton } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -38,51 +39,67 @@ export function HomeScreen({ navigation }: any) {
   }, []);
 
   const QUICK_TILES = [
-    { title: 'Insurance', icon: '🛡️' },
-    { title: 'Loans', icon: '💰' },
-    { title: 'Funding / PE', icon: '🚀' },
-    { title: 'Unlisted Shares', icon: '📈' },
-    { title: 'Bulk Stocks', icon: '📊' }
+    { title: 'Insurance', Icon: Shield, color: '#3b82f6' }, // blue-500
+    { title: 'Loans', Icon: Banknote, color: '#10b981' }, // emerald-500
+    { title: 'Funding', Icon: Rocket, color: '#8b5cf6' }, // violet-500
+    { title: 'Unlisted Shares', Icon: TrendingUp, color: '#f59e0b' }, // amber-500
+    { title: 'Bulk Stocks', Icon: BarChart3, color: '#ec4899' } // pink-500
   ];
 
   return (
-    <View className="flex-1 bg-ink-50">
+    <View className="flex-1 bg-white">
       <ScrollView
-        contentContainerClassName="px-6 pb-24 pt-14"
+        contentContainerClassName="px-5 pb-24 pt-14"
         showsVerticalScrollIndicator={false}
       >
+        {/* Header */}
         <View className="flex-row items-center justify-between mb-8">
           <View>
-            <Text className="text-sm font-semibold text-ink-500">Welcome,</Text>
-            <Text className="mt-1 text-2xl font-bold text-ink-900">
-              {user?.name || user?.phone || 'Partner'} 👋
+            <Text className="text-sm font-medium text-ink-500 uppercase tracking-wide">Welcome,</Text>
+            <Text className="text-2xl font-bold text-ink-900 mt-1">
+              {user?.name?.split(' ')[0] || user?.phone || 'Partner'}
             </Text>
           </View>
-          <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100">
-            <Text className="text-lg font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
-          </View>
+          <TouchableOpacity onPress={logout} className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
+            <Text className="text-sm font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Create Lead Callout */}
-        <View className="bg-ink-900 p-6 rounded-2xl mb-8 relative overflow-hidden">
-          <Text className="text-white text-lg font-bold mb-1">Grow your earnings</Text>
-          <Text className="text-brand-200 text-sm mb-4 w-3/4">Submit a new lead and track commissions in real-time.</Text>
-          <PrimaryButton
-            label="+  Create New Lead"
-            onPress={() => navigation.navigate('CreateLead')}
-          />
-        </View>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => navigation.navigate('CreateLead')}
+          className="bg-brand-500 p-6 rounded-3xl mb-10 shadow-lg shadow-gray-200"
+        >
+          <View className="flex-row justify-between items-start">
+            <View className="flex-1 mr-4">
+              <View className="bg-white/20 self-start px-3 py-1 rounded-full mb-3">
+                <Text className="text-white text-xs font-semibold">New Opportunity</Text>
+              </View>
+              <Text className="text-white text-xl font-bold mb-2">Grow your earnings</Text>
+              <Text className="text-gray-200 text-sm leading-5">Submit a new lead and track commissions in real-time.</Text>
+            </View>
+            <View className="bg-white/10 p-3 rounded-full">
+              <Plus size={24} color="white" />
+            </View>
+          </View>
+        </TouchableOpacity>
 
-        <Text className="text-lg font-bold text-ink-900 mb-4">Product Categories</Text>
+        {/* Categories */}
+        <Text className="text-lg font-bold text-ink-900 mb-5">Explore Products</Text>
         <View className="flex-row flex-wrap gap-3">
           {QUICK_TILES.map((tile) => (
             <TouchableOpacity
               key={tile.title}
-              className="w-[48%] bg-white p-4 rounded-xl border border-ink-100 shadow-sm"
-              onPress={() => navigation.navigate('CreateLead')} // Shortcuts to create lead
+              className="w-[48%] bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex-col justify-between h-32"
+              onPress={() => navigation.navigate('CreateLead')}
             >
-              <Text className="text-2xl mb-2">{tile.icon}</Text>
-              <Text className="font-semibold text-ink-900">{tile.title}</Text>
+              <View className="p-2.5 rounded-xl self-start bg-gray-50">
+                <tile.Icon size={24} color={tile.color} strokeWidth={2} />
+              </View>
+              <View>
+                <Text className="font-semibold text-ink-900 text-[15px]">{tile.title}</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
