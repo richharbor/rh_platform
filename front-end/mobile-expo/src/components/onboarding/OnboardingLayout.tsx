@@ -87,7 +87,7 @@ export function OnboardingLayout({
                     <TouchableOpacity onPress={onSkip} className="w-10">
                         {!isLastStep && (
                             <View className="bg-white/20 px-3 py-1.5 rounded-full border border-white/30" style={{ backdropFilter: 'blur(10px)' } as any}>
-                                <Text className="text-white font-bold text-[10px] tracking-widest uppercase">Skip</Text>
+                                <Text className="text-white font-bold max-w-[50px] text-[10px] tracking-widest uppercase">Skip</Text>
                             </View>
                         )}
                     </TouchableOpacity>
@@ -133,15 +133,6 @@ export function OnboardingLayout({
                             label={isLastStep ? "Enter the Harbor" : "Continue"}
                             fullWidth
                             onPress={onNext}
-                            style={{
-                                borderRadius: 32,
-                                height: 72,
-                                shadowColor: '#5b46ff',
-                                shadowOffset: { width: 0, height: 8 },
-                                shadowOpacity: 0.3,
-                                shadowRadius: 16,
-                                elevation: 8
-                            }}
                         />
                     </View>
                 </Animated.View>

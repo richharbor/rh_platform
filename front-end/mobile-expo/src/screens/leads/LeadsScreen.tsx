@@ -1,56 +1,98 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 import { leadService, Lead } from '../../services/leadService';
-import { PrimaryButton } from '../../components';
+import { Search, Plus, Banknote, CreditCard, Shield, MoreHorizontal, FileText, ChevronRight, Calendar } from 'lucide-react-native';
+
+
 
 function LeadCard({ lead }: { lead: Lead }) {
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'new': return 'bg-blue-100 text-blue-700';
-            case 'approved': return 'bg-green-100 text-green-700';
-            case 'rejected': return 'bg-red-100 text-red-700';
-            case 'paid': return 'bg-purple-100 text-purple-700';
-            default: return 'bg-gray-100 text-gray-700';
+            case 'new': return 'bg-blue-50 text-blue-700 border-blue-200';
+            case 'approved': return 'bg-green-50 text-green-700 border-green-200';
+            case 'rejected': return 'bg-red-50 text-red-700 border-red-200';
+            case 'paid': return 'bg-purple-50 text-purple-700 border-purple-200';
+            default: return 'bg-gray-50 text-gray-700 border-gray-200';
         }
     };
 
+    const getProductMeta = (type: string) => {
+        const t = (type || '').toLowerCase();
+        if (t.includes('loan')) return { icon: <Banknote size={24} color="#4f46e5" />, bg: 'bg-indigo-50' };
+        if (t.includes('card')) return { icon: <CreditCard size={24} color="#ec4899" />, bg: 'bg-pink-50' };
+        if (t.includes('insurance')) return { icon: <Shield size={24} color="#059669" />, bg: 'bg-emerald-50' };
+        return { icon: <FileText size={24} color="#6b7280" />, bg: 'bg-gray-50' };
+    };
+
     const statusStyle = getStatusColor(lead.status);
-    const date = new Date(lead.createdAt).toLocaleDateString();
+    const meta = getProductMeta(lead.product_type);
+    const dateStr = lead.created_at || lead.createdAt || new Date().toISOString();
+    const date = new Date(dateStr).toLocaleDateString();
 
     return (
-        <View className="bg-white p-4 rounded-xl border border-ink-100 mb-3 shadow-sm">
-            <View className="flex-row justify-between items-start mb-2">
-                <View>
-                    <Text className="font-bold text-ink-900 text-base">{lead.product_type?.toUpperCase()}</Text>
-                    <Text className="text-ink-500 text-xs">ID: #{lead.id}</Text>
+        <TouchableOpacity className="bg-white p-4 rounded-3xl mb-4 shadow-sm shadow-gray-200 border border-gray-100">
+            <View className="flex-row items-start justify-between">
+                {/* Icon & Main Info */}
+                <View className="flex-row items-center flex-1">
+                    <View className={`h-14 w-14 rounded-2xl ${meta.bg} items-center justify-center mr-4 border border-black/5`}>
+                        {meta.icon}
+                    </View>
+
+                    <View className="flex-1">
+                        <Text className="text-gray-900 font-bold text-lg leading-tight" numberOfLines={1}>
+                            {lead.name}
+                        </Text>
+                        <View className="flex-row items-center mt-1">
+                            <Text className="text-gray-500 text-xs font-medium mr-2">
+                                {lead.product_type || 'Lead'}
+                            </Text>
+                            <View className="h-1 w-1 rounded-full bg-gray-300 mr-2" />
+                            <Text className="text-gray-400 text-xs text-xs bg-gray-100 px-1.5 py-0.5 rounded-md overflow-hidden">
+                                #{lead.id}
+                            </Text>
+                        </View>
+                    </View>
                 </View>
-                <View className={`px-2 py-1 rounded-full ${statusStyle.split(' ')[0]}`}>
-                    <Text className={`text-xs font-bold ${statusStyle.split(' ')[1]}`}>{lead.status.toUpperCase()}</Text>
-                </View>
+
+                {/* Arrow */}
+                {/* <ChevronRight size={20} color="#e5e7eb" className="mt-2" /> */}
             </View>
 
-            <View className="mb-2">
-                <Text className="text-ink-800 font-medium">{lead.name}</Text>
+            {/* Footer / Status Divider */}
+            <View className="h-[1px] bg-gray-50 my-3" />
 
+            <View className="flex-row items-center justify-between">
+                {/* Date */}
+                <View className="flex-row items-center">
+                    <Calendar size={14} color="#9ca3af" className="mr-1.5" />
+                    <Text className="text-gray-400 text-xs font-medium">{date}</Text>
+                </View>
+
+                {/* Status Pill */}
+                <View className={`px-3 py-1 rounded-full border ${statusStyle.split(' ')[2]} ${statusStyle.split(' ')[0]}`}>
+                    <Text className={`text-[10px] font-bold uppercase tracking-wider ${statusStyle.split(' ')[1]}`}>
+                        {lead.status}
+                    </Text>
+                </View>
             </View>
-
-            <Text className="text-ink-400 text-xs text-right">{date}</Text>
-        </View>
+        </TouchableOpacity>
     );
 }
 
 export function LeadsScreen() {
     const navigation = useNavigation<any>();
     const [leads, setLeads] = useState<Lead[]>([]);
+    const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchLeads = async () => {
         try {
             const data = await leadService.getMyLeads();
             setLeads(data);
+            setFilteredLeads(data);
         } catch (error) {
             console.error(error);
         } finally {
@@ -63,6 +105,20 @@ export function LeadsScreen() {
         fetchLeads();
     }, []);
 
+    useEffect(() => {
+        if (!searchQuery) {
+            setFilteredLeads(leads);
+        } else {
+            const lower = searchQuery.toLowerCase();
+            const filtered = leads.filter(l =>
+                l.name.toLowerCase().includes(lower) ||
+                l.product_type?.toLowerCase().includes(lower) ||
+                l.status.toLowerCase().includes(lower)
+            );
+            setFilteredLeads(filtered);
+        }
+    }, [searchQuery, leads]);
+
     const onRefresh = () => {
         setRefreshing(true);
         fetchLeads();
@@ -70,36 +126,60 @@ export function LeadsScreen() {
 
     if (loading && !refreshing) {
         return (
-            <View className="flex-1 justify-center items-center bg-ink-50">
-                <ActivityIndicator size="large" color="#4f46e5" />
+            <View className="flex-1 justify-center items-center bg-white">
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }
 
     return (
-        <View className="flex-1 bg-ink-50 pt-14 px-4">
-            <Text className="text-2xl font-bold text-ink-900 mb-1">My Leads</Text>
-            <Text className="text-ink-500 mb-4">Track progress and payouts</Text>
+        <View className="flex-1 bg-white">
+            {/* Header */}
+            <View className="pt-16 px-6 pb-4 bg-white z-10">
+                <Text className="text-3xl font-bold text-gray-900">My Leads</Text>
+                <Text className="text-gray-500 text-base mt-1">Track and manage your applications</Text>
 
-            <View className="mb-4">
-                <PrimaryButton
-                    label="+ Create New Lead"
-                    onPress={() => navigation.navigate('CreateLead')}
-                />
+                {/* Search Bar */}
+                <View className="mt-6 flex-row items-center bg-gray-100 rounded-xl px-4 py-3">
+                    <Search size={20} color="#9ca3af" />
+                    <TextInput
+                        placeholder="Search by name or status..."
+                        placeholderTextColor="#9ca3af"
+                        className="flex-1 ml-3 text-base text-gray-900"
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                </View>
             </View>
 
             <FlatList
-                data={leads}
+                data={filteredLeads}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => <LeadCard lead={item} />}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100, paddingTop: 10 }}
+                showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 ListEmptyComponent={
-                    <View className="items-center py-10">
-                        <Text className="text-ink-400">No leads found. Create one!</Text>
+                    <View className="items-center py-20">
+                        <View className="w-16 h-16 bg-gray-50 rounded-full items-center justify-center mb-4">
+                            <Search size={32} color="#d1d5db" />
+                        </View>
+                        <Text className="text-gray-900 font-medium text-lg">No leads found</Text>
+                        <Text className="text-gray-500 text-center mt-2 px-10">
+                            {searchQuery ? "Try limiting your search terms." : "Create your first lead to start earning."}
+                        </Text>
                     </View>
                 }
             />
+
+            {/* Floating Action Button */}
+            <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('CreateLead')}
+                className="absolute bottom-6 right-6 h-14 w-14 bg-brand-500 rounded-full items-center justify-center shadow-lg shadow-gray-400"
+            >
+                <Plus size={28} color="white" />
+            </TouchableOpacity>
         </View>
     );
 }

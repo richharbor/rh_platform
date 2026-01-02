@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { ChevronLeft } from 'lucide-react-native';
 import { AppStackParamList } from '../../navigation/types';
 
 import { PrimaryButton, SecondaryButton } from '../../components';
+
+
 import { DynamicField } from '../../components/inputs/DynamicField';
+
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 import { COMMON_LEAD_FIELDS, PRODUCT_CATEGORIES, PRODUCT_FORMS, LeadField } from '../../config/leads';
 import { leadService } from '../../services/leadService';
 
@@ -17,6 +22,19 @@ export function CreateLeadScreen() {
     const [productType, setProductType] = useState<string | null>(null);
     const [consent, setConsent] = useState(false);
     const [showErrors, setShowErrors] = useState(false);
+
+    // Alert State
+
+
+    // Alert State
+    const [alertVisible, setAlertVisible] = useState(false);
+
+    const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+    const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+        setAlertConfig({ title, message, actions, type });
+        setAlertVisible(true);
+    };
 
     // Helper to update data
     const updateData = (key: string, value: any) => {
@@ -122,14 +140,14 @@ export function CreateLeadScreen() {
             // Validate common
             const missing = COMMON_LEAD_FIELDS.filter(f => f.required && !data[f.id]);
             if (missing.length > 0) {
-                Alert.alert("Required", "Please fill all required fields.");
+                showAlert("Missing Information", "Please fill in all required fields to proceed.", [], 'error');
                 return;
             }
             setShowErrors(false);
             setStep(1);
         } else if (step === 1) {
             if (!productType) {
-                Alert.alert("Required", "Please select a product.");
+                showAlert("Product Required", "Please select a financial product to continue.", [], 'error');
                 return;
             }
             setShowErrors(false);
@@ -140,7 +158,7 @@ export function CreateLeadScreen() {
                 const fields = PRODUCT_FORMS[productType].filter(checkCondition);
                 const missing = fields.filter(f => f.required && !data[f.id]);
                 if (missing.length > 0) {
-                    Alert.alert("Required", "Please fill all required details.");
+                    showAlert("Missing Details", "Please complete all product-specific details.", [], 'error');
                     return;
                 }
             }
@@ -153,7 +171,7 @@ export function CreateLeadScreen() {
 
     const handleSubmit = async () => {
         if (!consent) {
-            Alert.alert("Consent Required", "Please confirm client consent.");
+            showAlert("Consent Required", "Please confirm that you have the client's consent to proceed.", [{ text: "I Understand", style: 'cancel' }], 'warning');
             return;
         }
 
@@ -178,10 +196,10 @@ export function CreateLeadScreen() {
                 alert("Lead submitted successfully!");
                 navigation.navigate('Main', { screen: 'Leads' });
             } else {
-                Alert.alert("Success", "Lead submitted successfully!", [
+                showAlert("Success", "Lead submitted successfully!", [
                     {
-                        text: "OK", onPress: () => {
-                            // Navigate to Leads tab in Main navigator
+                        text: "Great!",
+                        onPress: () => {
                             navigation.navigate('Main', { screen: 'Leads' });
                         }
                     }
@@ -191,22 +209,40 @@ export function CreateLeadScreen() {
             // while the user sees the success alert and until navigation happens.
         } catch (error: any) {
             console.error(error);
-            Alert.alert("Error", error.response?.data?.error || "Failed to submit lead.");
+            const errorMessage = error.response?.data?.error || "Failed to submit lead.";
+            showAlert("Error", errorMessage, [{ text: "Close", style: 'cancel' }], 'error');
             setLoading(false);
         }
     };
 
     return (
-        <View className="flex-1 bg-ink-50">
-            <View className="bg-white pt-14 pb-4 px-6 border-b border-ink-100 flex-row items-center justify-between">
-                <TouchableOpacity onPress={() => {
-                    setShowErrors(false);
-                    step === 0 ? navigation.goBack() : setStep(step - 1);
-                }}>
-                    <Text className="text-brand-600 font-medium">Back</Text>
+        <View className="flex-1 relative bg-ink-50">
+            <CustomAlert
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                actions={alertConfig.actions}
+                onClose={() => setAlertVisible(false)}
+            />
+            {/* Header */}
+            <View className="bg-white pt-14 pb-4 px-6 flex-row items-center justify-between z-10">
+                <TouchableOpacity
+                    onPress={() => {
+                        setShowErrors(false);
+                        step === 0 ? navigation.goBack() : setStep(step - 1);
+                    }}
+                    className="h-10 w-10 bg-gray-50 rounded-full items-center justify-center"
+                >
+                    <ChevronLeft size={24} color="#111827" />
                 </TouchableOpacity>
-                <Text className="font-bold text-lg text-ink-900">Step {step + 1}/4</Text>
-                <View className="w-8" />
+
+                <View className="items-center">
+                    <Text className="font-bold text-lg text-gray-900">New Lead</Text>
+                    <Text className="text-xs text-brand-600 font-medium tracking-wide">Step {step + 1} of 4</Text>
+                </View>
+
+                {/* Placeholder to balance the title */}
+                <View className="w-10" />
             </View>
 
             <KeyboardAvoidingView
@@ -220,12 +256,15 @@ export function CreateLeadScreen() {
                     {step === 3 && renderReview()}
                 </ScrollView>
 
-                <View className="p-6 bg-white border-t border-ink-100 safe-area-bottom">
-                    <PrimaryButton
-                        label={loading ? "Submitting..." : step === 3 ? "Submit Lead" : "Next"}
-                        onPress={handleNext}
-                        disabled={loading}
-                    />
+                <View className="px-6 pt-3 pb-3 flex  bg-white border-t border-gray-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
+                    <View className='ml-auto'>
+                        <PrimaryButton
+                            label={loading ? "Submitting..." : step === 3 ? "Submit Lead" : "Next"}
+                            onPress={handleNext}
+                            disabled={loading}
+
+                        />
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         </View>

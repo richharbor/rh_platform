@@ -44,118 +44,111 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
   };
 
   return (
-    <View className="flex-1 bg-ink-50 px-6 pb-8 pt-16">
-      <Text className="text-3xl font-bold text-ink-900">Welcome back</Text>
-      <Text className="mt-3 text-base text-ink-500">
-        Log in with a secure OTP to access your account.
+    <View className="flex-1 bg-white px-6 pt-16">
+      {/* Header */}
+      <Text className="text-3xl font-semibold text-ink-900">
+        Welcome back
+      </Text>
+      <Text className="mt-2 text-base text-ink-500">
+        Login securely using a one-time password.
       </Text>
 
-      <View style={{ marginTop: 24, flexDirection: 'row', marginBottom: 16, backgroundColor: '#e5e7eb', padding: 4, borderRadius: 9999 }}>
-        <TouchableOpacity
-          onPress={() => { setMethod('email'); setIdentifier(''); }}
-          style={{
-            flex: 1,
-            paddingVertical: 8,
-            borderRadius: 9999,
-            alignItems: 'center',
-            backgroundColor: method === 'email' ? 'white' : 'transparent',
-            shadowOpacity: method === 'email' ? 0.1 : 0,
-            shadowRadius: 2,
-            shadowOffset: { width: 0, height: 1 },
-            elevation: method === 'email' ? 2 : 0
-          }}
-        >
-          <Text style={{ fontWeight: '500', color: method === 'email' ? '#111827' : '#6b7280' }}>Email</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => { setMethod('phone'); setIdentifier(''); }}
-          style={{
-            flex: 1,
-            paddingVertical: 8,
-            borderRadius: 9999,
-            alignItems: 'center',
-            backgroundColor: method === 'phone' ? 'white' : 'transparent',
-            shadowOpacity: method === 'phone' ? 0.1 : 0,
-            shadowRadius: 2,
-            shadowOffset: { width: 0, height: 1 },
-            elevation: method === 'phone' ? 2 : 0
-          }}
-        >
-          <Text style={{ fontWeight: '500', color: method === 'phone' ? '#111827' : '#6b7280' }}>Phone</Text>
-        </TouchableOpacity>
+      {/* Method Switch */}
+      <View className="mt-8 flex-row rounded-full bg-ink-100 p-1">
+        {(['email', 'phone'] as const).map((type) => (
+          <TouchableOpacity
+            key={type}
+            onPress={() => {
+              setMethod(type);
+              setIdentifier('');
+            }}
+            className={`flex-1 py-2.5 rounded-full items-center ${method === type ? 'bg-white' : ''
+              }`}
+          >
+            <Text
+              className={`text-sm font-medium ${method === type ? 'text-ink-900' : 'text-ink-500'
+                }`}
+            >
+              {type === 'email' ? 'Email' : 'Phone'}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <View className="mt-2">
+      {/* Input Section */}
+      <View className="mt-6">
         {method === 'email' ? (
           <TextField
-            key="email-input"
             label="Email address"
             placeholder="you@company.com"
             value={identifier}
             onChangeText={setIdentifier}
             keyboardType="email-address"
             autoCapitalize="none"
-            helper="We will send a 6-digit verification code."
           />
         ) : (
-          <View>
-            <Text className="mb-2 text-sm font-medium text-ink-700">Phone number</Text>
-            <View className="flex-row items-center space-x-3">
-              <View className="rounded-2xl border border-ink-200 pl-3 pr-4 h-[56px] bg-white flex-row items-center justify-center">
+          <>
+            <Text className="mb-2 text-sm font-medium text-ink-700">
+              Phone number
+            </Text>
+
+            <View className="flex-row items-center rounded-2xl border border-ink-200 bg-white h-[56px]">
+              {/* Country */}
+              <View className="flex-row items-center pl-4 pr-3 border-r border-ink-200">
                 <CountryPicker
                   countryCode={countryCode}
-                  withFilter
                   withFlag
-                  withCallingCode={false}
+                  withFilter
                   withEmoji
-                  onSelect={(country: Country) => {
+                  onSelect={(country) => {
                     setCountryCode(country.cca2);
                     setCallingCode(country.callingCode[0]);
                   }}
-                  visible={false}
-                  containerButtonStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                  containerButtonStyle={{ alignItems: 'center' }}
                 />
-                <Text className="text-base text-ink-900 ml-1">+{callingCode}</Text>
+                <Text className="ml-2 text-base text-ink-900">
+                  +{callingCode}
+                </Text>
               </View>
-              <View className="flex-1">
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#e5e7eb',
-                    borderRadius: 16,
-                    paddingHorizontal: 16,
-                    height: 56, // Fixed height for alignment
-                    fontSize: 16,
-                    color: '#111827',
-                    backgroundColor: 'white'
-                  }}
-                  placeholder="98765 43210"
-                  placeholderTextColor="#9ca3af"
-                  value={identifier}
-                  onChangeText={setIdentifier}
-                  keyboardType="phone-pad"
-                  textContentType="telephoneNumber"
-                />
-              </View>
+
+              {/* Phone Input */}
+              <TextInput
+                className="flex-1 px-4 text-base text-ink-900"
+                placeholder="98765 43210"
+                placeholderTextColor="#9ca3af"
+                value={identifier}
+                onChangeText={setIdentifier}
+                keyboardType="phone-pad"
+              />
             </View>
-            <Text className="mt-2 text-xs text-ink-500">We will send a 6-digit verification code.</Text>
-          </View>
+          </>
         )}
+
+        <Text className="mt-2 text-xs text-ink-500">
+          We’ll send a 6-digit verification code.
+        </Text>
       </View>
 
-      <View className="mt-8 space-y-4">
+      {/* Actions */}
+      <View className="mt-10 space-y-4">
         <PrimaryButton
-          label={loading ? "Sending..." : "Send OTP"}
+          label={loading ? 'Sending OTP…' : 'Send OTP'}
           fullWidth
           onPress={handleSendOtp}
           disabled={loading}
         />
-        <SecondaryButton
-          label="Need an account? Signup"
-          fullWidth
+
+        <TouchableOpacity
           onPress={() => navigation.replace('Signup')}
-        />
+          className="items-center mt-2"
+        >
+          <Text className="text-sm text-ink-600">
+            Don’t have an account?{' '}
+            <Text className="font-medium text-ink-900">Sign up</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
+
   );
 }
