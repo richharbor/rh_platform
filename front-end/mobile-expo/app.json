@@ -28,11 +28,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "varun2773",
     "extra": {
       "eas": {
-        "projectId": "04066cca-d02b-4cd8-bfa7-ad36a2615b47"
+        "projectId": "2880f08c-7da8-41ad-ab2e-17c13e10348f"
       }
-    },
-    "owner": "varun2773"
+    }
   }
 }

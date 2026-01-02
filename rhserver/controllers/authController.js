@@ -10,6 +10,9 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 const generateToken = (user, currentRole = null) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in environment variables");
+  }
   return jwt.sign(
     {
       id: user.id,
@@ -44,6 +47,9 @@ const startOnboarding = async (req, res) => {
     // If accountType is empty, set default role "partner"
     if (!Array.isArray(accountType) || accountType.length === 0) {
       accountType = ["partner"];
+    } else {
+      // Sanitize: ensure all elements are strings
+      accountType = accountType.filter(type => typeof type === 'string');
     }
 
     // Check if user already exists

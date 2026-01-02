@@ -11,7 +11,7 @@ const authenticate = async (req, res, next) => {
             return res.status(401).json({ error: "No token provided" });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log(`[Auth Debug] Token decoded for User ID: ${decoded.id}`);
 
         const user = await User.findOne({
@@ -42,7 +42,7 @@ const authenticateSoft = async (req, res, next) => {
             return res.status(401).json({ error: "No token provided" });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findOne({
             where: {
                 id: decoded.id,

@@ -1,11 +1,13 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { User, Otp } = require("../models"); // Uses platform/models/index.js
 const awsService = require("../services/awsService");
 const { sendEmail } = require("../services/emailService");
 
 const generateToken = (user) => {
-    return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || "dev_secret", {
+    if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET must be defined");
+    return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: "7d",
     });
 };
@@ -42,7 +44,7 @@ const requestOtp = async (req, res) => {
         }
 
         // Generate OTP
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const code = crypto.randomInt(100000, 999999).toString();
         // In prod hash this code
         const code_hash = code;
 
@@ -216,7 +218,13 @@ const updateOnboardingStep = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        if (role) user.role = role;
+        if (role) {
+            const allowedRoles = ["customer", "partner", "franchise"]; // Whitelist
+            if (!allowedRoles.includes(role)) {
+                return res.status(403).json({ error: "Invalid or restricted role" });
+            }
+            user.role = role;
+        }
         if (step !== undefined) user.signup_step = step;
 
         // Merge data
