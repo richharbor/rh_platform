@@ -21,6 +21,7 @@ export default function LeadsPage() {
     // Edit States
     const [newStatus, setNewStatus] = useState('');
     const [assigneeId, setAssigneeId] = useState('');
+    const [notifyUser, setNotifyUser] = useState(true); // Default true
     const [actionLoading, setActionLoading] = useState(false);
 
     // Reward Confirmation State
@@ -116,11 +117,12 @@ export default function LeadsPage() {
         try {
             const payload = {
                 status: newStatus,
-                incentive_amount: rewardAmount // Will be 0 if not set via modal, which logic ignores or uses as 0 override?
+                incentive_amount: rewardAmount, // Will be 0 if not set via modal, which logic ignores or uses as 0 override?
                 // Actually backend logic: if undefined/null -> calc. If provide -> use. 
                 // We should pass it ONLY if we confirmed it. But if we skip confirmation, we pass 0?
                 // Better: pass it only if isRewardConfirmOpen was true. 
                 // But simplified: pass it always? No, strict check backend checks for undefined.
+                notifyUser: notifyUser
             };
 
             // If we are confirming reward, pass it.
@@ -419,9 +421,22 @@ export default function LeadsPage() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <button className="btn btn-primary w-full" onClick={handleStatusUpdate} disabled={actionLoading}>
-                                        {actionLoading ? 'Updating...' : 'Update Status'}
-                                    </button>
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <input
+                                                type="checkbox"
+                                                id="notifyUser"
+                                                className="w-4 h-4 text-blue-600 rounded"
+                                                checked={notifyUser}
+                                                onChange={e => setNotifyUser(e.target.checked)}
+                                            />
+                                            <label htmlFor="notifyUser" className="text-sm font-medium text-slate-700">Notify User via App 🔔</label>
+                                        </div>
+
+                                        <button className="btn btn-primary w-full" onClick={handleStatusUpdate} disabled={actionLoading}>
+                                            {actionLoading ? 'Updating...' : 'Update Status'}
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         )}

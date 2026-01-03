@@ -5,9 +5,9 @@ import { storage } from '../utils/storage';
 // Local IP (Recommended for Physical Devices & Emulators on same network):
 
 
-// const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5003/v1';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5003/v1';
 // console.log('API URL:', BASE_URL);
-const BASE_URL = 'http://192.168.1.118:5003/v1';
+// const BASE_URL = 'http://192.168.1.118:5003/v1';
 
 // Backups
 // const BASE_URL = 'http://10.0.2.2:3000/v1'; // Android Emulator specific

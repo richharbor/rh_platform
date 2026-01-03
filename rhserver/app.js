@@ -115,6 +115,12 @@ app.use("/v1/rewards", platformRewardRoutes);
 const platformSupportRoutes = require("./platform/routes/supportRoutes");
 app.use("/v1/support", platformSupportRoutes);
 
+const platformContestRoutes = require("./platform/routes/contestRoutes");
+app.use("/v1/contests", platformContestRoutes);
+
+const platformNotificationRoutes = require("./platform/routes/notificationRoutes");
+app.use("/v1/notifications", platformNotificationRoutes);
+
 app.use("/v1", (req, res, next) => {
   console.log(`[V1 Debug] ${req.method} ${req.originalUrl}`);
   next();

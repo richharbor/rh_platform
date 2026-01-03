@@ -50,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         biometric_key: {
             type: DataTypes.STRING,
+        },
+        push_token: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     }, {
         tableName: 'users',

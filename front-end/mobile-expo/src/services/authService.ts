@@ -62,6 +62,10 @@ export const authService = {
         return hasHardware && isEnrolled;
     },
 
+    savePushToken: async (token: string) => {
+        return api.post('/notifications/push-token', { token });
+    },
+
     authenticateBiometric: async () => {
         const result = await LocalAuthentication.authenticateAsync({
             promptMessage: 'Unlock with FaceID / TouchID',

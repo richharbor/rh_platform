@@ -1,24 +1,32 @@
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useState, useCallback, useEffect } from 'react';
 import { rewardService } from '../../services/rewardService';
+import { contestService, Contest } from '../../services/contestService';
+import { ContestCard } from '../../components/ContestCard';
 import { ArrowUpRight, Clock, CheckCircle2, History, Trophy, Wallet } from 'lucide-react-native';
 
 export function WalletScreen() {
     const [stats, setStats] = useState({ totalEarned: 0, pending: 0, paid: 0 });
     const [transactions, setTransactions] = useState<any[]>([]);
+    const [contests, setContests] = useState<Contest[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [activeTab, setActiveTab] = useState<'history' | 'contests'>('history');
+    const [loadingContests, setLoadingContests] = useState(true);
+    const [activeTab, setActiveTab] = useState<'history' | 'contests'>('contests'); // Default to contests for testing per user focus
 
     const fetchData = async () => {
         try {
-            const [statsData, txData] = await Promise.all([
+            const [statsData, txData, contestsData] = await Promise.all([
                 rewardService.getWalletStats(),
-                rewardService.getTransactions()
+                rewardService.getTransactions(),
+                contestService.getMyStatus()
             ]);
             setStats(statsData);
             setTransactions(txData);
+            setContests(contestsData);
         } catch (error) {
             console.error("Wallet fetch error:", error);
+        } finally {
+            setLoadingContests(false);
         }
     };
 
@@ -81,38 +89,38 @@ export function WalletScreen() {
                 </View>
 
                 {/* Tabs */}
-            <View style={{ flexDirection: 'row', marginBottom: 24, backgroundColor: '#f3f4f6', padding: 4, borderRadius: 9999 }}>
+                <View style={{ flexDirection: 'row', marginBottom: 24, backgroundColor: '#f3f4f6', padding: 4, borderRadius: 9999 }}>
                     <TouchableOpacity
                         onPress={() => setActiveTab('history')}
-                    style={{
-                        flex: 1,
-                        paddingVertical: 8,
-                        borderRadius: 9999,
-                        alignItems: 'center',
-                        backgroundColor: activeTab === 'history' ? 'white' : 'transparent',
-                        shadowOpacity: activeTab === 'history' ? 0.1 : 0,
-                        shadowRadius: 2,
-                        shadowOffset: { width: 0, height: 1 },
-                        elevation: activeTab === 'history' ? 2 : 0
-                    }}
+                        style={{
+                            flex: 1,
+                            paddingVertical: 8,
+                            borderRadius: 9999,
+                            alignItems: 'center',
+                            backgroundColor: activeTab === 'history' ? 'white' : 'transparent',
+                            shadowOpacity: activeTab === 'history' ? 0.1 : 0,
+                            shadowRadius: 2,
+                            shadowOffset: { width: 0, height: 1 },
+                            elevation: activeTab === 'history' ? 2 : 0
+                        }}
                     >
-                    <Text style={{ fontWeight: '500', color: activeTab === 'history' ? '#111827' : '#6b7280' }}>Reward History</Text>
+                        <Text style={{ fontWeight: '500', color: activeTab === 'history' ? '#111827' : '#6b7280' }}>Reward History</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => setActiveTab('contests')}
-                    style={{
-                        flex: 1,
-                        paddingVertical: 8,
-                        borderRadius: 9999,
-                        alignItems: 'center',
-                        backgroundColor: activeTab === 'contests' ? 'white' : 'transparent',
-                        shadowOpacity: activeTab === 'contests' ? 0.1 : 0,
-                        shadowRadius: 2,
-                        shadowOffset: { width: 0, height: 1 },
-                        elevation: activeTab === 'contests' ? 2 : 0
-                    }}
+                        style={{
+                            flex: 1,
+                            paddingVertical: 8,
+                            borderRadius: 9999,
+                            alignItems: 'center',
+                            backgroundColor: activeTab === 'contests' ? 'white' : 'transparent',
+                            shadowOpacity: activeTab === 'contests' ? 0.1 : 0,
+                            shadowRadius: 2,
+                            shadowOffset: { width: 0, height: 1 },
+                            elevation: activeTab === 'contests' ? 2 : 0
+                        }}
                     >
-                    <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
+                        <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -147,10 +155,26 @@ export function WalletScreen() {
 
                 {/* Contests Tab */}
                 {activeTab === 'contests' && (
-                    <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                        <Trophy size={32} color="#fbbf24" />
-                        <Text className="text-gray-400 mt-3 font-medium text-lg">No active contests.</Text>
-                        <Text className="text-gray-400 text-sm">Check back soon for new challenges!</Text>
+                    <View>
+                        {loadingContests ? (
+                            <View className="items-center py-12">
+                                <Text className="text-gray-400">Loading contests...</Text>
+                            </View>
+                        ) : contests.length === 0 ? (
+                            <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                <Trophy size={32} color="#fbbf24" />
+                                <Text className="text-gray-400 mt-3 font-medium text-lg">No active contests.</Text>
+                                <Text className="text-gray-400 text-sm">Check back soon for new challenges!</Text>
+                            </View>
+                        ) : (
+                            contests.map(contest => (
+                                <ContestCard
+                                    key={contest.id}
+                                    contest={contest}
+                                    onClaimSuccess={onRefresh} // Reload to update status
+                                />
+                            ))
+                        )}
                     </View>
                 )}
             </ScrollView>

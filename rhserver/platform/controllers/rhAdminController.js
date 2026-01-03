@@ -89,7 +89,7 @@ const assignLead = async (req, res) => {
 const updateLeadInternalStatus = async (req, res) => {
     try {
         const { leadId } = req.params;
-        const { status, incentive_amount } = req.body;
+        const { status, incentive_amount, notifyUser } = req.body; // Added notifyUser
 
         const lead = await Lead.findByPk(leadId);
         if (!lead) return res.status(404).json({ error: "Lead not found" });
@@ -146,6 +146,16 @@ const updateLeadInternalStatus = async (req, res) => {
             if (existing && existing.status === 'pending') {
                 await existing.destroy();
                 console.log(`[INCENTIVE] Removed pending reward for Lead #${lead.id} due to Rejection`);
+            }
+        }
+
+        // Notification Logic
+        if (notifyUser) {
+            const user = await User.findByPk(lead.user_id, { attributes: ['id', 'push_token'] });
+            if (user && user.push_token) {
+                const title = "Lead Update 📢";
+                const body = `Your lead "${lead.name}" is now marked as ${status}.`;
+                await notificationService.sendPushNotification([user.id], title, body, { type: 'lead', leadId: leadId });
             }
         }
 
@@ -357,19 +367,37 @@ const inviteAdmin = async (req, res) => {
 };
 
 // Update Incentive (Amount/Status)
+const notificationService = require("../services/notificationService");
+
 const updateIncentive = async (req, res) => {
     try {
         const { id } = req.params;
-        const { amount, status, notes } = req.body;
+        const { status, notifyUser } = req.body; // Expect notifyUser boolean
 
-        const incentive = await Incentive.findByPk(id);
+        const incentive = await Incentive.findByPk(id, {
+            include: [{ model: User, as: 'partner', attributes: ['id', 'push_token'] }]
+        });
+
         if (!incentive) return res.status(404).json({ error: "Incentive not found" });
 
-        if (amount !== undefined) incentive.amount = amount;
-        if (status) incentive.status = status;
-        if (notes) incentive.notes = notes;
+        await incentive.update({ status });
 
-        await incentive.save();
+        // Notification
+        if (notifyUser && incentive.partner && incentive.partner.push_token) {
+            let title = "Incentive Update 💰";
+            let body = `Your incentive of ₹${incentive.amount} is now ${status}!`;
+
+            if (status === 'approved') body = `Great work! Your incentive of ₹${incentive.amount} has been Approved.`;
+            if (status === 'paid') body = `Ka-ching! ₹${incentive.amount} has been Paid to your account.`;
+
+            await notificationService.sendPushNotification(
+                [incentive.partner.id],
+                title,
+                body,
+                { type: 'incentive', incentiveId: id }
+            );
+        }
+
         res.json(incentive);
     } catch (error) {
         console.error("Update incentive error:", error);

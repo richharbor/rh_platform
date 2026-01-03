@@ -29,8 +29,9 @@ const authenticate = async (req, res, next) => {
         req.token = token;
         next();
     } catch (error) {
-        console.error("[Platform Auth Error]:", error.message);
-        res.status(401).json({ error: "Please authenticate" });
+        console.error("[Platform Auth Error]:", error.message, error.stack);
+        console.error("[Auth Debug] Token:", req.header("Authorization"));
+        res.status(401).json({ error: "Please authenticate", details: error.message });
     }
 };
 
