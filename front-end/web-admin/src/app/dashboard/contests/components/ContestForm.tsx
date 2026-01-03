@@ -24,6 +24,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
         termsAndConditions: "",
         isActive: true,
         targetType: "incentive",
+        notifyUsers: true,
         tiers: [],
         ...initialData
     });
@@ -181,7 +182,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
                                         type="checkbox"
                                         id="notifyUsers"
                                         className="w-4 h-4 text-blue-600 rounded"
-                                        // checked={formData.notifyUsers} 
+                                        checked={formData.notifyUsers} 
                                         // We need to add notifyUsers to state or handle it separately since it's not part of Contest model usually
                                         onChange={e => setFormData({ ...formData, notifyUsers: e.target.checked } as any)}
                                     />

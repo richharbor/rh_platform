@@ -20,28 +20,47 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header">
-                Admin
+        <aside className="fixed top-0 left-0 h-screen w-[250px] bg-white border-r border-slate-200 flex flex-col z-50">
+            <div className="h-16 flex items-center px-6 border-b border-slate-100">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                    Admin
+                </h1>
             </div>
-            <nav className="mt-4">
-                {menuItems.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === item.href ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
-                    >
-                        <item.icon size={20} />
-                        <span className="font-medium">{item.name}</span>
-                    </Link>
-                ))}
+
+            <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+                {menuItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`
+                                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group
+                                ${isActive
+                                    ? 'bg-slate-400 text-white shadow-sm'
+                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                }
+                            `}
+                        >
+                            <item.icon
+                                size={18}
+                                className={`transition-colors duration-200 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`}
+                                strokeWidth={2}
+                            />
+                            <span>{item.name}</span>
+                        </Link>
+                    );
+                })}
+            </nav>
+
+            <div className="p-4 border-t border-slate-100 mt-auto">
                 <button
                     onClick={postLogout}
-                    className="nav-link w-full text-left mt-8 text-red-400 hover:text-red-300"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors group"
                 >
-                    Logout
+                    <span className="flex-1 text-left">Logout</span>
                 </button>
-            </nav>
+            </div>
         </aside>
     );
 }

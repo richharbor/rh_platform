@@ -6,6 +6,7 @@ import SidePanel from '@/components/ui/SidePanel';
 // import Modal from '@/components/ui/Modal';
 
 import { settingsService } from '@/services/Settings/settingsService';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
@@ -448,131 +449,133 @@ export default function LeadsPage() {
 
             {
                 isCreateOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                            <div className="p-6 border-b flex justify-between items-center">
+                    <div onClick={() => setIsCreateOpen(false)} className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center p-4 z-50">
+                        <div onClick={(e) => e.stopPropagation()} className="bg-white flex flex-col rounded-xl shadow-xl max-w-xl w-full h-[90vh] overflow-hidden">
+                            <div className="p-6 border-b flex justify-between items-center bg-white z-10">
                                 <h2 className="text-xl font-bold">Create New Lead</h2>
                                 <button onClick={() => setIsCreateOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                             </div>
-                            <div className="p-6 space-y-4">
-                                {/* Basic Info */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="label">Client Name</label>
-                                        <input className="input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label className="label">City</label>
-                                        <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="label">Phone</label>
-                                        <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label className="label">Email</label>
-                                        <input className="input" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                                    </div>
-                                </div>
-
-                                {/* Product Type Selection */}
-                                <div>
-                                    <label className="label">Product Type</label>
-                                    <select className="input" value={formData.product_type} onChange={e => setFormData({ ...formData, product_type: e.target.value, product_details: {} })}>
-                                        <option value="Unlisted Shares">Unlisted Shares</option>
-                                        <option value="Pre-IPO">Pre-IPO</option>
-                                        <option value="Insurance">Insurance</option>
-                                        <option value="Loan">Loan</option>
-                                        <option value="generic">Generic / Other</option>
-                                        <option value="insurance">insurance</option>
-                                        <option value="loans">loans</option>
-                                        <option value="equity">equity</option>
-                                        <option value="unlisted">unlisted</option>
-                                        <option value="stocks">stocks</option>
-                                    </select>
-                                </div>
-
-                                {/* Dynamic Requirements */}
-                                <div className="p-4 bg-gray-50 rounded border">
-                                    <h4 className="font-bold text-sm mb-3 text-gray-700">Requirement Details</h4>
-                                    {(formData.product_type === 'Unlisted Shares' || formData.product_type === 'unlisted') && (
-                                        <div className="space-y-3">
-                                            <div>
-                                                <label className="text-xs font-semibold text-gray-500">Scrip Name / Company</label>
-                                                <input className="input" placeholder="e.g. Reliance Retail"
-                                                    value={formData.product_details.scripName || ''}
-                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="text-xs font-semibold text-gray-500">Quantity</label>
-                                                    <input className="input" type="number"
-                                                        value={formData.product_details.quantity || ''}
-                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-xs font-semibold text-gray-500">Target Price</label>
-                                                    <input className="input" type="number"
-                                                        value={formData.product_details.price || ''}
-                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {(formData.product_type === 'Insurance' || formData.product_type === 'insurance') && (
-                                        <div className="space-y-3">
-                                            <div>
-                                                <label className="text-xs font-semibold text-gray-500">Insurance Type</label>
-                                                <select className="input"
-                                                    value={formData.product_details.type || 'Health'}
-                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, type: e.target.value } })}
-                                                >
-                                                    <option value="Health">Health</option>
-                                                    <option value="Life">Life / Term</option>
-                                                    <option value="Motor">Motor</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="text-xs font-semibold text-gray-500">Sum Insured / Coverage</label>
-                                                <input className="input" placeholder="e.g. 1 Cr"
-                                                    value={formData.product_details.coverage || ''}
-                                                    onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, coverage: e.target.value } })}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {(!['Unlisted Shares', 'unlisted', 'Insurance', 'insurance'].includes(formData.product_type)) && (
+                            <ScrollArea className='flex-1 min-h-0'>
+                                <div className="p-6 space-y-4">
+                                    {/* Basic Info */}
+                                    <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-semibold text-gray-500">Description / Amount</label>
-                                            <textarea className="input h-20" placeholder="Enter details..."
-                                                value={formData.requirement}
-                                                onChange={e => setFormData({ ...formData, requirement: e.target.value })}
-                                            />
+                                            <label className="label">Client Name</label>
+                                            <input className="input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                                         </div>
-                                    )}
-                                </div>
+                                        <div>
+                                            <label className="label">City</label>
+                                            <input className="input" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="label">Phone</label>
+                                            <input className="input" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="label">Email</label>
+                                            <input className="input" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                                        </div>
+                                    </div>
 
-                                <button className="btn btn-primary w-full py-3" onClick={async () => {
-                                    setActionLoading(true);
-                                    try {
-                                        await createLead(formData);
-                                        alert('Lead created successfully');
-                                        setIsCreateOpen(false);
-                                        loadData();
-                                    } catch (e) {
-                                        alert('Failed to create lead');
-                                    } finally {
-                                        setActionLoading(false);
-                                    }
-                                }} disabled={actionLoading}>
-                                    {actionLoading ? 'Creating...' : 'Create Lead'}
-                                </button>
-                            </div>
+                                    {/* Product Type Selection */}
+                                    <div>
+                                        <label className="label">Product Type</label>
+                                        <select className="input" value={formData.product_type} onChange={e => setFormData({ ...formData, product_type: e.target.value, product_details: {} })}>
+                                            <option value="Unlisted Shares">Unlisted Shares</option>
+                                            <option value="Pre-IPO">Pre-IPO</option>
+                                            <option value="Insurance">Insurance</option>
+                                            <option value="Loan">Loan</option>
+                                            <option value="generic">Generic / Other</option>
+                                            <option value="insurance">insurance</option>
+                                            <option value="loans">loans</option>
+                                            <option value="equity">equity</option>
+                                            <option value="unlisted">unlisted</option>
+                                            <option value="stocks">stocks</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Dynamic Requirements */}
+                                    <div className="p-4 bg-gray-50 rounded border">
+                                        <h4 className="font-bold text-sm mb-3 text-gray-700">Requirement Details</h4>
+                                        {(formData.product_type === 'Unlisted Shares' || formData.product_type === 'unlisted') && (
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <label className="text-xs font-semibold text-gray-500">Scrip Name / Company</label>
+                                                    <input className="input" placeholder="e.g. Reliance Retail"
+                                                        value={formData.product_details.scripName || ''}
+                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Quantity</label>
+                                                        <input className="input" type="number"
+                                                            value={formData.product_details.quantity || ''}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Target Price</label>
+                                                        <input className="input" type="number"
+                                                            value={formData.product_details.price || ''}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {(formData.product_type === 'Insurance' || formData.product_type === 'insurance') && (
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <label className="text-xs font-semibold text-gray-500">Insurance Type</label>
+                                                    <select className="input"
+                                                        value={formData.product_details.type || 'Health'}
+                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, type: e.target.value } })}
+                                                    >
+                                                        <option value="Health">Health</option>
+                                                        <option value="Life">Life / Term</option>
+                                                        <option value="Motor">Motor</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-semibold text-gray-500">Sum Insured / Coverage</label>
+                                                    <input className="input" placeholder="e.g. 1 Cr"
+                                                        value={formData.product_details.coverage || ''}
+                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, coverage: e.target.value } })}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                        {(!['Unlisted Shares', 'unlisted', 'Insurance', 'insurance'].includes(formData.product_type)) && (
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">Description / Amount</label>
+                                                <textarea className="input h-20" placeholder="Enter details..."
+                                                    value={formData.requirement}
+                                                    onChange={e => setFormData({ ...formData, requirement: e.target.value })}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <button className="btn btn-primary w-full py-3" onClick={async () => {
+                                        setActionLoading(true);
+                                        try {
+                                            await createLead(formData);
+                                            alert('Lead created successfully');
+                                            setIsCreateOpen(false);
+                                            loadData();
+                                        } catch (e) {
+                                            alert('Failed to create lead');
+                                        } finally {
+                                            setActionLoading(false);
+                                        }
+                                    }} disabled={actionLoading}>
+                                        {actionLoading ? 'Creating...' : 'Create Lead'}
+                                    </button>
+                                </div>
+                            </ScrollArea>
                         </div>
                     </div>
                 )
