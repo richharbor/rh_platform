@@ -11,8 +11,7 @@ export function SplashScreen({ navigation }: AuthStackScreenProps<'Splash'>) {
   useEffect(() => {
     const checkNavigation = async () => {
       const hasSeen = await AsyncStorage.getItem('has_seen_onboarding');
-      // Force onboarding to show every time per user request
-      const nextRoute = 'OnboardingOne'; // hasSeen === 'true' ? 'Login' : 'OnboardingOne';
+      const nextRoute = hasSeen === 'true' ? 'Login' : 'OnboardingOne';
 
       const timer = setTimeout(() => {
         navigation.replace(nextRoute);
