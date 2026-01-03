@@ -51,11 +51,11 @@ export function OtpInput({ length = 6, value, onChange }: OtpInputProps) {
             }
             keyboardType="number-pad"
             maxLength={1}
-            cursorColor="#D946EF" // Brand color
+            cursorColor="#5b46ff" // Brand color
             selectionColor="#FDF4FF"
             className={`h-16 flex-1 rounded-2xl border bg-white text-center text-2xl font-bold ${isActive || isFilled
-                ? 'border-brand-500 text-brand-950 bg-brand-50/10'
-                : 'border-ink-200 text-ink-900'
+              ? 'border-brand-500 text-brand-950 bg-brand-50/10'
+              : 'border-ink-200 text-ink-900'
               }`}
             style={{
               // iOS shadow

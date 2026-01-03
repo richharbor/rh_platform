@@ -72,7 +72,6 @@ const PARTNER_FLOW: OnboardingFlow = {
                         'Private Equity / Structured Deals',
                         'Insurance (Life / Health / General)',
                         'Loans (Home, Business, LAP, etc.)',
-                        'Mutual Funds & Fixed Deposits',
                         'Not sure – want guidance'
                     ],
                     required: true
@@ -123,22 +122,22 @@ const PARTNER_FLOW: OnboardingFlow = {
                 }
             ]
         },
-        {
-            title: 'Connect',
-            questions: [
-                {
-                    id: 'connectPreference',
-                    type: 'select',
-                    question: 'Would you like our team to connect with you for a quick walkthrough?',
-                    options: [
-                        'Yes, please call me',
-                        'Yes, WhatsApp is fine',
-                        'Not now'
-                    ],
-                    required: true
-                }
-            ]
-        }
+        // {
+        //     title: 'Connect',
+        //     questions: [
+        //         {
+        //             id: 'connectPreference',
+        //             type: 'select',
+        //             question: 'Would you like our team to connect with you for a quick walkthrough?',
+        //             options: [
+        //                 'Yes, please call me',
+        //                 'Yes, WhatsApp is fine',
+        //                 'Not now'
+        //             ],
+        //             required: true
+        //         }
+        //     ]
+        // }
     ]
 };
 
