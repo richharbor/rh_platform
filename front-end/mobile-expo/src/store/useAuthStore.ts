@@ -34,6 +34,8 @@ interface AuthState {
     markOnboardingComplete: () => Promise<void>;
     markSignedUp: () => Promise<void>;
     enableBiometrics: () => Promise<boolean>;
+    syncPushToken: () => Promise<void>;
+    handleAppStateChange: (nextAppState: string) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -73,6 +75,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     // No biometrics or not enabled, just auto-login
                     set({ token, user, isAuthenticated: true, isLocked: false, accountType: type, isBiometricEnabled: false });
                 }
+
+                // Sync push token if pending
+                get().syncPushToken();
             }
         } catch (e) {
             console.error('Hydration failed', e);
@@ -102,6 +107,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             accountType: type,
             isBiometricEnabled: isBio
         });
+
+        // Sync token after login
+        get().syncPushToken();
     },
 
     logout: async () => {
@@ -151,5 +159,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             return true;
         }
         return false;
+    },
+
+    syncPushToken: async () => {
+        try {
+            const pendingToken = await AsyncStorage.getItem('expo_push_token');
+            const { user, isAuthenticated } = get();
+
+            if (pendingToken && isAuthenticated && user) {
+                console.log('[AuthStore] Syncing pending push token:', pendingToken);
+                await authService.savePushToken(pendingToken);
+                // We keep it in storage in case we need to re-sync or it changes, 
+                // but strictly speaking we could clear it if we tracked "synced" status.
+                // For now, idempotent value overwrites are fine.
+            }
+        } catch (error) {
+            console.error('[AuthStore] Failed to sync push token:', error);
+        }
+    },
+
+    handleAppStateChange: (nextAppState: string) => {
+        const { isBiometricEnabled, isAuthenticated, isLocked } = get();
+        if (nextAppState === 'background' && isAuthenticated && isBiometricEnabled && !isLocked) {
+            set({ isLocked: true });
+        }
     }
 }));

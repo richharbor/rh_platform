@@ -16,6 +16,8 @@ import { useAuthStore } from './src/store/useAuthStore';
 import "./global.css";
 import { LogBox } from 'react-native';
 
+import { AppState } from 'react-native';
+
 // Ignore specific warnings that are from dependencies (not our code)
 LogBox.ignoreLogs([
   "SafeAreaView has been deprecated",
@@ -23,12 +25,21 @@ LogBox.ignoreLogs([
 ]);
 
 function AppShell() {
-  const { isAppReady, hydrate } = useAuthStore();
+  const { isAppReady, hydrate, handleAppStateChange } = useAuthStore();
 
   useNotificationPermissionOnce();
 
   useEffect(() => {
     hydrate();
+
+    // AppState Listener for Biometric Lock
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      handleAppStateChange(nextAppState);
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   if (!isAppReady) {
