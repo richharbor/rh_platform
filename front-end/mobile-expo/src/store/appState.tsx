@@ -24,12 +24,14 @@ interface AppStateContextValue {
   isAuthenticated: boolean;
   accountType: AccountType;
   user: User | null;
+  productType: String | null;
   markOnboardingComplete: () => Promise<void>;
   markSignedUp: () => Promise<void>;
   setAccountType: (type: AccountType) => void;
   signIn: (token: string, user: User) => Promise<void>;
   signOut: () => Promise<void>;
   setUser: Dispatch<SetStateAction<User | null>>;
+  setProductType: Dispatch<SetStateAction<String | null>>;
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
@@ -45,6 +47,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>('Customer');
   const [user, setUser] = useState<User | null>(null);
+  const [productType, setProductType] = useState<String | null>(null);
 
   useEffect(() => {
     if (!bootstrap.isLoading) {
@@ -101,12 +104,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       isAuthenticated,
       accountType,
       user,
+      productType,
       markOnboardingComplete,
       markSignedUp,
       setAccountType,
       signIn,
       signOut,
       setUser,
+      setProductType,
     }),
     [
       bootstrap.isLoading,

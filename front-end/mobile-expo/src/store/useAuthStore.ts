@@ -22,6 +22,7 @@ interface AuthState {
     isLocked: boolean; // True if app is open but requires biometric unlock
 
     accountType: 'Customer' | 'Partner' | 'Referral Partner';
+    productType: string | null;
 
     // Actions
     hydrate: () => Promise<void>;
@@ -31,6 +32,7 @@ interface AuthState {
     setLocked: (locked: boolean) => void;
     updateUser: (user: User) => void;
     setAccountType: (type: 'Partner' | 'Customer' | 'Referral Partner') => void;
+    setProductType: (type: string | null) => void;
     markOnboardingComplete: () => Promise<void>;
     markSignedUp: () => Promise<void>;
     enableBiometrics: () => Promise<boolean>;
@@ -44,6 +46,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isAppReady: false,
     isLocked: false,
     accountType: 'Customer',
+    productType: null,
 
     hydrate: async () => {
         try {
@@ -125,6 +128,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 
     setAccountType: (type) => set({ accountType: type }),
+    setProductType: (type) => set({ productType: type }),
 
     markOnboardingComplete: async () => {
         // Just local state update for now or async storage if needed for logic not tied to user

@@ -3,6 +3,7 @@ import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicat
 import { useNavigation } from '@react-navigation/native';
 import { leadService, Lead } from '../../services/leadService';
 import { Search, Plus, Banknote, CreditCard, Shield, MoreHorizontal, FileText, ChevronRight, Calendar } from 'lucide-react-native';
+import { useAuthStore } from '../../store/useAuthStore';
 
 
 
@@ -87,6 +88,7 @@ export function LeadsScreen() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const { setProductType } = useAuthStore();
 
     const fetchLeads = async () => {
         try {
@@ -175,7 +177,7 @@ export function LeadsScreen() {
             {/* Floating Action Button */}
             <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={() => navigation.navigate('CreateLead')}
+                onPress={() => { navigation.navigate('CreateLead'); setProductType(null) }}
                 className="absolute bottom-6 right-6 h-14 w-14 bg-brand-500 rounded-full items-center justify-center shadow-lg shadow-gray-400"
             >
                 <Plus size={28} color="white" />

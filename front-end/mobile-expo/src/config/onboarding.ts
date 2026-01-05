@@ -108,18 +108,18 @@ const PARTNER_FLOW: OnboardingFlow = {
                     ],
                     required: true
                 },
-                {
-                    id: 'timeline',
-                    type: 'select',
-                    question: 'How soon would you like to start?',
-                    options: [
-                        'Immediately',
-                        'Within 30 days',
-                        'In 1–3 months',
-                        'Just exploring'
-                    ],
-                    required: true
-                }
+                // {
+                //     id: 'timeline',
+                //     type: 'select',
+                //     question: 'How soon would you like to start?',
+                //     options: [
+                //         'Immediately',
+                //         'Within 30 days',
+                //         'In 1–3 months',
+                //         'Just exploring'
+                //     ],
+                //     required: true
+                // }
             ]
         },
         // {

@@ -10,7 +10,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import type { AppStackScreenProps } from '../../navigation/types';
 
 export function HomeScreen({ navigation }: any) {
-  const { user, logout } = useAuthStore();
+  const { user, logout, setProductType } = useAuthStore();
 
   useEffect(() => {
     (async () => {
@@ -39,11 +39,11 @@ export function HomeScreen({ navigation }: any) {
   }, []);
 
   const QUICK_TILES = [
-    { title: 'Insurance', Icon: Shield, color: '#3b82f6' }, // blue-500
-    { title: 'Loans', Icon: Banknote, color: '#10b981' }, // emerald-500
-    { title: 'Funding', Icon: Rocket, color: '#8b5cf6' }, // violet-500
-    { title: 'Unlisted Shares', Icon: TrendingUp, color: '#f59e0b' }, // amber-500
-    { title: 'Bulk Stocks', Icon: BarChart3, color: '#ec4899' } // pink-500
+    { title: 'Insurance', Icon: Shield, color: '#3b82f6', id: 'insurance' }, // blue-500
+    { title: 'Loans', Icon: Banknote, color: '#10b981', id: 'loans' }, // emerald-500
+    { title: 'Funding', Icon: Rocket, color: '#8b5cf6', id: 'equity' }, // violet-500
+    { title: 'Unlisted Shares', Icon: TrendingUp, color: '#f59e0b', id: 'unlisted' }, // amber-500
+    { title: 'Bulk Stocks', Icon: BarChart3, color: '#ec4899', id: 'stocks' } // pink-500
   ];
 
   return (
@@ -68,7 +68,7 @@ export function HomeScreen({ navigation }: any) {
         {/* Create Lead Callout */}
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('CreateLead')}
+          onPress={() => { navigation.navigate('CreateLead'); setProductType(null) }}
           className="bg-brand-500 p-6 rounded-3xl mb-10 shadow-lg shadow-gray-200"
         >
           <View className="flex-row justify-between items-start">
@@ -92,7 +92,7 @@ export function HomeScreen({ navigation }: any) {
             <TouchableOpacity
               key={tile.title}
               className="w-[48%] bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex-col justify-between h-32"
-              onPress={() => navigation.navigate('CreateLead')}
+              onPress={() => { navigation.navigate('CreateLead'); setProductType(tile.id) }}
             >
               <View className="p-2.5 rounded-xl self-start bg-gray-50">
                 <tile.Icon size={24} color={tile.color} strokeWidth={2} />

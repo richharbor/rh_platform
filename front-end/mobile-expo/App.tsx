@@ -4,7 +4,7 @@ enableScreens(false); // Disable native screens to fix crashes on RN 0.81
 
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 
@@ -24,6 +24,7 @@ LogBox.ignoreLogs([
 
 function AppShell() {
   const { isAppReady, hydrate } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   useNotificationPermissionOnce();
 
@@ -39,7 +40,13 @@ function AppShell() {
     );
   }
 
-  return <RootNavigator />;
+
+
+  return (
+    <View style={{ flex: 1, paddingBottom: insets.bottom, backgroundColor: "white" }}>
+      <RootNavigator />
+    </View>
+  );
 }
 
 export default function App() {
