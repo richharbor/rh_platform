@@ -12,6 +12,7 @@ import { DynamicField } from '../../components/inputs/DynamicField';
 import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 import { COMMON_LEAD_FIELDS, PRODUCT_CATEGORIES, PRODUCT_FORMS, LeadField } from '../../config/leads';
 import { leadService } from '../../services/leadService';
+import { useAuthStore } from '../../store/useAuthStore';
 
 // Steps: 0=Basic, 1=Product, 2=Dynamic, 3=Review
 export function CreateLeadScreen() {
@@ -19,11 +20,17 @@ export function CreateLeadScreen() {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
-    const [productType, setProductType] = useState<string | null>(null);
+    const { productType, setProductType } = useAuthStore();
+
+    // Initialize mode based on entry state
+    const [isPreSelected] = useState(!!productType);
+    const TOTAL_STEPS = isPreSelected ? 3 : 4;
+
     const [consent, setConsent] = useState(false);
     const [showErrors, setShowErrors] = useState(false);
 
     // Alert State
+
 
 
     // Alert State
@@ -136,7 +143,15 @@ export function CreateLeadScreen() {
 
     const handleNext = () => {
         setShowErrors(true);
-        if (step === 0) {
+
+        const currentStepIndex = step; // 0, 1, 2, (3)
+        // Map current step to logic type
+        let isBasic = currentStepIndex === 0;
+        let isProduct = !isPreSelected && currentStepIndex === 1;
+        let isDynamic = (isPreSelected && currentStepIndex === 1) || (!isPreSelected && currentStepIndex === 2);
+        let isReview = (isPreSelected && currentStepIndex === 2) || (!isPreSelected && currentStepIndex === 3);
+
+        if (isBasic) {
             // Validate common
             const missing = COMMON_LEAD_FIELDS.filter(f => f.required && !data[f.id]);
             if (missing.length > 0) {
@@ -144,15 +159,15 @@ export function CreateLeadScreen() {
                 return;
             }
             setShowErrors(false);
-            setStep(1);
-        } else if (step === 1) {
+            setStep(step + 1);
+        } else if (isProduct) {
             if (!productType) {
                 showAlert("Product Required", "Please select a financial product to continue.", [], 'error');
                 return;
             }
             setShowErrors(false);
-            setStep(2);
-        } else if (step === 2) {
+            setStep(step + 1);
+        } else if (isDynamic) {
             // Validate dynamic
             if (productType && PRODUCT_FORMS[productType]) {
                 const fields = PRODUCT_FORMS[productType].filter(checkCondition);
@@ -163,8 +178,8 @@ export function CreateLeadScreen() {
                 }
             }
             setShowErrors(false);
-            setStep(3);
-        } else if (step === 3) {
+            setStep(step + 1);
+        } else if (isReview) {
             handleSubmit();
         }
     };
@@ -238,7 +253,7 @@ export function CreateLeadScreen() {
 
                 <View className="items-center">
                     <Text className="font-bold text-lg text-gray-900">New Lead</Text>
-                    <Text className="text-xs text-brand-600 font-medium tracking-wide">Step {step + 1} of 4</Text>
+                    <Text className="text-xs text-brand-600 font-medium tracking-wide">Step {step + 1} of {TOTAL_STEPS}</Text>
                 </View>
 
                 {/* Placeholder to balance the title */}
@@ -251,15 +266,20 @@ export function CreateLeadScreen() {
             >
                 <ScrollView contentContainerClassName="p-6 pb-6">
                     {step === 0 && renderBasicDetails()}
-                    {step === 1 && renderProductSelect()}
-                    {step === 2 && renderDynamicForm()}
-                    {step === 3 && renderReview()}
+
+                    {/* If pre-selected, Step 1 is Dynamic. Else Step 1 is Product, Step 2 is Dynamic */}
+                    {isPreSelected && step === 1 && renderDynamicForm()}
+                    {isPreSelected && step === 2 && renderReview()}
+
+                    {!isPreSelected && step === 1 && renderProductSelect()}
+                    {!isPreSelected && step === 2 && renderDynamicForm()}
+                    {!isPreSelected && step === 3 && renderReview()}
                 </ScrollView>
 
                 <View className="px-6 pt-3 pb-3 flex  bg-white border-t border-gray-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
                     <View className='ml-auto'>
                         <PrimaryButton
-                            label={loading ? "Submitting..." : step === 3 ? "Submit Lead" : "Next"}
+                            label={loading ? "Submitting..." : step === (TOTAL_STEPS - 1) ? "Submit Lead" : "Next"}
                             onPress={handleNext}
                             disabled={loading}
 
