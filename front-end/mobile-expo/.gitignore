@@ -11,3 +11,4 @@ yarn-error.log*
 coverage
 web-build
 dist
+google-services.json
