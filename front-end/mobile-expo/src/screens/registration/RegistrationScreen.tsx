@@ -26,7 +26,15 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
       try {
         const { step, data } = await authService.getOnboardingStatus();
         if (step > 0) {
-          setCurrentStepIndex(step);
+          // Ensure we don't go out of bounds
+          if (step < steps.length) {
+            setCurrentStepIndex(step);
+          } else {
+            // If server returns a step larger than what we have locally,
+            // it implies the user might be done or the config changed.
+            // We'll log it and stay at 0 or handle accordingly.
+            console.log('Server step out of bounds:', step, 'Max:', steps.length);
+          }
           if (data) setAnswers(data);
         }
       } catch (e) {
@@ -38,6 +46,8 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
 
   const handleNext = async () => {
     // Validation
+    if (!currentStep) return;
+
     for (const q of currentStep.questions) {
       if (q.required && !answers[q.id]) {
         Alert.alert("Missing Information", `Please answer: ${q.question}`);
@@ -163,6 +173,15 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
         return null;
     }
   };
+
+  // Guard: If currentStep is undefined (e.g. data fetching inconsistency), show loading or empty
+  if (!currentStep) {
+    return (
+      <View className="flex-1 items-center justify-center bg-ink-50">
+        <Text className="text-gray-500">Loading registration...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-ink-50">

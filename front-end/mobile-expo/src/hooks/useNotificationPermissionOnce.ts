@@ -59,11 +59,15 @@ export function useNotificationPermissionOnce() {
 
           console.log('Expo Push Token:', pushTokenString);
 
-          // 6. Sync to Backend
-          // We only do this if we are logged in. 
-          // Ideally this hook runs on a screen where we know user is likely logged in (like Home),
-          // or the API call gracefully fails/we retry later.
-          await authService.savePushToken(pushTokenString);
+          // 6. Save locally first
+          await AsyncStorage.setItem('expo_push_token', pushTokenString);
+
+          // 7. Try to sync immediately if we have a user (optional, but store handles it better)
+          // We can import the store outside the hook if needed, or just rely on the store's hydration/login actions.
+          // Ideally, we'd trigger the store action here if we could.
+
+          // For now, let's just log it. The authStore will pick it up on login/hydrate.
+          console.log('Push token saved locally for sync.');
 
         } catch (error) {
           console.log('Failed to get push token', error);
