@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { storageKeys } from '../utils/storageKeys';
 import { authService } from '../services/authService';
 
+// Configure handler to determine how notifications behave when app is foreground
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -15,6 +16,18 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
+// Explicitly set up the channel for Android
+async function setupAndroidChannel() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'Default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+}
 
 export function useNotificationPermissionOnce() {
   const hasPrompted = useRef(false);
@@ -34,6 +47,8 @@ export function useNotificationPermissionOnce() {
         // console.log('Must use physical device for Push Notifications');
         return;
       }
+
+      await setupAndroidChannel();
 
       // 3. Check existing permissions
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
