@@ -69,8 +69,10 @@ export function useNotificationPermissionOnce() {
           // For now, let's just log it. The authStore will pick it up on login/hydrate.
           console.log('Push token saved locally for sync.');
 
-        } catch (error) {
+        } catch (error: any) {
           console.log('Failed to get push token', error);
+          // Show error on device to help debug standalone build issues
+          Alert.alert("Push Token Error", error?.message || "Unknown error getting token");
         }
       } else {
         await AsyncStorage.setItem(storageKeys.notificationPermissionStatus, 'denied');

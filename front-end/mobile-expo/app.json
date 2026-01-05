@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B0B0F"
       },
-      "package": "com.rfin.app"
+      "package": "com.rfin.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
