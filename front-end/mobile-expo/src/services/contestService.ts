@@ -17,6 +17,9 @@ export interface Contest {
     startDate: string;
     endDate: string;
     bannerUrl: string;
+    fileUrl?: string;
+    productType?: string;
+    productSubType?: string;
     targetType: 'incentive' | 'premium' | 'leads_count';
     progress: {
         current: number;
@@ -24,6 +27,7 @@ export interface Contest {
     };
     tiers: ContestTier[];
     isCompleted: boolean;
+    isEligible?: boolean;
 }
 
 export const contestService = {

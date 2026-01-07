@@ -160,20 +160,53 @@ export function WalletScreen() {
                             <View className="items-center py-12">
                                 <Text className="text-gray-400">Loading contests...</Text>
                             </View>
-                        ) : contests.length === 0 ? (
-                            <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                <Trophy size={32} color="#fbbf24" />
-                                <Text className="text-gray-400 mt-3 font-medium text-lg">No active contests.</Text>
-                                <Text className="text-gray-400 text-sm">Check back soon for new challenges!</Text>
-                            </View>
                         ) : (
-                            contests.map(contest => (
-                                <ContestCard
-                                    key={contest.id}
-                                    contest={contest}
-                                    onClaimSuccess={onRefresh} // Reload to update status
-                                />
-                            ))
+                            (() => {
+                                const now = new Date();
+                                const activeContests = contests.filter(c => new Date(c.endDate) > now);
+                                const pastEligible = contests.filter(c => new Date(c.endDate) <= now && c.isEligible);
+
+                                const groupedActive = activeContests.reduce((acc, contest) => {
+                                    const type = contest.productType
+                                        ? contest.productType.charAt(0).toUpperCase() + contest.productType.slice(1) + ' Contests'
+                                        : 'General Contests';
+                                    if (!acc[type]) acc[type] = [];
+                                    acc[type].push(contest);
+                                    return acc;
+                                }, {} as Record<string, Contest[]>);
+
+                                return (
+                                    <View>
+                                        {/* Active Contests */}
+                                        {Object.entries(groupedActive).map(([type, typeContests]) => (
+                                            <View key={type} className="mb-6">
+                                                <Text className="text-xl font-bold text-gray-800 mb-3">{type}</Text>
+                                                {typeContests.map(contest => (
+                                                    <ContestCard key={contest.id} contest={contest} />
+                                                ))}
+                                            </View>
+                                        ))}
+
+                                        {/* Past Eligible Contests */}
+                                        {pastEligible.length > 0 && (
+                                            <View className="mb-6 pt-4 border-t border-gray-200">
+                                                <Text className="text-xl font-bold text-gray-800 mb-3">Past Eligible Contests</Text>
+                                                {pastEligible.map(contest => (
+                                                    <ContestCard key={contest.id} contest={contest} />
+                                                ))}
+                                            </View>
+                                        )}
+
+                                        {contests.length === 0 && (
+                                            <View className="items-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                                <Trophy size={32} color="#fbbf24" />
+                                                <Text className="text-gray-400 mt-3 font-medium text-lg">No active contests.</Text>
+                                                <Text className="text-gray-400 text-sm">Check back soon for new challenges!</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                );
+                            })()
                         )}
                     </View>
                 )}

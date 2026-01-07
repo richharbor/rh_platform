@@ -7,7 +7,7 @@ export const payoutService = {
     },
 
     updateIncentiveStatus: async (id: number, status: 'paid' | 'approved' | 'rejected') => {
-        const response = await PrivateAxios.patch(`/admin/incentives/${id}`, { status });
+        const response = await PrivateAxios.patch(`/admin/incentives/${id}`, { status, notifyUser: true });
         return response.data;
     }
 };

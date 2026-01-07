@@ -7,7 +7,7 @@ const notificationService = require("../services/notificationService");
 
 const createContest = async (req, res) => {
     try {
-        const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, notifyUsers } = req.body;
+        const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, notifyUsers, productType, productSubType, fileUrl } = req.body;
 
         const contest = await Contest.create({
             title,
@@ -17,7 +17,10 @@ const createContest = async (req, res) => {
             bannerUrl,
             termsAndConditions,
             targetType,
-            tiers // Expecting object/array
+            tiers, // Expecting object/array
+            productType,
+            productSubType,
+            fileUrl
         });
 
         if (notifyUsers) {
@@ -59,6 +62,106 @@ const deleteContest = async (req, res) => {
     }
 };
 
+const getEligibleUsers = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const contest = await Contest.findByPk(id);
+        if (!contest) return res.status(404).json({ error: "Contest not found" });
+
+        const { User } = require("../models");
+
+        const userIds = new Set();
+
+        if (contest.targetType === 'incentive') {
+            const incentives = await Incentive.findAll({
+                attributes: ['user_id'],
+                where: { status: ['approved', 'paid'] },
+                group: ['user_id']
+            });
+            incentives.forEach(i => userIds.add(i.user_id));
+        } else {
+            const leads = await Lead.findAll({
+                attributes: ['user_id'],
+                where: { status: 'Closed' },
+                group: ['user_id']
+            });
+            leads.forEach(l => userIds.add(l.user_id));
+        }
+
+        const eligibleUsers = [];
+
+        for (const userId of userIds) {
+            let currentAmount = 0;
+
+            if (contest.targetType === 'incentive') {
+                if (contest.productSubType) {
+                    const incentives = await Incentive.findAll({
+                        where: {
+                            user_id: userId,
+                            status: ['approved', 'paid'],
+                        },
+                        include: [{ model: Lead, as: 'lead' }]
+                    });
+
+                    currentAmount = incentives.reduce((sum, inc) => {
+                        if (inc.lead) {
+                            const pDetails = inc.lead.product_details || {};
+                            const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
+                            if (type && type === contest.productSubType) return sum + inc.amount;
+                        }
+                        return sum;
+                    }, 0);
+                } else {
+                    currentAmount = await Incentive.sum('amount', {
+                        where: {
+                            user_id: userId,
+                            status: ['approved', 'paid'],
+                        }
+                    }) || 0;
+                }
+            } else if (contest.targetType === 'leads_count') {
+                if (contest.productSubType) {
+                    const leads = await Lead.findAll({
+                        where: {
+                            user_id: userId,
+                            status: 'Closed',
+                        }
+                    });
+                    currentAmount = leads.filter(l => {
+                        const pDetails = l.product_details || {};
+                        const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
+                        return type === contest.productSubType;
+                    }).length;
+                } else {
+                    currentAmount = await Lead.count({
+                        where: {
+                            user_id: userId,
+                            status: 'Closed',
+                        }
+                    }) || 0;
+                }
+            }
+
+            const tiers = contest.tiers || [];
+            const unlockedTiers = tiers.filter(t => currentAmount >= t.minAmount);
+            if (unlockedTiers.length > 0) {
+                const user = await User.findByPk(userId, { attributes: ['id', 'name', 'email', 'phone'] });
+                if (user) {
+                    eligibleUsers.push({
+                        user,
+                        progress: currentAmount,
+                        unlockedTiers: unlockedTiers.map(t => t.name)
+                    });
+                }
+            }
+        }
+        res.json(eligibleUsers);
+    } catch (error) {
+        console.error("Get Eligible Users Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const getAdminContests = async (req, res) => {
     try {
         const contests = await Contest.findAll({ order: [['createdAt', 'DESC']] });
@@ -75,12 +178,14 @@ const getUserContests = async (req, res) => {
         const userId = req.user.id;
         const now = new Date();
 
-        // 1. Fetch Active Contests
+        // 1. Fetch Contests (Active + Recent Past)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
         const contests = await Contest.findAll({
             where: {
-                isActive: true,
-                // startDate: { [Op.lte]: now }, // Optionally hide future contests
-                // endDate: { [Op.gte]: now }   // Optionally hide past contests
+                // isActive: true, // We want past contests too
+                createdAt: { [Op.gte]: sixMonthsAgo }
             },
             include: [
                 {
@@ -90,7 +195,7 @@ const getUserContests = async (req, res) => {
                     required: false
                 }
             ],
-            order: [['endDate', 'ASC']]
+            order: [['endDate', 'DESC']]
         });
 
         const result = [];
@@ -100,26 +205,54 @@ const getUserContests = async (req, res) => {
             let currentAmount = 0;
 
             if (contest.targetType === 'incentive') {
-                // Sum approved incentives within date range
-                const incentives = await Incentive.sum('amount', {
-                    where: {
-                        user_id: userId,
-                        status: 'paid',
-                    }
-                });
-                currentAmount = incentives || 0;
+                if (contest.productSubType) {
+                    const incentives = await Incentive.findAll({
+                        where: {
+                            user_id: userId,
+                            status: ['approved', 'paid'],
+                        },
+                        include: [{ model: Lead, as: 'lead' }]
+                    });
+                    currentAmount = incentives.reduce((sum, inc) => {
+                        if (inc.lead) {
+                            const pDetails = inc.lead.product_details || {};
+                            const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
+                            if (type && type === contest.productSubType) return sum + inc.amount;
+                        }
+                        return sum;
+                    }, 0);
+                } else {
+                    const incentives = await Incentive.sum('amount', {
+                        where: {
+                            user_id: userId,
+                            status: ['approved', 'paid'],
+                        }
+                    });
+                    currentAmount = incentives || 0;
+                }
             } else if (contest.targetType === 'leads_count') {
-                // Count approved leads
-                const leads = await Lead.count({
-                    where: {
-                        userId, // Assuming lead.userId is the partner
-                        status: 'closed', // or whatever 'success' status is
-                    }
-                });
-                currentAmount = leads || 0;
+                if (contest.productSubType) {
+                    const leads = await Lead.findAll({
+                        where: {
+                            user_id: userId,
+                            status: 'Closed',
+                        }
+                    });
+                    currentAmount = leads.filter(l => {
+                        const pDetails = l.product_details || {};
+                        const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
+                        return type === contest.productSubType;
+                    }).length;
+                } else {
+                    const leads = await Lead.count({
+                        where: {
+                            user_id: userId,
+                            status: 'Closed',
+                        }
+                    });
+                    currentAmount = leads || 0;
+                }
             }
-            // For 'premium', we'd need a 'premium' column on Lead or Incentive table, which might not verify yet. 
-            // Defaulting to 0 if not supported.
 
             // 3. Process Tiers
             const tiers = Array.isArray(contest.tiers) ? contest.tiers : [];
@@ -137,21 +270,25 @@ const getUserContests = async (req, res) => {
 
             // 4. Determine Contest Status for UI (e.g. "Completed", "In Progress")
             const isCompleted = processedTiers.length > 0 && processedTiers.every(t => t.isUnlocked);
+            const isEligible = processedTiers.some(t => t.isUnlocked);
 
             result.push({
                 id: contest.id,
                 title: contest.title,
-                bannerUrl: contest.bannerUrl,
+                bannerUrl: contest.fileUrl || contest.bannerUrl,
                 description: contest.description,
                 startDate: contest.startDate,
                 endDate: contest.endDate,
                 targetType: contest.targetType,
+                productType: contest.productType,
+                productSubType: contest.productSubType,
                 progress: {
                     current: currentAmount,
                     target: Math.max(...tiers.map(t => t.minAmount), 0) // Max target from tiers
                 },
                 tiers: processedTiers,
-                isCompleted
+                isCompleted,
+                isEligible
             });
         }
 
@@ -227,5 +364,6 @@ module.exports = {
     deleteContest,
     getAdminContests,
     getUserContests,
-    claimReward
+    claimReward,
+    getEligibleUsers
 };

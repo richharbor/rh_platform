@@ -13,5 +13,6 @@ router.post('/', authenticateAdmin, contestController.createContest);
 router.put('/:id', authenticateAdmin, contestController.updateContest);
 router.delete('/:id', authenticateAdmin, contestController.deleteContest);
 router.get('/admin/all', authenticateAdmin, contestController.getAdminContests);
+router.get('/:id/eligible-users', authenticateAdmin, contestController.getEligibleUsers);
 
 module.exports = router;

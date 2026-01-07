@@ -9,6 +9,18 @@ module.exports = (sequelize, DataTypes) => {
       bannerUrl: { type: DataTypes.STRING },
       termsAndConditions: { type: DataTypes.TEXT },
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+      productType: {
+        type: DataTypes.STRING, // 'insurance', 'loans', 'equity', 'unlisted', 'stocks'
+        allowNull: true,
+      },
+      productSubType: {
+        type: DataTypes.STRING, // 'Health', 'Home', etc.
+        allowNull: true,
+      },
+      fileUrl: {
+        type: DataTypes.STRING, // S3 URL for poster
+        allowNull: true,
+      },
       targetType: {
         type: DataTypes.ENUM("incentive", "premium", "leads_count"),
         defaultValue: "incentive",

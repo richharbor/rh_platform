@@ -47,6 +47,14 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
         setTiers(newTiers);
     };
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
+        }
+    };
+
     const addTier = () => {
         setTiers([...tiers, { name: "", minAmount: 0, rewardDescription: "", segment: "All" }]);
     };
@@ -59,9 +67,16 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
         e.preventDefault();
         setSubmitting(true);
         try {
+            let uploadedUrl = formData.fileUrl;
+            if (selectedFile) {
+                uploadedUrl = await contestService.uploadPoster(selectedFile);
+            }
+
             const payload: Contest = {
                 ...formData as Contest,
-                tiers: tiers
+                tiers: tiers,
+                fileUrl: uploadedUrl,
+                bannerUrl: uploadedUrl || formData.bannerUrl || "" // Ensure string
             };
 
             if (isEditing && initialData?.id) {
@@ -139,20 +154,78 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
                                     onChange={e => setFormData({ ...formData, targetType: e.target.value as any })}
                                 >
                                     <option value="incentive">Incentive (Earnings)</option>
-                                    {/* <option value="leads_count">Leads Count</option> */}
+                                    <option value="leads_count">Leads Count</option>
                                 </select>
-                                <p className="text-xs text-slate-500 mt-1">Currently supporting Incentive/Earnings based targets only.</p>
                             </div>
-                            <div className="col-span-2">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Banner URL</label>
-                                <input
-                                    type="text"
+
+                            {/* Product Type Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Product Category</label>
+                                <select
                                     className="w-full border border-slate-300 rounded-lg p-2"
-                                    placeholder="https://..."
-                                    value={formData.bannerUrl}
-                                    onChange={e => setFormData({ ...formData, bannerUrl: e.target.value })}
-                                />
+                                    value={formData.productType || ''}
+                                    onChange={e => setFormData({ ...formData, productType: e.target.value, productSubType: '' })}
+                                >
+                                    <option value="">All Categories</option>
+                                    <option value="insurance">Insurance</option>
+                                    <option value="loans">Loans</option>
+                                    <option value="equity">Private Equity / Funding</option>
+                                    <option value="unlisted">Unlisted Shares</option>
+                                    <option value="stocks">Bulk Listed Stock Deals</option>
+                                </select>
                             </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Product Sub-Type</label>
+                                <select
+                                    className="w-full border border-slate-300 rounded-lg p-2"
+                                    value={formData.productSubType || ''}
+                                    onChange={e => setFormData({ ...formData, productSubType: e.target.value })}
+                                    disabled={!formData.productType}
+                                >
+                                    <option value="">All / Generic</option>
+                                    {formData.productType === 'insurance' && (
+                                        <>
+                                            <option value="Life">Life</option>
+                                            <option value="Health">Health</option>
+                                            <option value="Motor">Motor</option>
+                                            <option value="General">General</option>
+                                        </>
+                                    )}
+                                    {formData.productType === 'loans' && (
+                                        <>
+                                            <option value="Home">Home</option>
+                                            <option value="Personal">Personal</option>
+                                            <option value="Business">Business</option>
+                                            <option value="Mortgage">Mortgage</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Car">Car</option>
+                                            <option value="Machinery">Machinery</option>
+                                            <option value="WC">Working Capital</option>
+                                            <option value="Construction">Construction</option>
+                                            <option value="Project Finance">Project Finance</option>
+                                            <option value="RBF">RBF</option>
+                                            <option value="FTL">FTL</option>
+                                            <option value="Channel Financing">Channel Financing</option>
+                                        </>
+                                    )}
+                                    {/* Add other subtypes if needed */}
+                                </select>
+                            </div>
+
+                            <div className="col-span-2">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Contest Poster / Banner (Image)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="w-full border border-slate-300 rounded-lg p-2"
+                                    onChange={handleFileChange}
+                                />
+                                {formData.fileUrl && (
+                                    <p className="text-xs text-green-600 mt-1">Current Poster: <a href={formData.fileUrl} target="_blank" className="underline">View</a></p>
+                                )}
+                            </div>
+
                             <div className="col-span-2">
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
                                 <textarea
@@ -182,7 +255,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
                                         type="checkbox"
                                         id="notifyUsers"
                                         className="w-4 h-4 text-blue-600 rounded"
-                                        checked={formData.notifyUsers} 
+                                        checked={formData.notifyUsers}
                                         // We need to add notifyUsers to state or handle it separately since it's not part of Contest model usually
                                         onChange={e => setFormData({ ...formData, notifyUsers: e.target.checked } as any)}
                                     />

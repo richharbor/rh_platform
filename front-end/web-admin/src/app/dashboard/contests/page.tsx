@@ -1,15 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trophy, Calendar, Users, Edit, Trash2 } from "lucide-react";
 import { contestService, Contest } from "@/services/Contest/contestService";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
+import SidePanel from "@/components/ui/SidePanel";
+
+interface EligibleUser {
+    user: { id: number; name: string; email: string; phone: string };
+    progress: number;
+    unlockedTiers: string[];
+}
 
 export default function ContestsPage() {
     const router = useRouter();
     const [contests, setContests] = useState<Contest[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
+    const [eligibleUsers, setEligibleUsers] = useState<EligibleUser[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
 
     useEffect(() => {
         loadContests();
@@ -39,6 +50,21 @@ export default function ContestsPage() {
         }
     };
 
+    const handleViewEligible = async (contest: Contest) => {
+        setSelectedContest(contest);
+        setLoadingUsers(true);
+        setEligibleUsers([]);
+        try {
+            const users = await contestService.getEligibleUsers(contest.id!);
+            setEligibleUsers(users);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load eligible users");
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-slate-50">
             <Header title="Contests" description="Manage sales contests and rewards" />
@@ -65,6 +91,7 @@ export default function ContestsPage() {
                                     <th className="px-6 py-4">Title</th>
                                     <th className="px-6 py-4">Duration</th>
                                     <th className="px-6 py-4">Target Type</th>
+                                    <th className="px-6 py-4">Category</th>
                                     <th className="px-6 py-4">Status</th>
                                     <th className="px-6 py-4">Rewards</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
@@ -95,6 +122,12 @@ export default function ContestsPage() {
                                             <span className="capitalize px-2 py-1 bg-slate-100 rounded text-xs">{contest.targetType}</span>
                                         </td>
                                         <td className="px-6 py-4">
+                                            <div className="flex flex-col text-xs">
+                                                <span className="font-medium capitalize">{contest.productType || 'All'}</span>
+                                                <span className="text-slate-400 capitalize">{contest.productSubType || 'All'}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded text-xs font-medium ${contest.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {contest.isActive ? 'Active' : 'Inactive'}
                                             </span>
@@ -104,6 +137,12 @@ export default function ContestsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleViewEligible(contest)}
+                                                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition"
+                                                >
+                                                    <Users size={14} /> Eligible
+                                                </button>
                                                 <button
                                                     onClick={() => router.push(`/dashboard/contests/edit/${contest.id}`)}
                                                     className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded"
@@ -127,6 +166,76 @@ export default function ContestsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Eligible Users Side Panel */}
+            <SidePanel
+                isOpen={!!selectedContest}
+                onClose={() => setSelectedContest(null)}
+                title={`Eligible Users: ${selectedContest?.title}`}
+            >
+                <div className="space-y-8">
+                    <p className="text-sm text-slate-500 mb-4">
+                        {loadingUsers ? "Calculating eligibility..." : `${eligibleUsers.length} users have qualified for rewards.`}
+                    </p>
+
+                    {loadingUsers ? (
+                        <div className="flex justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : eligibleUsers.length === 0 ? (
+                        <div className="bg-slate-100 p-8 rounded-lg text-center text-slate-500 text-sm">
+                            No users have met the targets yet.
+                        </div>
+                    ) : (
+                        // Group by Tiers (Display highest tier first)
+                        (selectedContest?.tiers || [])
+                            .slice() // Create a copy before sorting
+                            .sort((a, b) => b.minAmount - a.minAmount) // Highest amount first
+                            .map((tier) => {
+                                // Find users who have unlocked THIS tier
+                                const usersInTier = eligibleUsers.filter(u => u.unlockedTiers.includes(tier.name));
+                                if (usersInTier.length === 0) return null;
+
+                                return (
+                                    <div key={tier.name} className="border border-slate-200 rounded-lg overflow-hidden">
+                                        <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-800">{tier.name}</h3>
+                                                <span className="text-xs text-slate-500">Target: ₹{tier.minAmount.toLocaleString()}</span>
+                                            </div>
+                                            <span className="text-xs font-medium bg-white px-2 py-1 rounded border border-slate-200 shadow-sm text-slate-600">
+                                                {usersInTier.length} Eligible
+                                            </span>
+                                        </div>
+
+                                        <table className="w-full text-left text-sm text-slate-600">
+                                            <thead className="bg-white border-b border-slate-100 font-medium text-slate-500 text-xs uppercase tracking-wider">
+                                                <tr>
+                                                    <th className="px-4 py-2">User</th>
+                                                    <th className="px-4 py-2">Contact</th>
+                                                    <th className="px-4 py-2 text-right">Progress</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-50">
+                                                {usersInTier.map((item, idx) => (
+                                                    <tr key={idx} className="hover:bg-slate-50">
+                                                        <td className="px-4 py-2 font-medium text-slate-800">{item.user.name}</td>
+                                                        <td className="px-4 py-2 font-mono text-xs text-slate-500">
+                                                            {item.user.phone || item.user.email || '-'}
+                                                        </td>
+                                                        <td className="px-4 py-2 text-right font-semibold text-green-600">
+                                                            ₹{item.progress.toLocaleString()}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                );
+                            })
+                    )}
+                </div>
+            </SidePanel>
         </div>
     );
 }
