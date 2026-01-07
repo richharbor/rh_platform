@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "375917098988",
-    "project_id": "rfin-dc5ca",
-    "storage_bucket": "rfin-dc5ca.firebasestorage.app"
+    "project_number": "800769269564",
+    "project_id": "rfin-mobile",
+    "storage_bucket": "rfin-mobile.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:375917098988:android:cc96f8f28ea934495eb2c9",
+        "mobilesdk_app_id": "1:800769269564:android:04c67bbdb3034443288839",
         "android_client_info": {
           "package_name": "com.rfin.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB9byOkHVcJaylehW7FLe-qc-ysK7FTPfA"
+          "current_key": "AIzaSyCQ9M52K2CXBiQV82EEE99NgKw8l9yc_QA"
         }
       ],
       "services": {

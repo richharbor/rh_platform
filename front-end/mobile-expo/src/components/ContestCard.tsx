@@ -19,9 +19,12 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onClaimSucces
             Alert.alert("Error", "Failed to claim reward.");
         }
     };
-
+    console.log("Contest: ", contest);
     const progressPercent = Math.min((contest.progress.current / contest.progress.target) * 100, 100);
 
+    console.log("Progress Percent: ", progressPercent);
+    console.log("Progress Current: ", contest.progress.current);
+    console.log("Progress Target: ", contest.progress.target);
     return (
         <View className="bg-white rounded-xl mb-4 overflow-hidden shadow-sm border border-gray-100">
             {/* Banner */}

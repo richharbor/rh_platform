@@ -38,6 +38,8 @@ const sendPushNotification = async (userIds, title, body, data = {}) => {
                 title: title,
                 body: body,
                 data: { ...data, userId: user.id },
+                channelId: 'default', // explicit channel for Android
+                priority: 'high',     // ensure heads-up display
             });
         }
 
@@ -83,7 +85,9 @@ const broadcastNotification = async (title, body, data = {}) => {
             sound: 'default',
             title,
             body,
-            data
+            data,
+            channelId: 'default',
+            priority: 'high'
         }));
 
         const chunks = expo.chunkPushNotifications(messages);

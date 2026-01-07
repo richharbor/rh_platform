@@ -1,9 +1,10 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { User, Otp } = require("../models"); // Uses platform/models/index.js
+const { User } = require("../models"); // Uses platform/models/index.js
 const awsService = require("../services/awsService");
 const { sendEmail } = require("../services/emailService");
+const redisClient = require("../config/redis");
 
 const generateToken = (user) => {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET must be defined");
@@ -45,20 +46,16 @@ const requestOtp = async (req, res) => {
 
         // Generate OTP
         const code = crypto.randomInt(100000, 999999).toString();
-        // In prod hash this code
-        const code_hash = code;
+
+        // Store in Redis (Key: otp:purpose:identifier, TTL: 600s/300s)
+        const redisKey = `otp:${purpose}:${identifier}`;
+        const ttl = type === "email" ? 600 : 300; // 10 mins email, 5 mins SMS
+
+        await redisClient.setex(redisKey, ttl, code);
 
         // Send OTP
         if (type === "email") {
             console.log(`Email OTP to ${identifier}: ${code}`);
-
-            await Otp.create({
-                email: identifier,
-                phone: null,
-                code_hash,
-                purpose,
-                expires_at: new Date(Date.now() + 10 * 60000),
-            });
 
             const subject = `${code} is your Rich Harbor verification code`;
             const htmlContent = `
@@ -66,7 +63,7 @@ const requestOtp = async (req, res) => {
                     <h2>Verification Code</h2>
                     <p>Use the following code to login or sign up to Rich Harbor Platform:</p>
                     <h1 style="color: #5b46ff; letter-spacing: 5px;">${code}</h1>
-                    <p>This code will expire in 10 minutes.</p>
+                    <p>This code will expire in ${ttl / 60} minutes.</p>
                 </div>
             `;
 
@@ -75,14 +72,6 @@ const requestOtp = async (req, res) => {
             console.log(`SMS OTP to ${identifier}: ${code}`);
             // Pass the controller-generated code to the service
             const snsResult = await awsService.sendSnsOtp(identifier, code);
-
-            await Otp.create({
-                phone: identifier,
-                email: null,
-                code_hash,
-                purpose,
-                expires_at: new Date(Date.now() + 5 * 60000),
-            });
         }
 
         res.json({ message: "OTP sent successfully", type });
@@ -103,23 +92,15 @@ const verifyOtp = async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        // Find OTP record
-        const query = { purpose };
+        const redisKey = `otp:${purpose}:${identifier}`;
+        const storedOtp = await redisClient.get(redisKey);
 
-        if (type === "email") {
-            query.email = identifier;
-        } else {
-            query.phone = identifier;
-        }
-
-        const record = await Otp.findOne({
-            where: query,
-            order: [["createdAt", "DESC"]],
-        });
-
-        if (!record || record.code_hash !== otp || new Date() > record.expires_at) {
+        if (!storedOtp || storedOtp !== otp) {
             return res.status(400).json({ error: "Invalid or expired code" });
         }
+
+        // Delete OTP after successful verification (optional, but good practice to prevent reuse)
+        await redisClient.del(redisKey);
 
         // OTP Valid
         if (purpose === "login") {

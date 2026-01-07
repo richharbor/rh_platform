@@ -104,10 +104,7 @@ const getUserContests = async (req, res) => {
                 const incentives = await Incentive.sum('amount', {
                     where: {
                         user_id: userId,
-                        status: 'approved',
-                        createdAt: {
-                            [Op.between]: [contest.startDate, contest.endDate]
-                        }
+                        status: 'paid',
                     }
                 });
                 currentAmount = incentives || 0;
@@ -117,9 +114,6 @@ const getUserContests = async (req, res) => {
                     where: {
                         userId, // Assuming lead.userId is the partner
                         status: 'closed', // or whatever 'success' status is
-                        createdAt: {
-                            [Op.between]: [contest.startDate, contest.endDate]
-                        }
                     }
                 });
                 currentAmount = leads || 0;
@@ -184,13 +178,19 @@ const claimReward = async (req, res) => {
             const incentives = await Incentive.sum('amount', {
                 where: {
                     user_id: userId,
-                    status: 'approved',
-                    createdAt: { [Op.between]: [contest.startDate, contest.endDate] }
+                    status: ['approved', 'paid']
                 }
             });
             currentAmount = incentives || 0;
+        } else if (contest.targetType === 'leads_count') {
+            const leads = await Lead.count({
+                where: {
+                    user_id: userId,
+                    status: 'Closed' // Use the correct Enum value 'Closed'
+                }
+            });
+            currentAmount = leads || 0;
         }
-        // ... add other types if needed
 
         const tier = (contest.tiers || []).find(t => t.name === tierName);
         if (!tier) return res.status(400).json({ error: "Tier not found" });

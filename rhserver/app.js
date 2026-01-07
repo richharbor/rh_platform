@@ -38,6 +38,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Rate Limiter
+const { globalLimiter } = require("./platform/middleware/rateLimiter");
+app.use(globalLimiter);
+
 // Test route
 app.get("/", (req, res) => {
   res.json({ message: "Hello World! Backend is running." });

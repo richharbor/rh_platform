@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const bootstrapAdmin = async () => {
     try {
         const adminEmail = process.env.ADMIN_EMAIL || "admin@rhinontech.com";
-        const adminPass = process.env.ADMIN_PASSWORD || "admin123";
+        const adminPass = process.env.ADMIN_PASSWORD || "1q2w3e";
 
         const existing = await User.findOne({ where: { email: adminEmail } });
         if (!existing) {
