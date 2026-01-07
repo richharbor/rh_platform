@@ -8,19 +8,19 @@ const notificationService = require("../services/notificationService");
 const createContest = async (req, res) => {
     try {
         const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, notifyUsers, productType, productSubType, fileUrl } = req.body;
-
+        // Map to snake_case for model
         const contest = await Contest.create({
             title,
             description,
-            startDate,
-            endDate,
-            bannerUrl,
-            termsAndConditions,
-            targetType,
+            start_date: startDate,
+            end_date: endDate,
+            banner_url: bannerUrl,
+            terms_and_conditions: termsAndConditions,
+            target_type: targetType,
             tiers, // Expecting object/array
-            productType,
-            productSubType,
-            fileUrl
+            product_type: productType,
+            product_sub_type: productSubType,
+            file_url: fileUrl
         });
 
         if (notifyUsers) {
@@ -72,7 +72,7 @@ const getEligibleUsers = async (req, res) => {
 
         const userIds = new Set();
 
-        if (contest.targetType === 'incentive') {
+        if (contest.target_type === 'incentive') {
             const incentives = await Incentive.findAll({
                 attributes: ['user_id'],
                 where: { status: ['approved', 'paid'] },
@@ -93,8 +93,8 @@ const getEligibleUsers = async (req, res) => {
         for (const userId of userIds) {
             let currentAmount = 0;
 
-            if (contest.targetType === 'incentive') {
-                if (contest.productSubType) {
+            if (contest.target_type === 'incentive') {
+                if (contest.product_sub_type) {
                     const incentives = await Incentive.findAll({
                         where: {
                             user_id: userId,
@@ -107,7 +107,7 @@ const getEligibleUsers = async (req, res) => {
                         if (inc.lead) {
                             const pDetails = inc.lead.product_details || {};
                             const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
-                            if (type && type === contest.productSubType) return sum + inc.amount;
+                            if (type && type === contest.product_sub_type) return sum + inc.amount;
                         }
                         return sum;
                     }, 0);
@@ -119,8 +119,8 @@ const getEligibleUsers = async (req, res) => {
                         }
                     }) || 0;
                 }
-            } else if (contest.targetType === 'leads_count') {
-                if (contest.productSubType) {
+            } else if (contest.target_type === 'leads_count') {
+                if (contest.product_sub_type) {
                     const leads = await Lead.findAll({
                         where: {
                             user_id: userId,
@@ -130,7 +130,7 @@ const getEligibleUsers = async (req, res) => {
                     currentAmount = leads.filter(l => {
                         const pDetails = l.product_details || {};
                         const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
-                        return type === contest.productSubType;
+                        return type === contest.product_sub_type;
                     }).length;
                 } else {
                     currentAmount = await Lead.count({
@@ -204,8 +204,8 @@ const getUserContests = async (req, res) => {
             // 2. Calculate Progress
             let currentAmount = 0;
 
-            if (contest.targetType === 'incentive') {
-                if (contest.productSubType) {
+            if (contest.target_type === 'incentive') {
+                if (contest.product_sub_type) {
                     const incentives = await Incentive.findAll({
                         where: {
                             user_id: userId,
@@ -217,7 +217,7 @@ const getUserContests = async (req, res) => {
                         if (inc.lead) {
                             const pDetails = inc.lead.product_details || {};
                             const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
-                            if (type && type === contest.productSubType) return sum + inc.amount;
+                            if (type && type === contest.product_sub_type) return sum + inc.amount;
                         }
                         return sum;
                     }, 0);
@@ -230,8 +230,8 @@ const getUserContests = async (req, res) => {
                     });
                     currentAmount = incentives || 0;
                 }
-            } else if (contest.targetType === 'leads_count') {
-                if (contest.productSubType) {
+            } else if (contest.target_type === 'leads_count') {
+                if (contest.product_sub_type) {
                     const leads = await Lead.findAll({
                         where: {
                             user_id: userId,
@@ -241,7 +241,7 @@ const getUserContests = async (req, res) => {
                     currentAmount = leads.filter(l => {
                         const pDetails = l.product_details || {};
                         const type = pDetails.loanType || pDetails.insuranceType || pDetails.productType;
-                        return type === contest.productSubType;
+                        return type === contest.product_sub_type;
                     }).length;
                 } else {
                     const leads = await Lead.count({
@@ -272,16 +272,19 @@ const getUserContests = async (req, res) => {
             const isCompleted = processedTiers.length > 0 && processedTiers.every(t => t.isUnlocked);
             const isEligible = processedTiers.some(t => t.isUnlocked);
 
+            // Map back to camelCase for Frontend consistency (or should I change frontend?)
+            // The user said "update model and code", imply frontend update. 
+            // I will return snake_case to be consistent with the backend model.
             result.push({
                 id: contest.id,
                 title: contest.title,
-                bannerUrl: contest.fileUrl || contest.bannerUrl,
+                bannerUrl: contest.file_url || contest.banner_url,
                 description: contest.description,
-                startDate: contest.startDate,
-                endDate: contest.endDate,
-                targetType: contest.targetType,
-                productType: contest.productType,
-                productSubType: contest.productSubType,
+                startDate: contest.start_date,
+                endDate: contest.end_date,
+                targetType: contest.target_type,
+                productType: contest.product_type,
+                productSubType: contest.product_sub_type,
                 progress: {
                     current: currentAmount,
                     target: Math.max(...tiers.map(t => t.minAmount), 0) // Max target from tiers
@@ -311,7 +314,7 @@ const claimReward = async (req, res) => {
         // 1. Verify Eligibility
         // Re-calculate progress to be safe (prevent API abuse)
         let currentAmount = 0;
-        if (contest.targetType === 'incentive') {
+        if (contest.target_type === 'incentive') {
             const incentives = await Incentive.sum('amount', {
                 where: {
                     user_id: userId,
@@ -319,7 +322,7 @@ const claimReward = async (req, res) => {
                 }
             });
             currentAmount = incentives || 0;
-        } else if (contest.targetType === 'leads_count') {
+        } else if (contest.target_type === 'leads_count') {
             const leads = await Lead.count({
                 where: {
                     user_id: userId,

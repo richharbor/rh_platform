@@ -4,24 +4,24 @@ module.exports = (sequelize, DataTypes) => {
     {
       title: { type: DataTypes.STRING, allowNull: false },
       description: { type: DataTypes.TEXT },
-      startDate: { type: DataTypes.DATE, allowNull: false },
-      endDate: { type: DataTypes.DATE, allowNull: false },
-      bannerUrl: { type: DataTypes.STRING },
-      termsAndConditions: { type: DataTypes.TEXT },
-      isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-      productType: {
+      start_date: { type: DataTypes.DATE, allowNull: false },
+      end_date: { type: DataTypes.DATE, allowNull: false },
+      banner_url: { type: DataTypes.STRING },
+      terms_and_conditions: { type: DataTypes.TEXT },
+      is_active: { type: DataTypes.BOOLEAN, defaultValue: true },
+      product_type: {
         type: DataTypes.STRING, // 'insurance', 'loans', 'equity', 'unlisted', 'stocks'
         allowNull: true,
       },
-      productSubType: {
+      product_sub_type: {
         type: DataTypes.STRING, // 'Health', 'Home', etc.
         allowNull: true,
       },
-      fileUrl: {
+      file_url: {
         type: DataTypes.STRING, // S3 URL for poster
         allowNull: true,
       },
-      targetType: {
+      target_type: {
         type: DataTypes.ENUM("incentive", "premium", "leads_count"),
         defaultValue: "incentive",
       },
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Contest.associate = function (models) {
     Contest.hasMany(models.UserContestReward, {
-      foreignKey: "contestId",
+      foreignKey: "contest_id",
       as: "rewards",
     });
   };
