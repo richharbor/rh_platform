@@ -7,7 +7,7 @@ const notificationService = require("../services/notificationService");
 
 const createContest = async (req, res) => {
     try {
-        const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, notifyUsers, productType, productSubType, fileUrl } = req.body;
+        const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, notifyUsers, productType, productSubType } = req.body;
         // Map to snake_case for model
         const contest = await Contest.create({
             title,
@@ -19,8 +19,8 @@ const createContest = async (req, res) => {
             target_type: targetType,
             tiers, // Expecting object/array
             product_type: productType,
-            product_sub_type: productSubType,
-            file_url: fileUrl
+            product_sub_type: productSubType
+            // file_url removed, use banner_url
         });
 
         if (notifyUsers) {
@@ -164,7 +164,7 @@ const getEligibleUsers = async (req, res) => {
 
 const getAdminContests = async (req, res) => {
     try {
-        const contests = await Contest.findAll({ order: [['createdAt', 'DESC']] });
+        const contests = await Contest.findAll({ order: [['created_at', 'DESC']] });
         res.json(contests);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -185,17 +185,17 @@ const getUserContests = async (req, res) => {
         const contests = await Contest.findAll({
             where: {
                 // isActive: true, // We want past contests too
-                createdAt: { [Op.gte]: sixMonthsAgo }
+                created_at: { [Op.gte]: sixMonthsAgo }
             },
             include: [
                 {
                     model: UserContestReward,
                     as: 'rewards',
-                    where: { userId },
+                    where: { user_id: userId },
                     required: false
                 }
             ],
-            order: [['endDate', 'DESC']]
+            order: [['end_date', 'DESC']]
         });
 
         const result = [];
@@ -258,13 +258,13 @@ const getUserContests = async (req, res) => {
             const tiers = Array.isArray(contest.tiers) ? contest.tiers : [];
             const processedTiers = tiers.map(tier => {
                 const isUnlocked = currentAmount >= tier.minAmount;
-                const claimedRecord = contest.rewards.find(r => r.tierName === tier.name);
+                const claimedRecord = contest.rewards.find(r => r.tier_name === tier.name);
 
                 return {
                     ...tier,
                     isUnlocked,
                     isClaimed: !!claimedRecord,
-                    claimedAt: claimedRecord ? claimedRecord.claimedAt : null
+                    claimedAt: claimedRecord ? claimedRecord.claimed_at : null
                 };
             });
 
@@ -278,7 +278,7 @@ const getUserContests = async (req, res) => {
             result.push({
                 id: contest.id,
                 title: contest.title,
-                bannerUrl: contest.file_url || contest.banner_url,
+                bannerUrl: contest.banner_url,
                 description: contest.description,
                 startDate: contest.start_date,
                 endDate: contest.end_date,
@@ -341,15 +341,15 @@ const claimReward = async (req, res) => {
 
         // 2. Check overlap
         const existing = await UserContestReward.findOne({
-            where: { contestId, userId, tierName }
+            where: { contest_id: contestId, user_id: userId, tier_name: tierName }
         });
         if (existing) return res.status(400).json({ error: "Reward already claimed" });
 
         // 3. Claim
         const reward = await UserContestReward.create({
-            contestId,
-            userId,
-            tierName,
+            contest_id: contestId,
+            user_id: userId,
+            tier_name: tierName,
             status: 'claimed'
         });
 

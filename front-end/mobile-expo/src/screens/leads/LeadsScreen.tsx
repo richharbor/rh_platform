@@ -44,12 +44,31 @@ function LeadCard({ lead }: { lead: Lead }) {
                         <Text className="text-gray-900 font-bold text-lg leading-tight" numberOfLines={1}>
                             {lead.name}
                         </Text>
-                        <View className="flex-row items-center mt-1">
-                            <Text className="text-gray-500 text-xs font-medium mr-2">
-                                {lead.product_type || 'Lead'}
-                            </Text>
-                            <View className="h-1 w-1 rounded-full bg-gray-300 mr-2" />
-                            <Text className="text-gray-400 text-xs text-xs bg-gray-100 px-1.5 py-0.5 rounded-md overflow-hidden">
+                        <View className="flex-row items-center mt-2 flex-wrap gap-2">
+                            {/* Product Type Badge */}
+                            <View className="bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                                <Text className="text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+                                    {lead.product_type}
+                                </Text>
+                            </View>
+
+                            {/* Sub Type Badge (if any) */}
+                            {(() => {
+                                const details = lead.product_details || {};
+                                const subType = details.loanType || details.insuranceType || details.productType; // fallback
+                                if (subType && subType !== lead.product_type) {
+                                    return (
+                                        <View className="bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200">
+                                            <Text className="text-gray-600 text-[10px] font-bold uppercase tracking-wider">
+                                                {subType}
+                                            </Text>
+                                        </View>
+                                    )
+                                }
+                                return null;
+                            })()}
+
+                            <Text className="text-gray-400 text-[10px] ml-auto">
                                 #{lead.id}
                             </Text>
                         </View>

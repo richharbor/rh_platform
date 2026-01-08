@@ -17,10 +17,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING, // 'Health', 'Home', etc.
         allowNull: true,
       },
-      file_url: {
-        type: DataTypes.STRING, // S3 URL for poster
-        allowNull: true,
-      },
       target_type: {
         type: DataTypes.ENUM("incentive", "premium", "leads_count"),
         defaultValue: "incentive",

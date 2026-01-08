@@ -17,7 +17,7 @@ export interface Contest {
     startDate: string;
     endDate: string;
     bannerUrl: string;
-    fileUrl?: string;
+    // fileUrl removed
     productType?: string;
     productSubType?: string;
     targetType: 'incentive' | 'premium' | 'leads_count';

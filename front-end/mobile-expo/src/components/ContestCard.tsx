@@ -17,7 +17,7 @@ export function ContestCard({ contest, onClaimSuccess }: ContestCardProps) {
     // Progress Calculation
     const progressPercent = Math.min((contest.progress.current / contest.progress.target) * 100, 100);
 
-    const imageUrl = contest.fileUrl || contest.bannerUrl;
+    const imageUrl = contest.bannerUrl;
 
     const handleDownload = async () => {
         if (!imageUrl) return;

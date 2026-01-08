@@ -67,7 +67,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
         e.preventDefault();
         setSubmitting(true);
         try {
-            let uploadedUrl = formData.fileUrl;
+            let uploadedUrl = formData.bannerUrl;
             if (selectedFile) {
                 uploadedUrl = await contestService.uploadPoster(selectedFile);
             }
@@ -75,7 +75,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
             const payload: Contest = {
                 ...formData as Contest,
                 tiers: tiers,
-                fileUrl: uploadedUrl,
+                // fileUrl: uploadedUrl, // Removed
                 bannerUrl: uploadedUrl || formData.bannerUrl || "" // Ensure string
             };
 
@@ -221,8 +221,8 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
                                     className="w-full border border-slate-300 rounded-lg p-2"
                                     onChange={handleFileChange}
                                 />
-                                {formData.fileUrl && (
-                                    <p className="text-xs text-green-600 mt-1">Current Poster: <a href={formData.fileUrl} target="_blank" className="underline">View</a></p>
+                                {formData.bannerUrl && (
+                                    <p className="text-xs text-green-600 mt-1">Current Poster: <a href={formData.bannerUrl} target="_blank" className="underline">View</a></p>
                                 )}
                             </div>
 

@@ -16,7 +16,7 @@ export interface Contest {
     startDate: string;
     endDate: string;
     bannerUrl: string;
-    fileUrl?: string;
+    // fileUrl removed
     productType?: string;
     productSubType?: string;
     termsAndConditions: string;
@@ -24,6 +24,15 @@ export interface Contest {
     targetType: 'incentive' | 'premium' | 'leads_count';
     tiers: ContestTier[];
     notifyUsers?: boolean;
+    // Snake case props from API
+    start_date?: string;
+    end_date?: string;
+    banner_url?: string;
+    product_type?: string;
+    product_sub_type?: string;
+    target_type?: 'incentive' | 'premium' | 'leads_count';
+    is_active?: boolean;
+    terms_and_conditions?: string;
 }
 
 export const contestService = {

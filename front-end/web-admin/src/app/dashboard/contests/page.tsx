@@ -103,8 +103,8 @@ export default function ContestsPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                                                    {contest.bannerUrl ? (
-                                                        <img src={contest.bannerUrl} alt="" className="w-full h-full object-cover" />
+                                                    {contest.bannerUrl || contest.banner_url ? (
+                                                        <img src={contest.bannerUrl || contest.banner_url} alt="" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <Trophy size={16} className="text-slate-400" />
                                                     )}
@@ -114,22 +114,22 @@ export default function ContestsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col text-xs">
-                                                <span>{new Date(contest.startDate).toLocaleDateString()}</span>
-                                                <span className="text-slate-400">to {new Date(contest.endDate).toLocaleDateString()}</span>
+                                                <span>{new Date(contest.startDate || contest.start_date!).toLocaleDateString()}</span>
+                                                <span className="text-slate-400">to {new Date(contest.endDate || contest.end_date!).toLocaleDateString()}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="capitalize px-2 py-1 bg-slate-100 rounded text-xs">{contest.targetType}</span>
+                                            <span className="capitalize px-2 py-1 bg-slate-100 rounded text-xs">{contest.targetType || contest.target_type}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col text-xs">
-                                                <span className="font-medium capitalize">{contest.productType || 'All'}</span>
-                                                <span className="text-slate-400 capitalize">{contest.productSubType || 'All'}</span>
+                                                <span className="font-medium capitalize">{contest.productType || contest.product_type || 'All'}</span>
+                                                <span className="text-slate-400 capitalize">{contest.productSubType || contest.product_sub_type || 'All'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs font-medium ${contest.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                                {contest.isActive ? 'Active' : 'Inactive'}
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${(contest.isActive !== undefined ? contest.isActive : contest.is_active) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                {(contest.isActive !== undefined ? contest.isActive : contest.is_active) ? 'Active' : 'Inactive'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
