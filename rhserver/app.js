@@ -182,18 +182,16 @@ const startServer = async () => {
     }
 
     await sequelize.authenticate();
-    console.log("  Database connection established successfully.");
+    console.log("  Database (Main) connection established.");
 
     // Sync models with database
-    await sequelize.sync({ alter: false });
-    console.log("  Database (Main) models synchronized.");
+    // await sequelize.sync({ alter: false });
 
     // Sync Platform DB
     try {
       await platformDB.sequelize.authenticate();
       console.log("  Database (Platform) connection established.");
-      await platformDB.sequelize.sync({ alter: false }); // migration-driven
-      console.log("  Database (Platform) models synchronized.");
+      // await platformDB.sequelize.sync({ alter: false }); // migration-driven
 
       const bootstrapAdmin = require("./platform/utils/bootstrap");
       await bootstrapAdmin();
