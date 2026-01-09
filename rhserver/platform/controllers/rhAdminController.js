@@ -98,7 +98,8 @@ const updateLeadInternalStatus = async (req, res) => {
         lead.status = status;
 
         // 1. Handle Incentive Creation / Update (Disbursed/Closed)
-        if (['Disbursed', 'Closed'].includes(status) && lead.lead_type !== 'self' && lead.user_id) {
+        // Allow incentives for 'self' leads too if a user_id is present (Partner self-lead)
+        if (['Disbursed', 'Closed'].includes(status) && lead.user_id) {
 
             // Check if incentive already exists
             const existing = await Incentive.findOne({ where: { lead_id: lead.id } });
