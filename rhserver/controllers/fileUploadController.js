@@ -15,7 +15,6 @@ exports.uploadDocumentFile = async (req, res) => {
             Key: `document/${fileName}`,
             Body: file.buffer,
             ContentType: file.mimetype,
-            ACL: "public-read", // Make file public
         };
 
         await s3.send(new PutObjectCommand(uploadParams));
