@@ -17,7 +17,7 @@ const partnerRoutes = require("./routes/partnerRoutes");
 const sellRoutes = require("./routes/sellRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const bidsRoutes = require("./routes/bidsRoutes");
-const dashboardRoutes = require('./routes/dashboardRoutes');
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const whatsappRoutes = require("./routes/whatsappRoutes");
 
@@ -27,25 +27,8 @@ const app = express();
 
 // Middleware
 // Allow all origins
-const allowedOrigins = [
-  "https://www.richharbor.com",
-  "https://richharbor.com",
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "http://localhost:8081",
-  "https://app.richharbor.com"
-];
-
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // true means reflect request origin, allows all
   credentials: true, // allow cookies/auth headers
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 };
@@ -70,8 +53,6 @@ app.get("/", (req, res) => {
 //   process.env.VAPID_PRIVATE_KEY
 // );
 
-
-
 // Health check
 app.get("/health", async (req, res) => {
   try {
@@ -90,7 +71,6 @@ app.get("/health", async (req, res) => {
   }
 });
 
-
 // const subscriptions = [];
 
 // app.post("/api/notification/save-subscription", (req, res) => {
@@ -104,8 +84,6 @@ app.get("/health", async (req, res) => {
 //   res.json({ success: true });
 // });
 
-
-
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
@@ -117,19 +95,19 @@ app.use("/api/teams", teamsRoutes);
 app.use("/api/franchises", franchisesRoutes);
 app.use("/api/partners", partnerRoutes);
 app.use("/api/sell", sellRoutes);
-app.use("/api/booking", bookingRoutes)
-app.use("/api/bids", bidsRoutes)
-app.use("/api/dashboard", dashboardRoutes)
-app.use("/api/notification", notificationRoutes)
-app.use("/api/whatsapp", whatsappRoutes)
+app.use("/api/booking", bookingRoutes);
+app.use("/api/bids", bidsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/notification", notificationRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 // --- Platform Services (Isolated) ---
 const platformAuthRoutes = require("./platform/routes/authRoutes");
 const platformLeadRoutes = require("./platform/routes/leadRoutes");
-const platformAdminRoutes = require('./platform/routes/adminRoutes'); // Renamed to avoid conflict with global adminRoutes
+const platformAdminRoutes = require("./platform/routes/adminRoutes"); // Renamed to avoid conflict with global adminRoutes
 
 // Routes
-app.use('/v1/admin', platformAdminRoutes); // Using platformAdminRoutes for /api/admin
+app.use("/v1/admin", platformAdminRoutes); // Using platformAdminRoutes for /api/admin
 const platformRewardRoutes = require("./platform/routes/rewardRoutes");
 app.use("/v1/rewards", platformRewardRoutes);
 
@@ -170,18 +148,20 @@ const startServer = async () => {
   try {
     // --- Ensure Databases Exist ---
     if (process.env.NODE_ENV === "development") {
-      const { Client } = require('pg');
+      const { Client } = require("pg");
       const createDb = async (dbName) => {
         const client = new Client({
-          user: process.env.DB_USERNAME || 'postgres',
-          host: process.env.DB_HOST || 'db',
-          database: 'postgres',
-          password: process.env.DB_PASSWORD || 'postgres',
+          user: process.env.DB_USERNAME || "postgres",
+          host: process.env.DB_HOST || "db",
+          database: "postgres",
+          password: process.env.DB_PASSWORD || "postgres",
           port: 5432,
         });
         await client.connect();
         try {
-          const res = await client.query(`SELECT 1 FROM pg_database WHERE datname = '${dbName}'`);
+          const res = await client.query(
+            `SELECT 1 FROM pg_database WHERE datname = '${dbName}'`
+          );
           if (res.rowCount === 0) {
             console.log(`  Creating database: ${dbName}`);
             await client.query(`CREATE DATABASE "${dbName}"`);
@@ -191,10 +171,13 @@ const startServer = async () => {
         }
       };
       try {
-        await createDb('richharbor-beta');
-        await createDb('rh_platform');
+        await createDb("richharbor-beta");
+        await createDb("rh_platform");
       } catch (dbErr) {
-        console.warn("  Note: Database creation check failed (might already exist):", dbErr.message);
+        console.warn(
+          "  Note: Database creation check failed (might already exist):",
+          dbErr.message
+        );
       }
     }
 
