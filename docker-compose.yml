@@ -66,28 +66,6 @@ services:
     networks:
       - rh_network
 
-  web-admin:
-    build:
-      context: ./front-end/web-admin
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./front-end/web-admin:/app
-      - /app/node_modules
-      - /app/.next
-    env_file:
-      - .env
-    environment:
-      - PORT=3000
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - AUTH_SECRET=${AUTH_SECRET}
-      - NODE_ENV=${NODE_ENV}
-    depends_on:
-      - rhserver
-    networks:
-      - rh_network
-
   nginx:
     image: nginx:latest
     ports:
@@ -98,7 +76,6 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - rhserver
-      - web-admin
     networks:
       - rh_network
 
