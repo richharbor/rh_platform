@@ -36,7 +36,19 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
     // Update form when initialData loads (async fetch)
     useEffect(() => {
         if (initialData) {
-            setFormData(prev => ({ ...prev, ...initialData }));
+            setFormData(prev => ({
+                ...prev,
+                ...initialData,
+                // Manually map snake_case to camelCase if camelCase is missing
+                startDate: initialData.startDate || initialData.start_date || "",
+                endDate: initialData.endDate || initialData.end_date || "",
+                bannerUrl: initialData.bannerUrl || initialData.banner_url || "",
+                termsAndConditions: initialData.termsAndConditions || initialData.terms_and_conditions || "",
+                productType: initialData.productType || initialData.product_type || "",
+                productSubType: initialData.productSubType || initialData.product_sub_type || "",
+                targetType: (initialData.targetType || initialData.target_type || "incentive") as any,
+                isActive: initialData.isActive ?? initialData.is_active ?? true,
+            }));
             if (initialData.tiers) setTiers(initialData.tiers);
         }
     }, [initialData]);

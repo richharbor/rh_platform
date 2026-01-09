@@ -44,8 +44,25 @@ const updateContest = async (req, res) => {
         const contest = await Contest.findByPk(id);
         if (!contest) return res.status(404).json({ error: "Contest not found" });
 
-        await contest.update(req.body);
-        res.json(contest);
+        const { title, description, startDate, endDate, bannerUrl, termsAndConditions, targetType, tiers, productType, productSubType, isActive, notifyUsers } = req.body;
+
+        await contest.update({
+            title,
+            description,
+            start_date: startDate,
+            end_date: endDate,
+            banner_url: bannerUrl,
+            terms_and_conditions: termsAndConditions,
+            target_type: targetType,
+            product_type: productType,
+            product_sub_type: productSubType,
+            tiers,
+            is_active: isActive
+        });
+
+        // Return updated contest
+        const updatedContest = await Contest.findByPk(id);
+        res.json(updatedContest);
     } catch (error) {
         console.error("Update Contest Error:", error);
         res.status(500).json({ error: error.message });
