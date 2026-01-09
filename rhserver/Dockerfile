@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5003
 
-CMD ["node", "app.js"]
+CMD ["sh", "-c", "npx sequelize-cli db:migrate && npx sequelize-cli db:migrate --migrations-path platform/migrations --config platform/config/config.js && node app.js"]
