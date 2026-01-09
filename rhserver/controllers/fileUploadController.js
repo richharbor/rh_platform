@@ -19,7 +19,8 @@ exports.uploadDocumentFile = async (req, res) => {
 
         await s3.send(new PutObjectCommand(uploadParams));
 
-        const fileUrl = `${process.env.AWS_DOCUMENT_BUCKET_URL}/${fileName}`;
+        // Construct URL dynamically to ensure it matches the upload bucket
+        const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/document/${fileName}`;
 
         res.status(200).json({
             message: "File uploaded successfully",
