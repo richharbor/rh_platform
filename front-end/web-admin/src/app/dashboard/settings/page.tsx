@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import axios from 'axios';
 
 // Service Function (Ideally move to services/adminService.ts, keeping here for speed as per user req style)
@@ -37,9 +38,9 @@ export default function SettingsPage() {
             const newUpdates = { ...updates };
             delete newUpdates[id];
             setUpdates(newUpdates);
-            alert('Rule updated successfully');
+            toast.success('Rule updated successfully');
         } catch (error) {
-            alert('Failed to update rule');
+            toast.error('Failed to update rule');
         } finally {
             setSaving(null);
         }

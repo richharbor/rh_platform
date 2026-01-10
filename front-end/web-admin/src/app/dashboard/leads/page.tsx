@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { getLeads, assignLead, updateLeadInternalStatus, createLead, updateLead } from '@/services/Leads/leadService';
 import { getRMs } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
@@ -137,11 +138,11 @@ export default function LeadsPage() {
             setLeads(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
             setSelectedLead({ ...selectedLead, ...updated });
 
-            alert('Status updated successfully');
+            toast.success('Status updated successfully');
             setIsRewardConfirmOpen(false);
         } catch (error) {
             console.error(error);
-            alert('Failed to update status');
+            toast.error('Failed to update status');
         } finally {
             setActionLoading(false);
         }
@@ -161,9 +162,9 @@ export default function LeadsPage() {
             setLeads(prev => prev.map(l => l.id === updated.id ? enrichedC : l));
             setSelectedLead({ ...selectedLead, ...updated, assigned_admin: rm });
 
-            alert('RM Assigned successfully');
+            toast.success('RM Assigned successfully');
         } catch (error) {
-            alert('Failed to assign RM');
+            toast.error('Failed to assign RM');
         } finally {
             setActionLoading(false);
         }
@@ -268,7 +269,7 @@ export default function LeadsPage() {
                                                     setLeads(prev => prev.map(l => l.id === res.id ? { ...l, ...res } : l));
                                                     setSelectedLead({ ...selectedLead, ...res });
                                                     setIsEditRequirements(false);
-                                                    alert('Updated');
+                                                    toast.success('Updated');
                                                 }}>Save</button>
                                             </div>
                                         )}
@@ -374,7 +375,7 @@ export default function LeadsPage() {
                                         setNewStatus(e.target.value);
                                         setIsRewardConfirmOpen(false); // Reset on change
                                     }}
-                                    disabled={isRewardConfirmOpen}
+                                    disabled={isRewardConfirmOpen || selectedLead.status === 'Closed'}
                                 >
                                     <option value="New">New</option>
                                     <option value="In Progress">In Progress</option>
@@ -403,7 +404,8 @@ export default function LeadsPage() {
                                         <input
                                             type="number"
                                             className="input text-lg font-bold text-gray-900 w-full mb-4"
-                                            value={rewardAmount}
+                                            value={rewardAmount || ''}
+                                            placeholder="0"
                                             onChange={(e) => setRewardAmount(Number(e.target.value))}
                                         />
 
@@ -423,6 +425,11 @@ export default function LeadsPage() {
                                     </div>
                                 ) : (
                                     <div>
+                                        {selectedLead.status === 'Closed' && (
+                                            <div className="bg-red-50 p-2 rounded text-xs text-red-800 mb-4 border border-red-100">
+                                                Locked: This lead is Closed and status cannot be changed.
+                                            </div>
+                                        )}
                                         <div className="flex items-center gap-2 mb-4">
                                             <input
                                                 type="checkbox"
@@ -430,11 +437,16 @@ export default function LeadsPage() {
                                                 className="w-4 h-4 text-blue-600 rounded"
                                                 checked={notifyUser}
                                                 onChange={e => setNotifyUser(e.target.checked)}
+                                                disabled={selectedLead.status === 'Closed'}
                                             />
                                             <label htmlFor="notifyUser" className="text-sm font-medium text-slate-700">Notify User via App 🔔</label>
                                         </div>
 
-                                        <button className="btn btn-primary w-full" onClick={handleStatusUpdate} disabled={actionLoading}>
+                                        <button
+                                            className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                            onClick={handleStatusUpdate}
+                                            disabled={actionLoading || selectedLead.status === 'Closed'}
+                                        >
                                             {actionLoading ? 'Updating...' : 'Update Status'}
                                         </button>
                                     </div>
@@ -563,11 +575,11 @@ export default function LeadsPage() {
                                         setActionLoading(true);
                                         try {
                                             await createLead(formData);
-                                            alert('Lead created successfully');
+                                            toast.success('Lead created successfully');
                                             setIsCreateOpen(false);
                                             loadData();
                                         } catch (e) {
-                                            alert('Failed to create lead');
+                                            toast.error('Failed to create lead');
                                         } finally {
                                             setActionLoading(false);
                                         }
