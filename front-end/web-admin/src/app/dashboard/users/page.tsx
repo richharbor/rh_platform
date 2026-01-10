@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { getUsers, approvePartner } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
 
@@ -49,11 +50,11 @@ export default function UsersPage() {
         setApproving(true);
         try {
             await approvePartner(selectedUser.id.toString());
-            alert('KYC approved successfully!');
+            toast.success('KYC approved successfully!');
             setIsPanelOpen(false);
             loadUsers(); // Reload users
         } catch (error) {
-            alert('Failed to approve KYC');
+            toast.error('Failed to approve KYC');
         } finally {
             setApproving(false);
         }

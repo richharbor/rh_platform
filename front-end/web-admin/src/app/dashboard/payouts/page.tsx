@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { payoutService } from '@/services/Payouts/payoutService';
 import SidePanel from '@/components/ui/SidePanel';
 
@@ -40,9 +41,9 @@ export default function PayoutsPage() {
 
             setPayouts(prev => prev.map(p => p.id === selectedPayout.id ? updated : p));
             setSelectedPayout(updated);
-            alert('Marked as Paid!');
+            toast.success('Marked as Paid!');
         } catch (error) {
-            alert('Failed to update status');
+            toast.error('Failed to update status');
         } finally {
             setProcessingId(null);
         }

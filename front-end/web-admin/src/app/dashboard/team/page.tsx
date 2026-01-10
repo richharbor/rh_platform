@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { getRMs } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
 import { PrivateAxios } from '@/helpers/PrivateAxios';
@@ -50,14 +51,14 @@ export default function TeamPage() {
                 name: inviteName,
                 roleId: inviteRole
             });
-            alert('Invitation sent successfully!');
+            toast.success('Invitation sent successfully!');
             setIsInvitePanelOpen(false);
             setInviteEmail('');
             setInviteName('');
             setInviteRole('');
             loadData(); // Reload to see new pending user
         } catch (error) {
-            alert('Failed to send invitation');
+            toast.error('Failed to send invitation');
         } finally {
             setInviting(false);
         }
@@ -70,11 +71,12 @@ export default function TeamPage() {
         setDeleting(memberId);
         try {
             await PrivateAxios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/v1'}/admin/team/${memberId}`);
-            alert('Team member removed successfully');
+            toast.success('Team member removed successfully');
             loadData(); // Reload team list
         } catch (error: any) {
             console.error('Failed to delete team member', error);
-            alert(error.response?.data?.error || 'Failed to remove team member');
+            // @ts-ignore
+            toast.error(error.response?.data?.error || 'Failed to remove team member');
         } finally {
             setDeleting(null);
         }
@@ -88,12 +90,12 @@ export default function TeamPage() {
                 permissions: {}, // Default empty perms
                 description: 'Custom Role'
             });
-            alert('Role created successfully!');
+            toast.success('Role created successfully!');
             setIsRolePanelOpen(false);
             setNewRoleName('');
             loadData();
         } catch (error) {
-            alert('Failed to create role');
+            toast.error('Failed to create role');
         } finally {
             setCreating(false);
         }
