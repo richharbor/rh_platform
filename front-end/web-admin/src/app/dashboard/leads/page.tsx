@@ -393,7 +393,7 @@ export default function LeadsPage() {
 
                                 {(newStatus === 'Closed' || newStatus === 'Disbursed') && (
                                     <div className="bg-blue-50 p-2 rounded text-xs text-blue-800 mb-2">
-                                        Note: If you change the status to {newStatus}, it creates a payout you can see in the payout page. Once the lead is Closed, you cannot change it again.
+                                        Note: If you change the status to {newStatus}, it creates a payout you can see in the payout page. {newStatus === 'Closed' ? 'Once the lead is Closed, you cannot change it again.' : ''}
                                     </div>
                                 )}
 
