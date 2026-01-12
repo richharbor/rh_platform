@@ -1,6 +1,7 @@
 const { User, Lead, Admin, AdminRole, Incentive, ProductRule } = require("../models");
 const { Op } = require("sequelize");
 const { sendEmail } = require("../services/emailService");
+const notificationService = require("../services/fcmNotificationService");
 
 // List all users (Admin only)
 const listUsers = async (req, res) => {
@@ -368,7 +369,6 @@ const inviteAdmin = async (req, res) => {
 };
 
 // Update Incentive (Amount/Status)
-const notificationService = require("../services/notificationService");
 
 const updateIncentive = async (req, res) => {
     try {

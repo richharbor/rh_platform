@@ -60,7 +60,7 @@ export function HomeScreen({ navigation }: any) {
               {user?.name?.split(' ')[0] || user?.phone || 'Partner'}
             </Text>
           </View>
-          <TouchableOpacity onPress={logout} className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
+          <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
             <Text className="text-sm font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
           </TouchableOpacity>
         </View>

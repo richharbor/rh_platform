@@ -4,25 +4,37 @@ import { rewardService } from '../../services/rewardService';
 import { contestService, Contest } from '../../services/contestService';
 import { ContestCard } from '../../components/ContestCard';
 import { ArrowUpRight, Clock, CheckCircle2, History, Trophy, Wallet } from 'lucide-react-native';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function WalletScreen() {
+    const { accountType } = useAuthStore();
+    const isCustomer = accountType === 'Customer';
     const [stats, setStats] = useState({ totalEarned: 0, pending: 0, paid: 0 });
     const [transactions, setTransactions] = useState<any[]>([]);
     const [contests, setContests] = useState<Contest[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [loadingContests, setLoadingContests] = useState(true);
-    const [activeTab, setActiveTab] = useState<'history' | 'contests'>('contests'); // Default to contests for testing per user focus
+    const [activeTab, setActiveTab] = useState<'history' | 'contests'>('history'); // Default to history for all users
 
     const fetchData = async () => {
         try {
-            const [statsData, txData, contestsData] = await Promise.all([
+            // Only fetch contests for non-customer users
+            const promises = [
                 rewardService.getWalletStats(),
-                rewardService.getTransactions(),
-                contestService.getMyStatus()
-            ]);
-            setStats(statsData);
-            setTransactions(txData);
-            setContests(contestsData);
+                rewardService.getTransactions()
+            ];
+
+            if (!isCustomer) {
+                promises.push(contestService.getMyStatus());
+            }
+
+            const results = await Promise.all(promises);
+            setStats(results[0]);
+            setTransactions(results[1]);
+
+            if (!isCustomer) {
+                setContests(results[2] || []);
+            }
         } catch (error) {
             console.error("Wallet fetch error:", error);
         } finally {
@@ -106,22 +118,26 @@ export function WalletScreen() {
                     >
                         <Text style={{ fontWeight: '500', color: activeTab === 'history' ? '#111827' : '#6b7280' }}>Reward History</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => setActiveTab('contests')}
-                        style={{
-                            flex: 1,
-                            paddingVertical: 8,
-                            borderRadius: 9999,
-                            alignItems: 'center',
-                            backgroundColor: activeTab === 'contests' ? 'white' : 'transparent',
-                            shadowOpacity: activeTab === 'contests' ? 0.1 : 0,
-                            shadowRadius: 2,
-                            shadowOffset: { width: 0, height: 1 },
-                            elevation: activeTab === 'contests' ? 2 : 0
-                        }}
-                    >
-                        <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
-                    </TouchableOpacity>
+
+                    {/* Contests Tab - Only for non-customer users */}
+                    {!isCustomer && (
+                        <TouchableOpacity
+                            onPress={() => setActiveTab('contests')}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 8,
+                                borderRadius: 9999,
+                                alignItems: 'center',
+                                backgroundColor: activeTab === 'contests' ? 'white' : 'transparent',
+                                shadowOpacity: activeTab === 'contests' ? 0.1 : 0,
+                                shadowRadius: 2,
+                                shadowOffset: { width: 0, height: 1 },
+                                elevation: activeTab === 'contests' ? 2 : 0
+                            }}
+                        >
+                            <Text style={{ fontWeight: '500', color: activeTab === 'contests' ? '#111827' : '#6b7280' }}>Contests</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Rewards History Tab */}

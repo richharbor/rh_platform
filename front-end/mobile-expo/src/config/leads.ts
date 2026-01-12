@@ -1,4 +1,4 @@
-export type FieldType = 'text' | 'number' | 'email' | 'select' | 'radio' | 'date' | 'checkbox' | 'multiselect';
+export type FieldType = 'text' | 'number' | 'email' | 'phone' | 'select' | 'radio' | 'date' | 'checkbox' | 'multiselect';
 
 export interface LeadField {
     id: string;
@@ -50,7 +50,7 @@ export const COMMON_LEAD_FIELDS: LeadField[] = [
     {
         id: 'mobile',
         label: 'Mobile Number',
-        type: 'number', // Input type phone-pad
+        type: 'phone', // Phone input with country code picker
         required: true
     },
     {
@@ -89,10 +89,10 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
         { id: 'coverage', label: 'Coverage Required (₹)', type: 'number', required: true },
         { id: 'existingPolicy', label: 'Existing Policy', type: 'radio', options: ['Yes', 'No'], required: true },
         // { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], required: true },
-        
+
 
         // Life
-        { id: 'productType', label: 'Product Type', type: 'radio', options: ['Term', 'Saving','Investment'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'productType', label: 'Product Type', type: 'radio', options: ['Term', 'Saving', 'Investment'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
         { id: 'age', label: 'Age', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Life' } },
         { id: 'income', label: 'Annual Income', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Life' } },
         { id: 'occupation', label: 'Occupation', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Life' } },
@@ -101,8 +101,8 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
         { id: 'alcoholic', label: 'Alcoholic', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
 
         // Health
-        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Health' }  },
-        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Individual', 'Family Floater'], conditional: { fieldId: 'insuranceType', value: 'Health' }  },
+        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Individual', 'Family Floater'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
         { id: 'memberAges', label: 'Age of Insured Members', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
         { id: 'membersCovered', label: 'Family Members to be Covered', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
         { id: 'conditions', label: 'Existing Medical Conditions', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
@@ -111,8 +111,8 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
         { id: 'alcoholic', label: 'Alcoholic', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
 
         // Motor
-        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Motor' }  },
-        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Third Party', 'Comprehensive'], conditional: { fieldId: 'insuranceType', value: 'Motor' }  },
+        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Third Party', 'Comprehensive'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
         { id: 'vehicleType', label: 'Vehicle Type', type: 'select', options: ['Car', 'Two-Wheeler', 'Commercial'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
         { id: 'vehicleModel', label: 'Vehicle Model & Year', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Motor' } },
         { id: 'expiryDate', label: 'Policy Expiry Date', type: 'date', conditional: { fieldId: 'insuranceType', value: 'Motor' } },
@@ -127,7 +127,7 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
             options: ['Home', 'Personal', 'Business', 'Mortgage', 'Education', 'Car', 'Machinery', 'WC', 'Construction', 'Project Finance', 'RBF', 'FTL', 'Channel Financing'],
             required: true
         },
-        { id: 'amount', label: 'Loan Amount Required (₹)', type: 'number', required: true , conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Business', 'Mortgage', 'Education', 'Car', 'Machinery', 'WC', 'FTL', 'Channel Financing'] } },
+        { id: 'amount', label: 'Loan Amount Required (₹)', type: 'number', required: true, conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Business', 'Mortgage', 'Education', 'Car', 'Machinery', 'WC', 'FTL', 'Channel Financing'] } },
         { id: 'purpose', label: 'Purpose of Loan', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Personal', 'Business', 'Machinery', 'Mortgage'] } },
         { id: 'timeline', label: 'Expected Disbursal Timeline', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Business', 'Machinery', 'Mortgage'] } },
         { id: 'creditProfile', label: 'Credit Profile', type: 'select', options: ['Excellent', 'Average', 'Needs Assessment'], required: true },
@@ -146,7 +146,7 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
         // Additional Field in Education
         { id: 'educationType', label: 'Course Type', type: 'select', options: ['Undergraduate', 'Postgraduate', 'PhD'], conditional: { fieldId: 'loanType', value: ['Education'] } },
         { id: 'countryOfStudy', label: 'Country of Study', type: 'text', conditional: { fieldId: 'loanType', value: ['Education'] } },
-        { id: 'collageName', label: 'Collage Name', type: 'text',  conditional: { fieldId: 'loanType', value: ['Education'] } },
+        { id: 'collageName', label: 'Collage Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Education'] } },
 
         // Additional Field in Car loan
         { id: 'assetType', label: 'Asset Type', type: 'select', options: ['New', 'Used'], conditional: { fieldId: 'loanType', value: ['Car'] } },
@@ -154,10 +154,10 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
 
         // Additional Field in WC loan
         { id: 'businessType', label: 'Business Type', type: 'text', conditional: { fieldId: 'loanType', value: ['WC'] } },
-        { id: 'currentBankingRelationship', label: 'Current Banking Relationship', type: 'radio', options: ['OD', 'CC','Invoice discounting'], conditional: { fieldId: 'loanType', value: ['WC'] } },
+        { id: 'currentBankingRelationship', label: 'Current Banking Relationship', type: 'radio', options: ['OD', 'CC', 'Invoice discounting'], conditional: { fieldId: 'loanType', value: ['WC'] } },
 
         // Additional Field in Construction
-        { id: 'fundingRequired', label: 'Funding Required', type: 'text', required:true, conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance', 'RBF'] } },
+        { id: 'fundingRequired', label: 'Funding Required', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance', 'RBF'] } },
         { id: 'projectType', label: 'Project Type', type: 'text', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
         { id: 'totalProjectCost', label: 'Total Project Cost (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
         { id: 'landOwnerStatus', label: 'Land Owner Status ', type: 'text', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
@@ -172,12 +172,12 @@ export const PRODUCT_FORMS: Record<string, LeadField[]> = {
         { id: 'loanTenureRequired', label: 'Loan Tenure Required', type: 'text', conditional: { fieldId: 'loanType', value: ['FTL'] } },
         { id: 'businessVintage', label: 'Business Vintage', type: 'text', conditional: { fieldId: 'loanType', value: ['FTL'] } },
 
-        
-        
-        
 
-        
-       
+
+
+
+
+
 
         // Business Loans
         { id: 'businessName', label: 'Business Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },

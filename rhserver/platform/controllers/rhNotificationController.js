@@ -1,5 +1,6 @@
 const { User } = require("../models");
-const notificationService = require("../services/notificationService");
+// Use FCM service for direct Firebase messaging with image support
+const notificationService = require("../services/fcmNotificationService");
 
 /**
  * Save Expo Push Token for the authenticated user
@@ -12,7 +13,7 @@ const savePushToken = async (req, res) => {
         if (!token) return res.status(400).json({ error: "Token is required" });
 
         await User.update({ push_token: token }, { where: { id: userId } });
-        console.log(`[Notification] Saved token for user ${userId}`);
+        console.log(`[Notification] Saved FCM token for user ${userId}`);
 
         res.json({ success: true, message: "Token saved" });
     } catch (error) {
@@ -22,17 +23,17 @@ const savePushToken = async (req, res) => {
 };
 
 /**
- * Admin Broadcast
+ * Admin Broadcast - Now uses FCM directly
  */
 const broadcast = async (req, res) => {
     try {
-        const { title, body, data } = req.body;
+        const { title, body, data, imageUrl } = req.body;
 
         if (!title || !body) {
             return res.status(400).json({ error: "Title and body are required" });
         }
 
-        const result = await notificationService.broadcastNotification(title, body, data);
+        const result = await notificationService.broadcastNotification(title, body, data, imageUrl);
         res.json({ success: true, result });
     } catch (error) {
         console.error("Broadcast Error:", error);
