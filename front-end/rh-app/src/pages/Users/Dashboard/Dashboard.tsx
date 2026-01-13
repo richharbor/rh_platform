@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getOnboardingStatus } from "@/services/Auth/authServices"
 import { getTieredPath } from "@/helpers/getTieredPath"
-import Cookies from "../../../../node_modules/@types/js-cookie"
+import Cookies from "js-cookie"
 
 
 

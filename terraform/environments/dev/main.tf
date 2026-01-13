@@ -16,8 +16,10 @@ module "rds" {
   project_name   = var.project_name
   environment    = var.environment
   db_name        = "rh_server_dev"
+  platform_db_name = "rh_platform_dev"
 
   db_username    = "postgres"
+
   db_password    = var.db_password
   subnet_ids     = module.vpc.public_subnet_ids
   db_sg_id       = module.security_groups.db_sg_id

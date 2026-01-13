@@ -1,5 +1,7 @@
 aws_region   = "ap-south-1"
 project_name = "rh"
+
+
 environment  = "dev"
 
 # Database credentials
