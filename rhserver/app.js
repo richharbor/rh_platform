@@ -128,6 +128,9 @@ app.use("/v1", (req, res, next) => {
 app.use("/v1", platformAuthRoutes);
 app.use("/v1", platformLeadRoutes);
 
+const platformRoleUpgradeRoutes = require("./platform/routes/roleUpgradeRoutes");
+app.use("/v1/me", platformRoleUpgradeRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

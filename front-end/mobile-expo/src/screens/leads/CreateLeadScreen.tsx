@@ -22,7 +22,9 @@ export function CreateLeadScreen() {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
-    const { productType, setProductType } = useAuthStore();
+    const { productType, setProductType, user } = useAuthStore();
+    const userRole = (user?.role || 'customer').toLowerCase();
+    const canSelectLeadType = userRole === 'partner' || userRole === 'referral_partner' || userRole === 'referral partner';
 
     // Initialize mode based on entry state
     const [isPreSelected] = useState(!!productType);
@@ -66,29 +68,56 @@ export function CreateLeadScreen() {
     };
 
     // Step 0: Basic Details
-    const renderBasicDetails = () => (
-        <View>
-            <Text className="text-xl font-bold text-ink-900 mb-6">Client Basic Information</Text>
-            {COMMON_LEAD_FIELDS.map((field) => {
-                const error = showErrors ? (fieldErrors[field.id] || validateSingleField(field.id, data[field.id], field.required)) : undefined;
+    const renderBasicDetails = () => {
+        // Prepare fields based on role
+        let fieldsToShow = [...COMMON_LEAD_FIELDS];
 
-                return (
-                    <DynamicField
-                        key={field.id}
-                        field={field}
-                        value={data[field.id]}
-                        onChange={(val) => updateData(field.id, val)}
-                        error={error}
-                        countryCode={field.id === 'mobile' ? countryCode : undefined}
-                        onCountryCodeChange={field.id === 'mobile' ? (code, calling) => {
-                            setCountryCode(code);
-                            setCallingCode(calling);
-                        } : undefined}
-                    />
-                );
-            })}
-        </View>
-    );
+        // If user can select lead type, prepend the field
+        if (canSelectLeadType) {
+            const leadTypeField: LeadField = {
+                id: 'leadType',
+                label: 'Lead Type',
+                type: 'radio',
+                options: ['Self', 'Referral', 'Cold'],
+                required: true
+            };
+            fieldsToShow = [leadTypeField, ...COMMON_LEAD_FIELDS];
+        }
+
+        return (
+            <View>
+                <Text className="text-xl font-bold text-ink-900 mb-2">Client Basic Information</Text>
+
+                {!canSelectLeadType && (
+                    <View className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-100">
+                        <Text className="text-blue-800 text-xs">
+                            You are creating a <Text className="font-bold">Self Lead</Text>.
+                            To refer others, please upgrade your account in Profile.
+                        </Text>
+                    </View>
+                )}
+
+                {fieldsToShow.map((field) => {
+                    const error = showErrors ? (fieldErrors[field.id] || validateSingleField(field.id, data[field.id], field.required)) : undefined;
+
+                    return (
+                        <DynamicField
+                            key={field.id}
+                            field={field}
+                            value={data[field.id]}
+                            onChange={(val) => updateData(field.id, val)}
+                            error={error}
+                            countryCode={field.id === 'mobile' ? countryCode : undefined}
+                            onCountryCodeChange={field.id === 'mobile' ? (code, calling) => {
+                                setCountryCode(code);
+                                setCallingCode(calling);
+                            } : undefined}
+                        />
+                    );
+                })}
+            </View>
+        );
+    };
 
     // Step 1: Product Selection
     const renderProductSelect = () => (
@@ -236,7 +265,7 @@ export function CreateLeadScreen() {
         try {
             const payload = {
                 product_type: productType,
-                lead_type: (data.leadType || "self").toLowerCase().includes('partner') ? 'partner' : (data.leadType || "self").toLowerCase(),
+                lead_type: (data.leadType || "self").toLowerCase(),
                 name: data.clientName,
                 email: data.email,
                 phone: `+${callingCode}${data.mobile}`, // Include country code with phone

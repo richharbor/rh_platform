@@ -13,6 +13,13 @@ export function ProfileScreen() {
             items: [
                 { label: 'KYC (Partner)', icon: FileCheck, color: '#0ea5e9', action: () => Alert.alert('Coming Soon') },
                 { label: 'Bank Details', icon: CreditCard, color: '#10b981', action: () => Alert.alert('Coming Soon') },
+                // Only show if not Partner
+                ...(user?.role !== 'partner' ? [{
+                    label: 'Upgrade Account',
+                    icon: User,
+                    color: '#6366f1',
+                    action: () => navigation.navigate('RoleUpgradeRequest')
+                }] : [])
             ]
         },
         {

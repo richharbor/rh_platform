@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainTabNavigator } from './MainTabNavigator';
 import { CreateLeadScreen } from '../screens/leads/CreateLeadScreen';
+import { RoleUpgradeRequestScreen } from '../screens/profile/RoleUpgradeRequestScreen';
 import type { AppStackParamList } from './types';
 
 import SupportScreen from '../screens/support/SupportScreen';
@@ -16,6 +17,11 @@ export function AppStack() {
         name="CreateLead"
         component={CreateLeadScreen}
         options={{ presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="RoleUpgradeRequest"
+        component={RoleUpgradeRequestScreen}
+        options={{ title: 'Upgrade Account' }}
       />
       <Stack.Screen name="Support" component={SupportScreen} />
     </Stack.Navigator>
