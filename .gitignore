@@ -32,7 +32,3 @@ dist/
 *.tfstate.backup
 .terraform.lock.hcl
 *.pem
-
-# env
-.env
-.env.*
