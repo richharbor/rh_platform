@@ -105,7 +105,7 @@ const adminList = async (req, res) => {
         const leads = await Lead.findAll({
             order: [["createdAt", "DESC"]],
             include: [
-                { model: User, as: "user", attributes: ["id", "name", "email"] },
+                { model: User, as: "user", attributes: ["id", "name", "email", "phone", "role"] },
             ],
         });
         res.json(leads);
