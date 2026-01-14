@@ -34,6 +34,14 @@ const create = async (req, res) => {
             return res.status(400).json({ error: "Consent required for cold leads" });
         }
 
+        // Role-based validation
+        const userRole = req.user.role || 'customer';
+        if (userRole === 'customer' && lead_type !== 'self') {
+            return res.status(403).json({
+                error: "Customers can only create self leads. Please upgrade to Referral Partner to create other leads."
+            });
+        }
+
         // Create Lead
 
         // Determine User ID (If Admin, allow setting user_id manually, else use own ID)
@@ -105,7 +113,7 @@ const adminList = async (req, res) => {
         const leads = await Lead.findAll({
             order: [["createdAt", "DESC"]],
             include: [
-                { model: User, as: "user", attributes: ["id", "name", "email"] },
+                { model: User, as: "user", attributes: ["id", "name", "email", "phone", "role"] },
             ],
         });
         res.json(leads);

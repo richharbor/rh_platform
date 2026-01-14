@@ -1,12 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text } from 'react-native';
-import { Home, Users, Wallet, User, Compass } from 'lucide-react-native';
+import { Home, Users, Wallet, User } from 'lucide-react-native';
 
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { LeadsScreen } from '../screens/leads/LeadsScreen';
 import { WalletScreen } from '../screens/wallet/WalletScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
-import { ExploreScreen } from '../screens/explore/ExploreScreen';
 
 import { MainTabParamList } from './types';
 import { useAuthStore } from '../store/useAuthStore';
@@ -54,16 +53,6 @@ export function MainTabNavigator() {
                     tabBarIcon: ({ color, size }) => <Users size={24} color={color} strokeWidth={2} />
                 }}
             />
-
-            {isCustomer && (
-                <Tab.Screen
-                    name="Explore"
-                    component={ExploreScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => <Compass size={24} color={color} strokeWidth={2} />
-                    }}
-                />
-            )}
 
             <Tab.Screen
                 name="Wallet"

@@ -3,7 +3,7 @@ const { Op } = Sequelize;
 
 // --- ADMIN ---
 
-const notificationService = require("../services/notificationService");
+const notificationService = require("../services/fcmNotificationService");
 
 const createContest = async (req, res) => {
     try {
@@ -27,7 +27,8 @@ const createContest = async (req, res) => {
             notificationService.broadcastNotification(
                 "New Contest Alert! 🏆",
                 `Join "${title}" and win exciting rewards!`,
-                { type: 'contest', contestId: contest.id }
+                { type: 'contest', contestId: contest.id },
+                contest.banner_url // Pass banner image for notification
             );
         }
 

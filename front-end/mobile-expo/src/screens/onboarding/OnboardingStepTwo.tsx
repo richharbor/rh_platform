@@ -1,25 +1,32 @@
 import React from 'react';
-import { OnboardingLayout } from '../../components/onboarding/OnboardingLayout';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AuthStackScreenProps } from '../../navigation/types';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
-export function OnboardingStepTwo({
-  navigation
-}: AuthStackScreenProps<'OnboardingTwo'>) {
-  const handleSkip = async () => {
-    await AsyncStorage.setItem('has_seen_onboarding', 'true');
-    navigation.replace('Signup');
-  };
+export function OnboardingStepTwo() {
+    const navigation = useNavigation<any>();
 
-  return (
-    <OnboardingLayout
-      step={2}
-      totalSteps={3}
-      title="Global Intelligence"
-      description="Leverage a global network of top-tier partners and real-time market insights."
-      image={require('../../../assets/onboarding/onboarding_2_ultra.png')}
-      onNext={() => navigation.navigate('OnboardingThree')}
-      onSkip={handleSkip}
-    />
-  );
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.content}>
+                <Text style={styles.title}>Track Your Success</Text>
+                <Text style={styles.description}>Monitor your referrals and earnings in real-time.</Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('OnboardingThree')}
+                >
+                    <Text style={styles.buttonText}>Next</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center' },
+    content: { padding: 20, alignItems: 'center' },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
+    description: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 30 },
+    button: { backgroundColor: '#4F46E5', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 25, width: '100%', alignItems: 'center' },
+    buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' }
+});

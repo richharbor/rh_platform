@@ -1,25 +1,34 @@
 #!/bin/bash
-# Install Docker
+set -e
+
+# Update and install dependencies
 sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+# Add Docker's official GPG key
+sudo mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set up the repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine and Docker Compose
 sudo apt-get update
-sudo apt-get install -y docker-ce docker-compose
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Start and enable Docker
 sudo systemctl start docker
 sudo systemctl enable docker
 
-# Install Nginx
+# Install Nginx and Certbot
 sudo apt-get install -y nginx certbot python3-certbot-nginx
 
-# Copy production Nginx config (this assumes we find a way to get the file there, 
-# for now we'll write it inline in the script or use a better provisioning tool later)
-cat <<EOF > /etc/nginx/sites-available/rfin
+# Configure Nginx
+cat <<EOF > /etc/nginx/sites-available/rh_platform
 server {
     listen 80;
-    server_name api.richharbor.com;
     location / {
         proxy_pass http://localhost:5003;
         proxy_http_version 1.1;
@@ -29,25 +38,13 @@ server {
         proxy_cache_bypass \$http_upgrade;
     }
 }
-server {
-    listen 80;
-    server_name admin.richharbor.com;
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-}
 EOF
 
-sudo ln -s /etc/nginx/sites-available/rfin /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
+sudo ln -sf /etc/nginx/sites-available/rh_platform /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
 
 # Add ubuntu user to docker group
 sudo usermod -aG docker ubuntu
 
-echo "Infrastructure Ready! Next step: Run 'sudo certbot --nginx' to enable SSL."
+echo "Infrastructure Ready!"

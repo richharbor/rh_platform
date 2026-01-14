@@ -18,6 +18,11 @@ resource "aws_instance" "main" {
   vpc_security_group_ids = [var.web_sg_id]
   key_name               = var.key_name
 
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+  }
+
   user_data = file("${path.module}/scripts/user-data.sh")
 
   tags = {

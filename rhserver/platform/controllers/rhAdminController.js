@@ -1,6 +1,7 @@
 const { User, Lead, Admin, AdminRole, Incentive, ProductRule } = require("../models");
 const { Op } = require("sequelize");
 const { sendEmail } = require("../services/emailService");
+const notificationService = require("../services/fcmNotificationService");
 
 // List all users (Admin only)
 const listUsers = async (req, res) => {
@@ -109,9 +110,24 @@ const updateLeadInternalStatus = async (req, res) => {
             if (incentive_amount !== undefined && incentive_amount !== null) {
                 finalAmount = parseFloat(incentive_amount);
             } else {
-                // Fallback calculation if not provided
+                // Fallback calculation based on user role
+                const user = await User.findByPk(lead.user_id);
                 const rule = await ProductRule.findOne({ where: { product_type: lead.product_type } });
-                const percentage = rule ? rule.reward_percentage : 0;
+
+                // Determine percentage based on user's account_type
+                let percentage = 0;
+                if (rule && user) {
+                    const accountType = user.account_type || 'Partner';
+                    if (accountType === 'Partner') {
+                        percentage = rule.partner_percentage || 0;
+                    } else if (accountType === 'Customer') {
+                        percentage = rule.customer_percentage || 0;
+                    } else if (accountType === 'Referral Partner') {
+                        percentage = rule.referral_partner_percentage || 0;
+                    }
+                    console.log(`[INCENTIVE] Using ${accountType} percentage: ${percentage}%`);
+                }
+
                 const details = lead.product_details || {};
                 const val = details.amount || details.capital || details.ticketSize || details.budget || details.coverage || details.sumInsured || 0;
                 const leadValue = parseFloat(val) || 0;
@@ -368,7 +384,6 @@ const inviteAdmin = async (req, res) => {
 };
 
 // Update Incentive (Amount/Status)
-const notificationService = require("../services/notificationService");
 
 const updateIncentive = async (req, res) => {
     try {
@@ -472,12 +487,14 @@ const listProductRules = async (req, res) => {
 const updateProductRule = async (req, res) => {
     try {
         const { id } = req.params;
-        const { reward_percentage, is_active } = req.body;
+        const { partner_percentage, customer_percentage, referral_partner_percentage, is_active } = req.body;
 
         const rule = await ProductRule.findByPk(id);
         if (!rule) return res.status(404).json({ error: "Rule not found" });
 
-        if (reward_percentage !== undefined) rule.reward_percentage = parseFloat(reward_percentage);
+        if (partner_percentage !== undefined) rule.partner_percentage = parseFloat(partner_percentage);
+        if (customer_percentage !== undefined) rule.customer_percentage = parseFloat(customer_percentage);
+        if (referral_partner_percentage !== undefined) rule.referral_partner_percentage = parseFloat(referral_partner_percentage);
         if (is_active !== undefined) rule.is_active = is_active;
 
         await rule.save();

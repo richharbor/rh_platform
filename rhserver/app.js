@@ -128,6 +128,9 @@ app.use("/v1", (req, res, next) => {
 app.use("/v1", platformAuthRoutes);
 app.use("/v1", platformLeadRoutes);
 
+const platformRoleUpgradeRoutes = require("./platform/routes/roleUpgradeRoutes");
+app.use("/v1/me", platformRoleUpgradeRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -150,12 +153,13 @@ const startServer = async () => {
     if (process.env.NODE_ENV === "development") {
       const { Client } = require("pg");
       const createDb = async (dbName) => {
+        if (!dbName) return;
         const client = new Client({
           user: process.env.DB_USERNAME || "postgres",
           host: process.env.DB_HOST || "db",
           database: "postgres",
           password: process.env.DB_PASSWORD || "postgres",
-          port: 5432,
+          port: process.env.DB_PORT || 5432,
         });
         await client.connect();
         try {
@@ -171,14 +175,15 @@ const startServer = async () => {
         }
       };
       try {
-        await createDb("richharbor-beta");
-        await createDb("rh_platform");
+        await createDb(process.env.DB_NAME);
+        await createDb(process.env.PLATFORM_DB_NAME);
       } catch (dbErr) {
         console.warn(
           "  Note: Database creation check failed (might already exist):",
           dbErr.message
         );
       }
+
     }
 
     await sequelize.authenticate();

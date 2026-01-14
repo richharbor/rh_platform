@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function (models) {
-        // associations can be defined here
+        User.hasMany(models.RoleUpgradeRequest, { foreignKey: 'user_id', as: 'upgrade_requests' });
     };
 
     return User;

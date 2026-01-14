@@ -1,7 +1,7 @@
 variable "project_name" {}
 variable "environment" {}
 variable "instance_type" {
-  default = "t2.small"
+  default = "t3.small"
 }
 variable "public_subnet_id" {}
 variable "web_sg_id" {}

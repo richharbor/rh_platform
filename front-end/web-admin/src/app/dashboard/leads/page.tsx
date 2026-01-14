@@ -27,8 +27,10 @@ export default function LeadsPage() {
     const [actionLoading, setActionLoading] = useState(false);
 
     // Reward Confirmation State
+    // Reward Confirmation State
     const [isRewardConfirmOpen, setIsRewardConfirmOpen] = useState(false);
     const [rewardAmount, setRewardAmount] = useState(0);
+    const [calculationDetails, setCalculationDetails] = useState<any>(null); // Store breakdown
     const [productRules, setProductRules] = useState<any[]>([]);
 
     // Create/Edit Form State
@@ -94,7 +96,23 @@ export default function LeadsPage() {
             // Calculate Estimated Reward
             const leadType = selectedLead.product_type;
             const rule = productRules.find(r => r.product_type === leadType || r.product_type.toLowerCase() === leadType.toLowerCase());
-            const percentage = rule ? rule.reward_percentage : 0;
+            // Determine percentage based on user's role
+            // Determine percentage based on user's role
+            let percentage = 0;
+            const rawRole = selectedLead.user?.role || 'partner';
+            const role = rawRole.toLowerCase();
+
+            if (rule) {
+                if (role === 'customer') {
+                    percentage = rule.customer_percentage || 0;
+                } else if (role === 'referral partner' || role === 'referral_partner') {
+                    percentage = rule.referral_partner_percentage || 0;
+                } else {
+                    // Default to Partner (role === 'partner' or other)
+                    percentage = rule.partner_percentage || 0;
+                }
+                console.log(`Calculating incentive for ${role}: ${percentage}%`);
+            }
 
             const details = selectedLead.product_details || {};
             // Extract value based on known fields or generic amount
@@ -105,12 +123,20 @@ export default function LeadsPage() {
 
             const estAmount = finalValue * (percentage / 100);
 
+            // Store details for display
+            setCalculationDetails({
+                role: rawRole, // Display the raw role name (e.g. "Partner" or "partner")
+                percentage: percentage,
+                leadValue: finalValue,
+                productType: leadType
+            });
+
             setRewardAmount(estAmount);
             setIsRewardConfirmOpen(true);
             return;
         }
 
-        // Otherwise regular update
+        // otherwise regular update
         await finalizeStatusUpdate();
     };
 
@@ -403,8 +429,29 @@ export default function LeadsPage() {
                                         <h4 className="font-bold text-blue-900 mb-2 text-sm">Confirm Incentive Payout</h4>
                                         <p className="text-xs text-blue-700 mb-3">
                                             Status change to <b>{newStatus}</b> will trigger a payout.
-                                            Please verify the amount.
                                         </p>
+
+                                        {/* Calculation Breakdown */}
+                                        {calculationDetails && (
+                                            <div className="bg-white/50 p-3 rounded mb-3 text-xs border border-blue-100">
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-gray-500">User Role:</span>
+                                                    <span className="font-bold">{calculationDetails.role}</span>
+                                                </div>
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-gray-500">Lead Value:</span>
+                                                    <span>₹{calculationDetails.leadValue.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-gray-500">Rate ({calculationDetails.productType}):</span>
+                                                    <span>{calculationDetails.percentage}%</span>
+                                                </div>
+                                                <div className="border-t border-blue-200 my-1 pt-1 flex justify-between font-bold text-blue-900">
+                                                    <span>Calculated:</span>
+                                                    <span>₹{(calculationDetails.leadValue * (calculationDetails.percentage / 100)).toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <label className="text-xs font-bold text-gray-500 uppercase">Incentive Amount (₹)</label>
                                         <input

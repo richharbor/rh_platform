@@ -23,6 +23,7 @@ export type MainTabParamList = {
 export type AppStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   CreateLead: undefined;
+  RoleUpgradeRequest: undefined;
   Support: undefined;
 };
 

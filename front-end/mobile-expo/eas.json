@@ -11,7 +11,7 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.richharbor.com/v1"
+        "EXPO_PUBLIC_API_URL": "https://q9qh6pkg-5003.inc1.devtunnels.ms/v1"
       }
     },
     "production": {

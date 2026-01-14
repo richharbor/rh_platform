@@ -37,6 +37,11 @@ router.post('/invite', authenticateAdmin, rhAdminController.inviteAdmin);
 router.delete('/team/:id', authenticateAdmin, rhAdminController.deleteTeamMember);
 router.patch('/incentives/:id', authenticateAdmin, rhAdminController.updateIncentive);
 
+// Role Upgrade Requests
+const rhRoleUpgradeController = require('../controllers/rhRoleUpgradeController');
+router.get('/role-upgrade-requests', authenticateAdmin, rhRoleUpgradeController.adminListRequests);
+router.put('/role-upgrade-requests/:id/review', authenticateAdmin, rhRoleUpgradeController.adminReviewRequest);
+
 // Product Rules (Rewards Config)
 router.get('/product-rules', authenticateAdmin, rhAdminController.listProductRules);
 router.put('/product-rules/:id', authenticateAdmin, rhAdminController.updateProductRule);

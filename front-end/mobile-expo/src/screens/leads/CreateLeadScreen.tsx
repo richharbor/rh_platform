@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { ChevronLeft } from 'lucide-react-native';
+import { CountryCode } from 'react-native-country-picker-modal';
 import { AppStackParamList } from '../../navigation/types';
 
 import { PrimaryButton, SecondaryButton } from '../../components';
@@ -13,6 +14,7 @@ import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 import { COMMON_LEAD_FIELDS, PRODUCT_CATEGORIES, PRODUCT_FORMS, LeadField } from '../../config/leads';
 import { leadService } from '../../services/leadService';
 import { useAuthStore } from '../../store/useAuthStore';
+import { validateField, validateEmail, validatePhone, validateName, validateCity } from '../../utils/validation';
 
 // Steps: 0=Basic, 1=Product, 2=Dynamic, 3=Review
 export function CreateLeadScreen() {
@@ -20,7 +22,9 @@ export function CreateLeadScreen() {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
-    const { productType, setProductType } = useAuthStore();
+    const { productType, setProductType, user } = useAuthStore();
+    const userRole = (user?.role || 'customer').toLowerCase();
+    const canSelectLeadType = userRole === 'partner' || userRole === 'referral_partner' || userRole === 'referral partner';
 
     // Initialize mode based on entry state
     const [isPreSelected] = useState(!!productType);
@@ -28,6 +32,11 @@ export function CreateLeadScreen() {
 
     const [consent, setConsent] = useState(false);
     const [showErrors, setShowErrors] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
+
+    // Country code for phone input
+    const [countryCode, setCountryCode] = useState<CountryCode>('IN');
+    const [callingCode, setCallingCode] = useState('91');
 
     // Alert State
 
@@ -43,26 +52,72 @@ export function CreateLeadScreen() {
         setAlertVisible(true);
     };
 
-    // Helper to update data
+    // Helper to update data with validation
     const updateData = (key: string, value: any) => {
         setData((prev) => ({ ...prev, [key]: value }));
+
+        // Clear error for this field when user starts typing
+        if (fieldErrors[key]) {
+            setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+        }
+    };
+
+    // Validate a specific field
+    const validateSingleField = (fieldId: string, value: any, required: boolean = false): string | undefined => {
+        return validateField(fieldId, value, required);
     };
 
     // Step 0: Basic Details
-    const renderBasicDetails = () => (
-        <View>
-            <Text className="text-xl font-bold text-ink-900 mb-6">Client Basic Information</Text>
-            {COMMON_LEAD_FIELDS.map((field) => (
-                <DynamicField
-                    key={field.id}
-                    field={field}
-                    value={data[field.id]}
-                    onChange={(val) => updateData(field.id, val)}
-                    error={showErrors && !data[field.id] && field.required ? 'Required' : undefined}
-                />
-            ))}
-        </View>
-    );
+    const renderBasicDetails = () => {
+        // Prepare fields based on role
+        let fieldsToShow = [...COMMON_LEAD_FIELDS];
+
+        // If user can select lead type, prepend the field
+        if (canSelectLeadType) {
+            const leadTypeField: LeadField = {
+                id: 'leadType',
+                label: 'Lead Type',
+                type: 'radio',
+                options: ['Self', 'Referral', 'Cold'],
+                required: true
+            };
+            fieldsToShow = [leadTypeField, ...COMMON_LEAD_FIELDS];
+        }
+
+        return (
+            <View>
+                <Text className="text-xl font-bold text-ink-900 mb-2">Client Basic Information</Text>
+
+                {!canSelectLeadType && (
+                    <View className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-100">
+                        <Text className="text-blue-800 text-xs">
+                            You are creating a <Text className="font-bold">Self Lead</Text>.
+                            To refer others, please upgrade your account in Profile.
+                        </Text>
+                    </View>
+                )}
+
+                {fieldsToShow.map((field) => {
+                    const error = showErrors ? (fieldErrors[field.id] || validateSingleField(field.id, data[field.id], field.required)) : undefined;
+
+                    return (
+                        <DynamicField
+                            key={field.id}
+                            field={field}
+                            value={data[field.id]}
+                            onChange={(val) => updateData(field.id, val)}
+                            error={error}
+                            countryCode={field.id === 'mobile' ? countryCode : undefined}
+                            onCountryCodeChange={field.id === 'mobile' ? (code, calling) => {
+                                setCountryCode(code);
+                                setCallingCode(calling);
+                            } : undefined}
+                        />
+                    );
+                })}
+            </View>
+        );
+    };
 
     // Step 1: Product Selection
     const renderProductSelect = () => (
@@ -124,9 +179,12 @@ export function CreateLeadScreen() {
             <Text className="text-xl font-bold text-ink-900 mb-6">Review Lead</Text>
             <View className="bg-white p-4 rounded-xl border border-ink-100 space-y-3">
                 <Text className="font-semibold text-ink-700">Client: <Text className="font-bold text-ink-900">{data.clientName}</Text></Text>
+                <Text className="font-semibold text-ink-700">Email: <Text className="font-normal text-ink-900">{data.email}</Text></Text>
+                <Text className="font-semibold text-ink-700">Phone: <Text className="font-normal text-ink-900">+{callingCode} {data.mobile}</Text></Text>
+                <Text className="font-semibold text-ink-700">City: <Text className="font-normal text-ink-900">{data.location}</Text></Text>
+                <Text className="font-semibold text-ink-700">Relationship: <Text className="font-normal text-ink-900">{data.relationship}</Text></Text>
+                <Text className="font-semibold text-ink-700">Client Type: <Text className="font-normal text-ink-900">{data.clientType}</Text></Text>
                 <Text className="font-semibold text-ink-700">Product: <Text className="font-bold text-ink-900">{PRODUCT_CATEGORIES.find(p => p.id === productType)?.label}</Text></Text>
-                <Text className="font-semibold text-ink-700">Phone: <Text className="font-normal text-ink-900">{data.mobile}</Text></Text>
-                <Text className="font-semibold text-ink-700">Lead Type: <Text className="font-normal text-ink-900">{data.leadType}</Text></Text>
             </View>
 
             <TouchableOpacity
@@ -152,13 +210,26 @@ export function CreateLeadScreen() {
         let isReview = (isPreSelected && currentStepIndex === 2) || (!isPreSelected && currentStepIndex === 3);
 
         if (isBasic) {
-            // Validate common
-            const missing = COMMON_LEAD_FIELDS.filter(f => f.required && !data[f.id]);
-            if (missing.length > 0) {
-                showAlert("Missing Information", "Please fill in all required fields to proceed.", [], 'error');
+            // Validate all common fields with specific validation
+            const errors: Record<string, string | undefined> = {};
+            let hasErrors = false;
+
+            COMMON_LEAD_FIELDS.forEach(f => {
+                const error = validateSingleField(f.id, data[f.id], f.required);
+                if (error) {
+                    errors[f.id] = error;
+                    hasErrors = true;
+                }
+            });
+
+            if (hasErrors) {
+                setFieldErrors(errors);
+                showAlert("Missing Information", "Please fix the errors and fill in all required fields.", [], 'error');
                 return;
             }
+
             setShowErrors(false);
+            setFieldErrors({});
             setStep(step + 1);
         } else if (isProduct) {
             if (!productType) {
@@ -194,10 +265,10 @@ export function CreateLeadScreen() {
         try {
             const payload = {
                 product_type: productType,
-                lead_type: (data.leadType || "self").toLowerCase().includes('partner') ? 'partner' : (data.leadType || "self").toLowerCase(),
+                lead_type: (data.leadType || "self").toLowerCase(),
                 name: data.clientName,
                 email: data.email,
-                phone: data.mobile,
+                phone: `+${callingCode}${data.mobile}`, // Include country code with phone
                 city: data.location,
                 product_details: data,
                 consent_confirmed: true,

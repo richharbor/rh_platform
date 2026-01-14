@@ -6,10 +6,13 @@ export const settingsService = {
         return response.data;
     },
 
-    updateProductRule: async (id: number, reward_percentage: number) => {
-        const response = await PrivateAxios.put(`/admin/product-rules/${id}`, {
-            reward_percentage
-        });
+    updateProductRule: async (id: number, updates: {
+        partner_percentage?: number;
+        customer_percentage?: number;
+        referral_partner_percentage?: number;
+        is_active?: boolean;
+    }) => {
+        const response = await PrivateAxios.put(`/admin/product-rules/${id}`, updates);
         return response.data;
     }
 };
