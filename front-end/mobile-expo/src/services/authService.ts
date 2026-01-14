@@ -72,5 +72,10 @@ export const authService = {
             fallbackLabel: 'Use Passcode',
         });
         return result.success;
+    },
+
+    getMe: async () => {
+        const response = await api.get('/auth/me');
+        return response.data;
     }
 };

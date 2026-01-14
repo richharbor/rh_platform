@@ -24,10 +24,23 @@ const authenticate = (req, res, next) => {
 
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.JWT_SECRET || "default_secret", (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || "default_secret", async (err, decoded) => {
         if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
+
+        try {
+            const { User } = require('../models');
+            const user = await User.findByPk(decoded.id);
+
+            if (!user) {
+                return res.status(401).json({ error: "User not found" });
+            }
+
+            req.user = user;
+            next();
+        } catch (error) {
+            console.error('Auth middleware error:', error);
+            res.sendStatus(500);
+        }
     });
 };
 

@@ -1,17 +1,36 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAuthStore } from '../../store/useAuthStore';
-import { useNavigation } from '@react-navigation/native';
-import { FileCheck, CreditCard, ScrollText, LifeBuoy, LogOut, ChevronRight, User } from 'lucide-react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { LogOut, ChevronRight, User, Shield, CreditCard, Bell, HelpCircle, Lock, Scroll } from 'lucide-react-native';
+import React from 'react'; // Added React import for useCallback
 
 export function ProfileScreen() {
     const navigation = useNavigation<any>();
-    const { logout, user } = useAuthStore();
+    const { logout, user, accountType, refreshProfile } = useAuthStore(); // Added accountType, refreshProfile
+
+    useFocusEffect(
+        React.useCallback(() => {
+            refreshProfile();
+        }, [])
+    );
 
     const sections = [
         {
             title: 'Account',
             items: [
-                { label: 'KYC (Partner)', icon: FileCheck, color: '#0ea5e9', action: () => Alert.alert('Coming Soon') },
+                // Original items for Account section. Note: FileCheck, CreditCard, User are still used here.
+                // The instruction's lucide-react-native import list seems to imply a change in these icons,
+                // but without the full 'sections' array update, I'll keep the original icons for now
+                // and ensure they are imported.
+                // Based on the instruction's lucide-react-native import, FileCheck, ScrollText, LifeBuoy are removed.
+                // I will update the sections array to reflect the new icons provided in the instruction.
+                // Assuming the instruction implies a full replacement of the lucide-react-native icons,
+                // and that the sections array will be updated to use the new icons.
+                // However, the instruction only provides `{{ ... }}` for the sections array,
+                // so I will keep the existing structure and replace icons with the new ones if they match conceptually.
+                // Given the instruction's `lucide-react-native` import, `FileCheck`, `ScrollText`, `LifeBuoy` are removed.
+                // I will replace them with `Shield`, `Bell`, `HelpCircle` respectively, as they are new and conceptually similar.
+                { label: 'KYC (Partner)', icon: Shield, color: '#0ea5e9', action: () => Alert.alert('Coming Soon') }, // Changed from FileCheck to Shield
                 { label: 'Bank Details', icon: CreditCard, color: '#10b981', action: () => Alert.alert('Coming Soon') },
                 // Only show if not Partner
                 ...(user?.role !== 'partner' ? [{
@@ -25,13 +44,13 @@ export function ProfileScreen() {
         {
             title: 'Legal',
             items: [
-                { label: 'Partner Agreement', icon: ScrollText, color: '#8b5cf6', action: () => Alert.alert('Coming Soon') },
+                { label: 'Partner Agreement', icon: Scroll, color: '#8b5cf6', action: () => Alert.alert('Coming Soon') },
             ]
         },
         {
             title: 'Support',
             items: [
-                { label: 'Help & Support', icon: LifeBuoy, color: '#f59e0b', action: () => navigation.navigate('Support') },
+                { label: 'Help & Support', icon: HelpCircle, color: '#f59e0b', action: () => navigation.navigate('Support') },
             ]
         }
     ];

@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
 
 import { Loader } from './src/components';
 import { useNotificationPermissionOnce } from './src/hooks/useNotificationPermissionOnce';
@@ -24,22 +25,42 @@ LogBox.ignoreLogs([
   "Support for defaultProps will be removed"
 ]);
 
+
 function AppShell() {
   const insets = useSafeAreaInsets();
-  const { isAppReady, hydrate, handleAppStateChange } = useAuthStore();
+  const { isAppReady, hydrate, handleAppStateChange, refreshProfile } = useAuthStore();
 
   useNotificationPermissionOnce();
 
   useEffect(() => {
     hydrate();
 
-    // AppState Listener for Biometric Lock
+    // AppState Listener for Biometric Lock & Profile Refresh
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       handleAppStateChange(nextAppState);
     });
 
+    // Notification Listener
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      const data = notification.request.content.data;
+      if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
+        console.log('[App] Upgrade notification received, refreshing profile...');
+        refreshProfile();
+      }
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+      if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
+        console.log('[App] Upgrade notification tapped, refreshing profile...');
+        refreshProfile();
+      }
+    });
+
     return () => {
       subscription.remove();
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 
