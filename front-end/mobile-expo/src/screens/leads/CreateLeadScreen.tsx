@@ -82,6 +82,9 @@ export function CreateLeadScreen() {
                 required: true
             };
             fieldsToShow = [leadTypeField, ...COMMON_LEAD_FIELDS];
+        } else {
+            // If customer (Self lead only), hide Relationship question as it's redundant
+            fieldsToShow = fieldsToShow.filter(f => f.id !== 'relationship');
         }
 
         return (
@@ -182,7 +185,9 @@ export function CreateLeadScreen() {
                 <Text className="font-semibold text-ink-700">Email: <Text className="font-normal text-ink-900">{data.email}</Text></Text>
                 <Text className="font-semibold text-ink-700">Phone: <Text className="font-normal text-ink-900">+{callingCode} {data.mobile}</Text></Text>
                 <Text className="font-semibold text-ink-700">City: <Text className="font-normal text-ink-900">{data.location}</Text></Text>
-                <Text className="font-semibold text-ink-700">Relationship: <Text className="font-normal text-ink-900">{data.relationship}</Text></Text>
+                {canSelectLeadType && (
+                    <Text className="font-semibold text-ink-700">Relationship: <Text className="font-normal text-ink-900">{data.relationship}</Text></Text>
+                )}
                 <Text className="font-semibold text-ink-700">Client Type: <Text className="font-normal text-ink-900">{data.clientType}</Text></Text>
                 <Text className="font-semibold text-ink-700">Product: <Text className="font-bold text-ink-900">{PRODUCT_CATEGORIES.find(p => p.id === productType)?.label}</Text></Text>
             </View>
@@ -214,7 +219,12 @@ export function CreateLeadScreen() {
             const errors: Record<string, string | undefined> = {};
             let hasErrors = false;
 
-            COMMON_LEAD_FIELDS.forEach(f => {
+            let fieldsToValidate = [...COMMON_LEAD_FIELDS];
+            if (!canSelectLeadType) {
+                fieldsToValidate = fieldsToValidate.filter(f => f.id !== 'relationship');
+            }
+
+            fieldsToValidate.forEach(f => {
                 const error = validateSingleField(f.id, data[f.id], f.required);
                 if (error) {
                     errors[f.id] = error;
