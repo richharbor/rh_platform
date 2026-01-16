@@ -152,11 +152,17 @@ export function RootSidebar(props: React.ComponentProps<typeof Sidebar>) {
       icon: Gavel,
       permission: "manage_my_bids",
     },
+    // {
+    //   title: "Whatsapp",
+    //   url: `/${roleNameForUrl}/whatsapp`,
+    //   icon: WhatsappIcon,
+    //   permission: "manage_whatsapp",
+    // },
     {
-      title: "Whatsapp",
-      url: `/${roleNameForUrl}/whatsapp`,
-      icon: WhatsappIcon,
-      permission: "manage_whatsapp",
+      title: "Web Shares",
+      url: `/${roleNameForUrl}/web-shares`,
+      icon: Building2,
+      permission: "manage_web_shares",
     },
   ];
 

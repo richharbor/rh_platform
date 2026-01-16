@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { supportService } from '@/services/Support/supportService';
 import SidePanel from '@/components/ui/SidePanel';
 
@@ -42,9 +43,9 @@ export default function SupportPage() {
             const updated = await supportService.updateTicket(selectedTicket.id, { status: newStatus });
             setTickets(prev => prev.map(t => t.id === updated.id ? updated : t));
             setSelectedTicket(updated);
-            alert('Ticket Updated');
+            toast.success('Ticket Updated');
         } catch (error) {
-            alert('Failed to update ticket');
+            toast.error('Failed to update ticket');
         } finally {
             setActionLoading(false);
         }

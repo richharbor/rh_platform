@@ -184,6 +184,30 @@ const updateLeadInternalStatus = async (req, res) => {
     }
 };
 
+const updateWebLeadStatus = async (req, res) => {
+    try {
+        const { leadId } = req.params;
+        const { status } = req.body;
+
+        const lead = await Lead.findByPk(leadId);
+        if (!lead) return res.status(404).json({ error: "Lead not found" });
+
+
+        lead.status = status;
+
+        await lead.save();
+        res.json(lead);
+    } catch (error) {
+        console.error("Update internal status error:", error);
+        res.status(500).json({ error: "Failed to update status" });
+
+    }
+
+
+
+
+}
+
 // List RMs (for assignment)
 const listRMs = async (req, res) => {
     try {
@@ -537,6 +561,7 @@ module.exports = {
     deleteTeamMember,
     listProductRules,
     updateProductRule,
-    listPayouts
+    listPayouts,
+    updateWebLeadStatus
 };
 

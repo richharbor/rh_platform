@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import axios from 'axios';
 
 // Service Function (Ideally move to services/adminService.ts, keeping here for speed as per user req style)
@@ -67,9 +68,9 @@ export default function SettingsPage() {
                 return newUpdates;
             });
 
-            alert(`${role.replace('_', ' ')} percentage updated successfully`);
+            toast.success(`${role.replace('_', ' ')} percentage updated successfully`);
         } catch (error) {
-            alert('Failed to update percentage');
+            toast.error('Failed to update percentage');
         } finally {
             setSaving(null);
         }
