@@ -3,7 +3,7 @@ const { WebShares, Sequelize } = require("../models");
 // Create a new WebShare
 const createWebShare = async (req, res) => {
     try {
-        const { id, name, sector, price } = req.body;
+        const { id, name, sector, price, symbol } = req.body;
 
         // Normalize name: lowercase and remove spaces
         const normalizedInputName = name.toLowerCase().replace(/\s+/g, '');
@@ -17,21 +17,22 @@ const createWebShare = async (req, res) => {
         });
 
         if (existingShare) {
-            return res.status(400).json({ error: "WebShare with this name already exists" });
+            return res.status(400).json({ error: "Share with this name already exists" });
         }
 
         const newWebShare = await WebShares.create({
             name,
             sector,
-            price
+            price,
+            symbol
         });
 
         return res.status(201).json({
-            message: "WebShare created successfully",
+            message: "Share created successfully",
             data: newWebShare
         });
     } catch (error) {
-        console.error("Error creating WebShare:", error);
+        console.error("Error creating Share:", error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -39,16 +40,16 @@ const createWebShare = async (req, res) => {
 // Update an existing WebShare
 const updateWebShare = async (req, res) => {
     try {
-        const { id, name, sector, price } = req.body;
+        const { id, name, sector, price, symbol } = req.body;
 
         if (!id) {
-            return res.status(400).json({ error: "WebShare ID is required for update" });
+            return res.status(400).json({ error: "Share ID is required for update" });
         }
 
         const webShare = await WebShares.findByPk(id);
 
         if (!webShare) {
-            return res.status(404).json({ error: "WebShare not found" });
+            return res.status(404).json({ error: "Share not found" });
         }
 
         // Map section to sector if provided
@@ -56,15 +57,16 @@ const updateWebShare = async (req, res) => {
         if (name) webShare.name = name;
         if (sector) webShare.sector = sector;
         if (price) webShare.price = price;
+        if(symbol) webShare.symbol = symbol;
 
         await webShare.save();
 
         return res.status(200).json({
-            message: "WebShare updated successfully",
+            message: "Share updated successfully",
             data: webShare
         });
     } catch (error) {
-        console.error("Error updating WebShare:", error);
+        console.error("Error updating Share:", error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -77,7 +79,37 @@ const getAllWebShares = async (req, res) => {
             data: webShares
         });
     } catch (error) {
-        console.error("Error fetching WebShares:", error);
+        console.error("Error fetching Shares:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Update an existing WebShare
+const deleteWebShare = async (req, res) => {
+    try {
+         const { id } = req.params; // 👈 from params
+
+        if (!id) {
+            return res.status(400).json({ error: "Share ID is required for update" });
+        }
+
+        const webShare = await WebShares.findByPk(id);
+
+        if (!webShare) {
+            return res.status(404).json({ error: "Share not found" });
+        }
+
+        // Delete the record
+        await webShare.destroy();
+
+
+
+        return res.status(200).json({
+            message: "WebShare deleted successfully",
+            data: webShare
+        });
+    } catch (error) {
+        console.error("Error deleting Share:", error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -85,5 +117,6 @@ const getAllWebShares = async (req, res) => {
 module.exports = {
     createWebShare,
     updateWebShare,
-    getAllWebShares
+    getAllWebShares,
+    deleteWebShare
 };

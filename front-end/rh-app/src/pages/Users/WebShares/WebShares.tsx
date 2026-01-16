@@ -1,4 +1,5 @@
 "use client";
+import { createWebShare, updateWebShare, getWebShares, deleteWebShare, uploadPoster } from "@/services/WebShares/WebSharesServices";
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import {
     Trash2,
     Edit,
     MoreHorizontal,
+    Loader2
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
@@ -39,10 +41,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { symbol } from "zod/v3";
 
 interface Share {
-    id: number;
-    logo: string;
+    id: number | string;
+    symbol: string;
     name: string;
     price: number;
     sector: string;
@@ -51,60 +54,44 @@ interface Share {
     action?: string;
 }
 
-const dummyShares: Share[] = [
-    {
-        id: 1,
-        logo: "https://picsum.photos/seed/1/40/40",
-        name: "TechNova Corp",
-        price: 150.25,
-        sector: "Technology",
-        label: "Hot Selling",
-        status: "Listed",
-    },
-    {
-        id: 2,
-        logo: "https://picsum.photos/seed/2/40/40",
-        name: "GreenEnergy Ltd",
-        price: 45.1,
-        sector: "Energy",
-        label: "Promising",
-        status: "Unlisted",
-    },
-    {
-        id: 3,
-        logo: "https://picsum.photos/seed/3/40/40",
-        name: "HealthPlus",
-        price: 210.5,
-        sector: "Healthcare",
-        label: "Hot Selling",
-        status: "Listed",
-    },
-    {
-        id: 4,
-        logo: "https://picsum.photos/seed/4/40/40",
-        name: "FinanceFlow",
-        price: 89.9,
-        sector: "Finance",
-        label: "Promising",
-        status: "Listed",
-    },
-    {
-        id: 5,
-        logo: "https://picsum.photos/seed/5/40/40",
-        name: "UrbanBuild",
-        price: 32.4,
-        sector: "Real Estate",
-        label: "Promising",
-        status: "Unlisted",
-    },
-];
+const dummyShares: Share[] = [];
 
 export default function WebShares() {
-    const [shares, setShares] = useState<Share[]>(dummyShares);
+    const [shares, setShares] = useState<Share[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    React.useEffect(() => {
+        fetchShares();
+    }, []);
+
+    const fetchShares = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getWebShares();
+            // Handle potentially nested data structure or direct array
+            const data = Array.isArray(response) ? response : (response?.data || response?.shares || []);
+
+            if (Array.isArray(data)) {
+                setShares(data.reverse());
+            } else {
+                console.error("Fetched data is not an array:", response);
+                setShares([]);
+                toast.error("Received invalid data from server");
+            }
+        } catch (error) {
+            console.error("Failed to fetch shares", error);
+            toast.error("Failed to fetch shares");
+            setShares([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     const [search, setSearch] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [currentId, setCurrentId] = useState<number | null>(null);
+    const [currentId, setCurrentId] = useState<number | string | null>(null);
 
     // States for the form
     const [formName, setFormName] = useState("");
@@ -113,20 +100,14 @@ export default function WebShares() {
     const [formLogo, setFormLogo] = useState("");
     const [inputType, setInputType] = useState<"url" | "upload">("url");
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormLogo(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
         }
     };
 
-    const filteredShares = shares.filter((share) =>
-        share.name.toLowerCase().includes(search.toLowerCase())
-    );
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [shareToDelete, setShareToDelete] = useState<Share | null>(null);
@@ -142,67 +123,90 @@ export default function WebShares() {
     };
 
     const openEditDialog = (share: Share) => {
+        setSelectedFile(null);
         setIsEditing(true);
         setCurrentId(share.id);
         setFormName(share.name);
         setFormPrice(share.price.toString());
         setFormSector(share.sector);
-        setFormLogo(share.logo);
+        setFormLogo(share.symbol);
+        
         // Timeout to prevent pointer-events issues with Radix Dialog + Dropdown
         setTimeout(() => setDialogOpen(true), 0);
     };
 
     const handleDeleteClick = (share: Share) => {
         setShareToDelete(share);
-        setDeleteDialogOpen(true);
+        setTimeout(() => setDeleteDialogOpen(true), 0);
     };
 
-    const confirmDelete = () => {
-        if (shareToDelete) {
-            setShares(shares.filter((s) => s.id !== shareToDelete.id));
+    const confirmDelete = async () => {
+        if (!shareToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deleteWebShare(shareToDelete.id.toString());
             toast.success("Share deleted successfully");
+            setShares((prev) => prev.filter((s) => s.id !== shareToDelete.id));
             setDeleteDialogOpen(false);
             setShareToDelete(null);
+        } catch (error) {
+            console.error("Error deleting share:", error);
+            toast.error("Failed to delete Share");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!formName || !formPrice || !formSector) {
             toast.error("Please fill in all required fields");
             return;
         }
 
-        if (isEditing && currentId !== null) {
-            // Update existing
-            const updatedShares = shares.map((s) =>
-                s.id === currentId
-                    ? {
-                        ...s,
-                        name: formName,
-                        price: parseFloat(formPrice) || 0,
-                        sector: formSector,
-                        logo: formLogo || `https://picsum.photos/seed/${s.id}/40/40`,
-                    }
-                    : s
-            );
-            setShares(updatedShares);
-            toast.success("Share updated successfully");
-        } else {
-            // Create new
-            const newId = Math.max(...shares.map(s => s.id), 0) + 1;
-            const newShare: Share = {
-                id: newId,
-                name: formName,
-                price: parseFloat(formPrice) || 0,
-                sector: formSector,
-                logo: formLogo || `https://picsum.photos/seed/${newId}/40/40`,
-                label: "Promising", // Default
-                status: "Listed", // Default
-            };
-            setShares([...shares, newShare]);
-            toast.success("New share added successfully");
+        setIsSaving(true);
+        try {
+            if (isEditing && currentId !== null) {
+                // Update existing
+                let uploadedUrl = formLogo;
+                if (selectedFile) {
+                    uploadedUrl = await uploadPoster(selectedFile);
+                }
+
+                const updatedShare = await updateWebShare({
+                    id: currentId.toString(),
+                    name: formName,
+                    price: parseFloat(formPrice) || 0,
+                    sector: formSector,
+                    symbol: uploadedUrl,
+                });
+                setShares((prev) => prev.map((s) => (s.id === updatedShare?.data.id ? updatedShare?.data : s)));
+                toast.success("Share updated successfully");
+            } else {
+                // Create new
+
+                let uploadedUrl = formLogo;
+                if (selectedFile) {
+                    uploadedUrl = await uploadPoster(selectedFile);
+                }
+
+                const newShare = await createWebShare({
+                    name: formName,
+                    price: parseFloat(formPrice) || 0,
+                    sector: formSector,
+                    symbol:uploadedUrl
+                });
+
+                setShares((prev) => [newShare?.data, ...prev]);
+                toast.success("New share added successfully");
+            }
+            setDialogOpen(false);
+            // fetchShares(); // Optimization: No need to fetch again
+        } catch (error) {
+            console.error("Error saving share", error);
+            toast.error("Failed to save share");
+        } finally {
+            setIsSaving(false);
         }
-        setDialogOpen(false);
     };
 
     return (
@@ -256,20 +260,27 @@ export default function WebShares() {
                                         <TableHead>Name</TableHead>
                                         <TableHead>Price</TableHead>
                                         <TableHead>Sector</TableHead>
-                                        <TableHead>Label</TableHead>
-                                        <TableHead>Status</TableHead>
                                         <TableHead>Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredShares.length ? (
-                                        filteredShares.map((share) => (
+                                    {isLoading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={7} className="h-24 text-center">
+                                                <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    Loading shares...
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : shares.length ? (
+                                        shares.filter((share) => share?.name?.toLowerCase().includes(search.toLowerCase())).map((share) => (
                                             <TableRow key={share.id} className="hover:bg-muted/50 transition-colors">
                                                 <TableCell className="py-4">
                                                     <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-muted/30 border border-border overflow-hidden">
-                                                        {share.logo ? (
+                                                        {share?.symbol ? (
                                                             <img
-                                                                src={share.logo}
+                                                                src={share?.symbol}
                                                                 alt={share.name}
                                                                 className="h-full w-full object-cover"
                                                                 onError={(e) => {
@@ -280,27 +291,27 @@ export default function WebShares() {
                                                         ) : (
                                                             <span className="text-xl text-muted-foreground font-bold">{share.name.charAt(0)}</span>
                                                         )}
-                                                        <span className={`text-xl text-muted-foreground font-bold hidden ${(share.logo) ? '' : 'block'}`}>{share.name.charAt(0)}</span>
+                                                        <span className={`text-xl text-muted-foreground font-bold hidden ${(share.symbol) ? '' : 'block'}`}>{share.name.charAt(0)}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="font-semibold text-base">{share.name}</TableCell>
-                                                <TableCell className="font-medium text-foreground/80">₹{share.price.toFixed(2)}</TableCell>
+                                                <TableCell className="font-semibold text-base">{share?.name}</TableCell>
+                                                <TableCell className="font-medium text-foreground/80">₹{share?.price}</TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
                                                         <span className="h-2 w-2 rounded-full bg-blue-500"></span>
-                                                        <span className="text-muted-foreground">{share.sector}</span>
+                                                        <span className="text-muted-foreground">{share?.sector}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>
+                                                {/* <TableCell>
                                                     <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200">
                                                         {share.label}
                                                     </Badge>
-                                                </TableCell>
-                                                <TableCell>
+                                                </TableCell> */}
+                                                {/* <TableCell>
                                                     <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                                                         {share.status}
                                                     </span>
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
@@ -365,9 +376,9 @@ export default function WebShares() {
                         <div className="flex flex-col items-center gap-3">
                             <div className="group relative">
                                 <div className="h-28 w-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center overflow-hidden hover:border-primary/50 transition-colors">
-                                    {formLogo ? (
+                                    {(formLogo || selectedFile)  ? (
                                         <img
-                                            src={formLogo}
+                                            src={selectedFile ? URL.createObjectURL(selectedFile) : formLogo}
                                             alt="Preview"
                                             className="h-full w-full object-cover"
                                         />
@@ -471,6 +482,7 @@ export default function WebShares() {
                             variant="ghost"
                             onClick={() => setDialogOpen(false)}
                             className="h-9 px-6 text-muted-foreground hover:text-foreground"
+                            disabled={isSaving}
                         >
                             Cancel
                         </Button>
@@ -478,8 +490,16 @@ export default function WebShares() {
                             type="submit"
                             onClick={handleSave}
                             className="h-9 px-8 rounded-lg"
+                            disabled={isSaving}
                         >
-                            {isEditing ? "Save" : "Create"}
+                            {isSaving ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {isEditing ? "Updating..." : "Creating..."}
+                                </>
+                            ) : (
+                                isEditing ? "Save" : "Create"
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -504,6 +524,7 @@ export default function WebShares() {
                             variant="ghost"
                             onClick={() => setDeleteDialogOpen(false)}
                             className="h-9 px-6 text-muted-foreground hover:text-foreground"
+                            disabled={isDeleting}
                         >
                             Cancel
                         </Button>
@@ -512,8 +533,16 @@ export default function WebShares() {
                             variant="destructive"
                             onClick={confirmDelete}
                             className="h-9 px-6 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm"
+                            disabled={isDeleting}
                         >
-                            Delete
+                            {isDeleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Deleting...
+                                </>
+                            ) : (
+                                "Delete"
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

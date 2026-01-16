@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { getLeads, assignLead, updateLeadInternalStatus, createLead, updateLead } from '@/services/Leads/leadService';
+import { getLeads, assignLead, updateLeadInternalStatus, createLead, updateLead, updateWebLeadStatus } from '@/services/Leads/leadService';
 import { getRMs } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
 // import Modal from '@/components/ui/Modal';
@@ -13,10 +13,12 @@ export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({ product: '', status: '', search: '' });
+    const [activeSourceTab, setActiveSourceTab] = useState<'web' | 'app'>('app'); // Default to App leads
 
     // Side Panel & Action States
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [isWebPanelOpen, setIsWebPanelOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('summary');
     const [rms, setRms] = useState<any[]>([]);
 
@@ -46,7 +48,7 @@ export default function LeadsPage() {
     useEffect(() => {
         loadData();
         loadRules();
-    }, [filters]);
+    }, [filters, activeSourceTab]);
 
     const loadRules = async () => {
         try {
@@ -62,6 +64,15 @@ export default function LeadsPage() {
             setRms(rmsData);
 
             let filtered = leadsData;
+
+            // Filter by Source (Web vs App)
+            if (activeSourceTab === 'web') {
+                filtered = filtered.filter((l: any) => l.product_details?.source === 'web');
+            } else {
+                // App leads: source is missing or explicitly 'app' (or anything not 'web')
+                filtered = filtered.filter((l: any) => !l.product_details?.source || l.product_details?.source !== 'web');
+            }
+
             if (filters.status) filtered = filtered.filter((l: any) => l.internal_status === filters.status);
             if (filters.product) filtered = filtered.filter((l: any) => l.product_type === filters.product);
             if (filters.search) {
@@ -72,6 +83,7 @@ export default function LeadsPage() {
                     l.phone?.includes(q)
                 );
             }
+
             setLeads(filtered);
         } catch (error) {
             console.error("Failed to load data", error);
@@ -85,7 +97,12 @@ export default function LeadsPage() {
         setNewStatus(lead.status || 'New');
         setAssigneeId(lead.assignee_id || '');
         setActiveTab('summary');
-        setIsPanelOpen(true);
+
+        if (lead.product_details?.source === 'web') {
+            setIsWebPanelOpen(true);
+        } else {
+            setIsPanelOpen(true);
+        }
     };
 
     const handleStatusUpdate = async () => {
@@ -139,6 +156,11 @@ export default function LeadsPage() {
         // otherwise regular update
         await finalizeStatusUpdate();
     };
+    const handleWebLeadStatusUpdate = async () => {
+        if (!selectedLead) return;
+
+        await finalizeWebLeadStatusUpdate();
+    }
 
     const finalizeStatusUpdate = async () => {
         setActionLoading(true);
@@ -160,6 +182,28 @@ export default function LeadsPage() {
             }
 
             const updated = await updateLeadInternalStatus(selectedLead.id, payload);
+
+            setLeads(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
+            setSelectedLead({ ...selectedLead, ...updated });
+
+            toast.success('Status updated successfully');
+            setIsRewardConfirmOpen(false);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to update status');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+    const finalizeWebLeadStatusUpdate = async () => {
+        setActionLoading(true);
+        try {
+            const payload = {
+                status: newStatus,
+            };
+
+
+            const updated = await updateWebLeadStatus(selectedLead.id, payload);
 
             setLeads(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
             setSelectedLead({ ...selectedLead, ...updated });
@@ -212,6 +256,22 @@ export default function LeadsPage() {
             </div>
 
             <div className="card mb-6">
+                {/* Source Tabs */}
+                <div className="flex border-b border-gray-200 mb-4">
+                    <button
+                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'app' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        onClick={() => setActiveSourceTab('app')}
+                    >
+                        App Leads
+                    </button>
+                    <button
+                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'web' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        onClick={() => setActiveSourceTab('web')}
+                    >
+                        Web Leads
+                    </button>
+                </div>
+
                 <div className="flex gap-4">
                     <input className="input" placeholder="Search Client..." value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
                     <select className="input" value={filters.status} onChange={e => setFilters({ ...filters, status: e.target.value })}>
@@ -504,6 +564,177 @@ export default function LeadsPage() {
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </SidePanel>
+            {/* Separate WEB Lead Side Panel */}
+            <SidePanel isOpen={isWebPanelOpen} onClose={() => { setIsWebPanelOpen(false); setIsRewardConfirmOpen(false); }} title={`WEB Query #${selectedLead?.id} - ${selectedLead?.name}`}>
+                {selectedLead && (
+                    <div className="space-y-6">
+                        {/* Tabs */}
+                        <div className="flex border-b border-gray-200">
+                            {['summary', 'assignment', 'status'].map(t => (
+                                <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 capitalize ${activeTab === t ? 'border-b-2 border-blue-600 text-blue-600 font-bold' : 'text-gray-500'}`}>{t}</button>
+                            ))}
+                        </div>
+
+                        {activeTab === 'summary' && (
+                            <div className="space-y-4">
+                                <div className="p-4 bg-gray-50 rounded">
+                                    <h4 className="font-bold text-gray-700 mb-2">Contact Details</h4>
+                                    <p>Email: {selectedLead.email}</p>
+                                    <p>Phone: {selectedLead.phone}</p>
+                                    <p>City: {selectedLead.city}</p>
+                                </div>
+
+                                {/* Requirement & Product Details (Editable) */}
+                                <div className="border p-4 rounded-lg">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h4 className="font-bold text-gray-700">Requirement Details</h4>
+                                        {!isEditRequirements ? (
+                                            <button className="text-blue-600 text-sm hover:underline" onClick={() => {
+                                                setFormData({
+                                                    ...selectedLead,
+                                                    product_details: selectedLead.product_details || {},
+                                                    requirement: selectedLead.requirement || ''
+                                                });
+                                                setIsEditRequirements(true);
+                                            }}>Edit</button>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                <button className="text-gray-500 text-xs" onClick={() => setIsEditRequirements(false)}>Cancel</button>
+                                                <button className="text-green-600 text-xs font-bold" onClick={async () => {
+                                                    const res = await updateLead(selectedLead.id, {
+                                                        product_details: formData.product_details,
+                                                        requirement: formData.requirement
+                                                    });
+                                                    setLeads(prev => prev.map(l => l.id === res.id ? { ...l, ...res } : l));
+                                                    setSelectedLead({ ...selectedLead, ...res });
+                                                    setIsEditRequirements(false);
+                                                    toast.success('Updated');
+                                                }}>Save</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {!isEditRequirements ? (
+                                        <>
+                                            <div className="mb-2">
+                                                <p className="text-sm font-semibold text-gray-500">Requirement</p>
+                                                <p className="text-sm">{selectedLead.requirement || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-gray-500">Specs</p>
+                                                <pre className="bg-gray-50 p-2 rounded text-xs overflow-x-auto font-mono">
+                                                    {Object.entries(selectedLead.product_details || {}).map(([k, v]) => `${k}: ${v}`).join('\n')}
+                                                </pre>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="animation-fade-in space-y-3">
+                                            {/* Reuse same form fields as main panel logic if needed, or keeping it generic for now as Web leads might differ. 
+                                                Actually, preserving the dynamic Logic from the first panel would require copying that whole block.
+                                                For now, I'll use the generic requirement Textarea editing which is safe for all. 
+                                                If users want the specific product fields (Scrip, Insurance Type), I should copy that too. 
+                                                The user said "look same". I will assume full copy is safer. */}
+                                            {selectedLead.product_type === 'Unlisted Shares' && (
+                                                <>
+                                                    <div>
+                                                        <label className="text-xs font-semibold text-gray-500">Scrip Name</label>
+                                                        <input className="input h-8 text-sm"
+                                                            value={formData.product_details.scripName || ''}
+                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="text-xs font-semibold text-gray-500">Qty</label>
+                                                            <input className="input h-8 text-sm" type="number"
+                                                                value={formData.product_details.quantity || ''}
+                                                                onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-semibold text-gray-500">Price</label>
+                                                            <input className="input h-8 text-sm" type="number"
+                                                                value={formData.product_details.price || ''}
+                                                                onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                            {/* Simplified for other types or generic fallback */}
+                                            <div>
+                                                <label className="text-xs font-semibold text-gray-500">General Requirement</label>
+                                                <textarea className="input text-sm p-2 h-20"
+                                                    value={formData.requirement || ''}
+                                                    onChange={e => setFormData({ ...formData, requirement: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'assignment' && (
+                            <div className="space-y-4">
+                                <p>Current RM: <b>{selectedLead.assigned_admin ? selectedLead.assigned_admin.name : 'None'}</b></p>
+                                <select className="input" value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
+                                    <option value="">Select RM</option>
+                                    {rms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                                </select>
+                                <button className="btn btn-primary w-full" onClick={handleAssign} disabled={actionLoading}>
+                                    {actionLoading ? 'Assigning...' : 'Update Assignment'}
+                                </button>
+                            </div>
+                        )}
+
+                        {activeTab === 'status' && (
+                            <div className="space-y-4">
+                                <label className="block text-sm font-bold">Internal Status</label>
+                                <select
+                                    className="input"
+                                    value={newStatus}
+                                    onChange={e => setNewStatus(e.target.value)}
+                                    disabled={selectedLead.status === 'Closed'}
+                                >
+                                    <option value="New">New</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Credit Approved">Credit Approved</option>
+                                    <option value="Disbursed">Disbursed</option>
+                                    <option value="Closed">Closed</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+
+                                {newStatus === 'Rejected' && (
+                                    <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800 mb-2">
+                                        Note: Lead will be marked as rejected.
+                                    </div>
+                                )}
+
+                                {(newStatus === 'Closed' || newStatus === 'Disbursed') && (
+                                    <div className="bg-blue-50 p-2 rounded text-xs text-blue-800 mb-2">
+                                        Note: Changing status to {newStatus}. {newStatus === 'Closed' ? 'Lead will be locked.' : ''}
+                                    </div>
+                                )}
+
+                                {selectedLead.status === 'Closed' && (
+                                    <div className="bg-red-50 p-2 rounded text-xs text-red-800 mb-4 border border-red-100">
+                                        Locked: This lead is Closed and status cannot be changed.
+                                    </div>
+                                )}
+
+                                <button
+                                    className="btn btn-primary w-full"
+                                    onClick={handleWebLeadStatusUpdate}
+                                    disabled={actionLoading || selectedLead.status === 'Closed'}
+                                >
+                                    {actionLoading ? 'Updating...' : 'Update Status'}
+                                </button>
                             </div>
                         )}
                     </div>

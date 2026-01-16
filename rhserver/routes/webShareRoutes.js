@@ -12,6 +12,8 @@ router.use(authenticate);
 
 router.post("/create", webSharesController.createWebShare);
 
-router.post("/update", webSharesController.updateWebShare);
+router.put("/update", webSharesController.updateWebShare);
+
+router.delete("/delete/:id", webSharesController.deleteWebShare);
 
 module.exports = router;

@@ -29,6 +29,7 @@ router.get('/leads', authenticateAdmin, rhLeadController.adminList); // Use exis
 router.get('/leads/:id', authenticateAdmin, rhAdminController.getLead); // Use new getLead
 router.post('/assign', authenticateAdmin, rhAdminController.assignLead);
 router.put('/internal-status/:leadId', authenticateAdmin, rhAdminController.updateLeadInternalStatus);
+router.put('/web-lead-status/:leadId', authenticateAdmin, rhAdminController.updateWebLeadStatus);
 
 // Roles & Invites
 router.get('/roles', authenticateAdmin, rhAdminController.listRoles);
