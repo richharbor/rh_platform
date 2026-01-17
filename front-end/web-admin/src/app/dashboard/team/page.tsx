@@ -4,6 +4,16 @@ import { toast } from 'sonner';
 import { getRMs } from '@/services/Users/userService';
 import SidePanel from '@/components/ui/SidePanel';
 import { PrivateAxios } from '@/helpers/PrivateAxios';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function TeamPage() {
     const [team, setTeam] = useState<any[]>([]);
@@ -12,6 +22,9 @@ export default function TeamPage() {
     const [isInvitePanelOpen, setIsInvitePanelOpen] = useState(false);
     const [isRolePanelOpen, setIsRolePanelOpen] = useState(false);
     const [deleting, setDeleting] = useState<number | null>(null);
+
+    // Alert Dialog State
+    const [memberToDelete, setMemberToDelete] = useState<{ id: number; name: string } | null>(null);
 
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState('');
@@ -64,10 +77,14 @@ export default function TeamPage() {
         }
     };
 
-    const handleDelete = async (memberId: number, memberName: string, memberEmail: string) => {
-        const confirmMessage = `Are you sure you want to remove ${memberName || memberEmail} from the team?`;
-        if (!confirm(confirmMessage)) return;
+    const confirmDelete = (memberId: number, memberName: string, memberEmail: string) => {
+        setMemberToDelete({ id: memberId, name: memberName || memberEmail });
+    };
 
+    const handleExecuteDelete = async () => {
+        if (!memberToDelete) return;
+
+        const { id: memberId } = memberToDelete;
         setDeleting(memberId);
         try {
             await PrivateAxios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/v1'}/admin/team/${memberId}`);
@@ -79,6 +96,7 @@ export default function TeamPage() {
             toast.error(error.response?.data?.error || 'Failed to remove team member');
         } finally {
             setDeleting(null);
+            setMemberToDelete(null);
         }
     };
 
@@ -157,7 +175,7 @@ export default function TeamPage() {
                                             </td>
                                             <td className="p-3">
                                                 <button
-                                                    onClick={() => handleDelete(member.id, member.name, member.email)}
+                                                    onClick={() => confirmDelete(member.id, member.name, member.email)}
                                                     disabled={deleting === member.id}
                                                     className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
@@ -247,6 +265,28 @@ export default function TeamPage() {
                     </button>
                 </div>
             </SidePanel>
+
+            <AlertDialog open={!!memberToDelete} onOpenChange={(open) => !open && setMemberToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently remove{" "}
+                            <span className="font-bold">{memberToDelete?.name}</span> from the
+                            team.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                            onClick={handleExecuteDelete}
+                        >
+                            Delete Member
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
