@@ -6,6 +6,16 @@ import { toast } from "sonner";
 import { Send, Bell, Image as ImageIcon, Loader2 } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/v1';
 
@@ -15,6 +25,7 @@ export default function NotificationsPage() {
     const [imageUrl, setImageUrl] = useState("");
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -48,12 +59,13 @@ export default function NotificationsPage() {
         }
     };
 
-    const handleBroadcast = async (e: React.FormEvent) => {
+    const handleBroadcastClick = (e: React.FormEvent) => {
         e.preventDefault();
         if (!title || !body) return toast.error("Please fill in all fields");
+        setIsConfirmOpen(true);
+    };
 
-        if (!confirm("Are you sure you want to send this notification to ALL users?")) return;
-
+    const handleConfirmBroadcast = async () => {
         setLoading(true);
         try {
             await PrivateAxios.post(`${API_URL}/notifications/broadcast`, {
@@ -71,6 +83,7 @@ export default function NotificationsPage() {
             toast.error(error.response?.data?.error || "Failed to send broadcast");
         } finally {
             setLoading(false);
+            setIsConfirmOpen(false);
         }
     };
 
@@ -88,7 +101,7 @@ export default function NotificationsPage() {
                 </div>
 
                 <div className="p-6">
-                    <form onSubmit={handleBroadcast} className="space-y-6">
+                    <form onSubmit={handleBroadcastClick} className="space-y-6">
                         <div className="space-y-2">
                             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
                             <input
@@ -169,6 +182,24 @@ export default function NotificationsPage() {
                     </form>
                 </div>
             </div>
+
+            <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Broadcast</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to send this notification to <span className="font-bold">ALL users</span>?
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmBroadcast}>
+                            Send Broadcast
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div >
 
     );
