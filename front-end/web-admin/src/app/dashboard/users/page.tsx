@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { getUsers, approvePartner, getUpgradeRequests, reviewUpgradeRequest } from '@/services/Users/userService'; // Updated import
 import SidePanel from '@/components/ui/SidePanel';
+import { toast } from 'sonner';
 
 // User Interface
 interface User {
@@ -87,11 +88,11 @@ export default function UsersPage() {
         setApprovingKYC(true);
         try {
             await approvePartner(selectedUser.id.toString());
-            alert('KYC approved successfully!');
+            toast.success('KYC approved successfully!');
             setIsUserPanelOpen(false);
             loadUsers();
         } catch (error) {
-            alert('Failed to approve KYC');
+            toast.error('Failed to approve KYC');
         } finally {
             setApprovingKYC(false);
         }

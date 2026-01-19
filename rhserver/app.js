@@ -20,6 +20,7 @@ const bidsRoutes = require("./routes/bidsRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const whatsappRoutes = require("./routes/whatsappRoutes");
+const webShareRoutes = require("./routes/webShareRoutes");
 
 const webpush = require("web-push");
 
@@ -100,6 +101,7 @@ app.use("/api/bids", bidsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
+app.use("/api/web-shares", webShareRoutes);
 
 // --- Platform Services (Isolated) ---
 const platformAuthRoutes = require("./platform/routes/authRoutes");

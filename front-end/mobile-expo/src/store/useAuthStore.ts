@@ -38,6 +38,7 @@ interface AuthState {
     enableBiometrics: () => Promise<boolean>;
     syncPushToken: () => Promise<void>;
     handleAppStateChange: (nextAppState: string) => void;
+    refreshProfile: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -183,9 +184,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 
     handleAppStateChange: (nextAppState: string) => {
-        const { isBiometricEnabled, isAuthenticated, isLocked } = get();
+        const { isBiometricEnabled, isAuthenticated, isLocked, refreshProfile } = get();
+
         if (nextAppState === 'background' && isAuthenticated && isBiometricEnabled && !isLocked) {
             set({ isLocked: true });
+        }
+
+        if (nextAppState === 'active' && isAuthenticated) {
+            console.log('[AuthStore] App active, refreshing profile...');
+            refreshProfile();
+        }
+    },
+
+    refreshProfile: async () => {
+        try {
+            const user = await authService.getMe();
+            if (user) {
+                await AsyncStorage.setItem('user_data', JSON.stringify(user));
+
+                let type: 'Customer' | 'Partner' | 'Referral Partner' = 'Customer';
+                if (user.role?.toLowerCase() === 'partner') type = 'Partner';
+                if (user.role?.toLowerCase() === 'referral_partner') type = 'Referral Partner';
+
+                set({ user, accountType: type });
+                console.log('[AuthStore] Profile refreshed, new role:', user.role);
+            }
+        } catch (error) {
+            console.error('[AuthStore] Failed to refresh profile:', error);
         }
     }
 }));

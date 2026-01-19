@@ -1,4 +1,4 @@
-const { Lead, User, Incentive } = require("../models"); // Uses platform/models/index.js
+const { Lead, User, Incentive, Admin } = require("../models"); // Uses platform/models/index.js
 
 const INCENTIVE_MAP = {
     self: "Free add-ons, priority RM, faster callback",
@@ -110,13 +110,29 @@ const get = async (req, res) => {
 // Admin: List all leads
 const adminList = async (req, res) => {
     try {
+
         const leads = await Lead.findAll({
             order: [["createdAt", "DESC"]],
             include: [
                 { model: User, as: "user", attributes: ["id", "name", "email", "phone", "role"] },
             ],
         });
-        res.json(leads);
+
+        // specific fetching of assigned admin details
+        const leadsWithAssigned = await Promise.all(leads.map(async (lead) => {
+            let leadData = lead.toJSON();
+            if (leadData.assignee_id) {
+                const admin = await Admin.findByPk(leadData.assignee_id, {
+                    attributes: ['name', 'email']
+                });
+                if (admin) {
+                    leadData.assigned_admin = { name: admin.name, email: admin.email };
+                }
+            }
+            return leadData;
+        }));
+
+        res.json(leadsWithAssigned);
     } catch (error) {
         console.error("Admin list leads error:", error);
         res.status(500).json({ error: "Failed to fetch leads" });

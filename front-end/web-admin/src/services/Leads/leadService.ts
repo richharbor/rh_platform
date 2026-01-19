@@ -41,6 +41,15 @@ export const updateLeadInternalStatus = async (leadId: string, requestBody: any)
         throw error;
     }
 };
+export const updateWebLeadStatus = async (leadId: string, requestBody: any) => {
+    try {
+        const response = await PrivateAxios.put(`${API_URL}/admin/web-lead-status/${leadId}`, requestBody);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to update status", error);
+        throw error;
+    }
+};
 
 export const createLead = async (requestBody: any) => {
     try {
