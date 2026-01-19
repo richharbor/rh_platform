@@ -329,6 +329,8 @@ export default function LeadsPage() {
                                     <p>Email: {selectedLead.email}</p>
                                     <p>Phone: {selectedLead.phone}</p>
                                     <p>City: {selectedLead.city}</p>
+                                    <p>Lead Type: {selectedLead.lead_type}</p>
+
                                 </div>
 
                                 {/* Requirement & Product Details (Editable) */}

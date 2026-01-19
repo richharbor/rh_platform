@@ -110,12 +110,12 @@ export default function UsersPage() {
         setReviewing(true);
         try {
             await reviewUpgradeRequest(selectedRequest.id, action, adminNotes);
-            alert(`Request ${action}ed successfully!`);
+            toast.success(`Request ${action}ed successfully!`);
             setIsRequestPanelOpen(false);
             loadRequests();
         } catch (error) {
             console.error(error);
-            alert(`Failed to ${action} request`);
+            toast.error(`Failed to ${action} request`);
         } finally {
             setReviewing(false);
         }

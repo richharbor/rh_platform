@@ -101,7 +101,12 @@ export default function TeamPage() {
     };
 
     const handleCreateRole = async () => {
+        if (!newRoleName) {
+            toast.error('Role name is required');
+            return;
+        }
         setCreating(true);
+
         try {
             await PrivateAxios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5003/v1'}/admin/roles`, {
                 name: newRoleName,

@@ -6,6 +6,16 @@ import { contestService, Contest } from "@/services/Contest/contestService";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import SidePanel from "@/components/ui/SidePanel";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface EligibleUser {
     user: { id: number; name: string; email: string; phone: string };
@@ -21,6 +31,7 @@ export default function ContestsPage() {
     const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
     const [eligibleUsers, setEligibleUsers] = useState<EligibleUser[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
+    const [contestToDelete, setContestToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         loadContests();
@@ -38,15 +49,21 @@ export default function ContestsPage() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this contest?")) return;
+    const handleDelete = (id: number) => {
+        setContestToDelete(id);
+    };
+
+    const confirmDelete = async () => {
+        if (contestToDelete === null) return;
         try {
-            await contestService.deleteContest(id);
+            await contestService.deleteContest(contestToDelete);
             toast.success("Contest deleted");
-            setContests(contests.filter(c => c.id !== id));
+            setContests(contests.filter(c => c.id !== contestToDelete));
         } catch (error) {
             console.error(error);
             toast.error("Failed to delete contest");
+        } finally {
+            setContestToDelete(null);
         }
     };
 
@@ -166,6 +183,23 @@ export default function ContestsPage() {
                     </div>
                 )}
             </div>
+
+            <AlertDialog open={!!contestToDelete} onOpenChange={(open) => !open && setContestToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the contest.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* Eligible Users Side Panel */}
             <SidePanel
