@@ -1,5 +1,5 @@
 const { RateLimiterRedis } = require('rate-limiter-flexible');
-const redisClient = require('../config/redis');
+const redisClient = require('../platform/config/redis');
 
 // Helper to create middleware
 const createRateLimiter = (options, errorMessage = 'Too Many Requests') => {
@@ -28,15 +28,15 @@ const createRateLimiter = (options, errorMessage = 'Too Many Requests') => {
 // Global Limiter: 100 requests per 15 mins (900 seconds)
 const globalLimiter = createRateLimiter({
     keyPrefix: 'rate_limit_global',
-    points: 100,
-    duration: 15 * 60, // 15 minutes
+    points: 1000,
+    duration: 10 * 60, // 15 minutes
 });
 
 // Strict Auth Limiter: 10 requests per 15 mins
 const authLimiter = createRateLimiter({
     keyPrefix: 'rate_limit_auth',
-    points: 10,
-    duration: 15 * 60,
+    points: 100,
+    duration: 10 * 60,
 }, 'Too many login attempts. Please try again later.');
 
 module.exports = {
