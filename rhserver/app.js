@@ -40,7 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rate Limiter
-const { globalLimiter } = require("./platform/middleware/rateLimiter");
+const { globalLimiter } = require("./middleware/rateLimiter");
 app.use(globalLimiter);
 
 // Test route

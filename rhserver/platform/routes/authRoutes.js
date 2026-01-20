@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/rhAuthController");
 const { authenticate } = require("../middleware/rhAuth");
-const { authLimiter } = require("../middleware/rateLimiter");
+const { authLimiter } = require("../../middleware/rateLimiter");
 
 // --- Public Auth Routes ---
 
