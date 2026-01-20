@@ -9,6 +9,181 @@ import SidePanel from '@/components/ui/SidePanel';
 import { settingsService } from '@/services/Settings/settingsService';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+
+export type FieldType = 'text' | 'number' | 'email' | 'phone' | 'select' | 'radio' | 'date' | 'checkbox' | 'multiselect';
+
+export interface LeadField {
+    id: string;
+    label: string;
+    type: FieldType;
+    placeholder?: string;
+    options?: string[];
+    required?: boolean;
+    conditional?: {
+        fieldId: string;
+        value: string | string[];
+    };
+}
+
+export const PRODUCT_FORMS: Record<string, LeadField[]> = {
+    insurance: [
+        { id: 'insuranceType', label: 'Insurance Type', type: 'select', options: ['Life', 'Health', 'Motor'], required: true },
+        { id: 'budget', label: 'Annual Premium Budget (₹)', type: 'number', required: true },
+        { id: 'coverage', label: 'Coverage Required (₹)', type: 'number', required: true },
+        { id: 'existingPolicy', label: 'Existing Policy', type: 'radio', options: ['Yes', 'No'], required: true },
+        // { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], required: true },
+
+
+        // Life
+        { id: 'productType', label: 'Product Type', type: 'radio', options: ['Term', 'Saving', 'Investment'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'age', label: 'Age', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'income', label: 'Annual Income', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'occupation', label: 'Occupation', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        //{ id: 'coverage', label: 'Coverage Required (₹)', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'smoker', label: 'Smoker', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
+        { id: 'alcoholic', label: 'Alcoholic', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Life' } },
+
+        // Health
+        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Individual', 'Family Floater'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'memberAges', label: 'Age of Insured Members', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'membersCovered', label: 'Family Members to be Covered', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'conditions', label: 'Existing Medical Conditions', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'sumInsured', label: 'Sum Insured Required (₹)', type: 'number', conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'smoker', label: 'Smoker', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
+        { id: 'alcoholic', label: 'Alcoholic', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Health' } },
+
+        // Motor
+        { id: 'policyStatus', label: 'Status', type: 'radio', options: ['Policy Renewal', 'New Purchase'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'policyType', label: 'Policy Type', type: 'radio', options: ['Third Party', 'Comprehensive'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'vehicleType', label: 'Vehicle Type', type: 'select', options: ['Car', 'Two-Wheeler', 'Commercial'], conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'vehicleModel', label: 'Vehicle Model & Year', type: 'text', conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'expiryDate', label: 'Policy Expiry Date', type: 'date', conditional: { fieldId: 'insuranceType', value: 'Motor' } },
+        { id: 'claimHistory', label: 'Claim History', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'insuranceType', value: 'Motor' } }
+    ],
+
+    loans: [
+        {
+            id: 'loanType',
+            label: 'Loan Type',
+            type: 'select',
+            options: ['Home', 'Personal', 'Business', 'Mortgage', 'Education', 'Car', 'Machinery', 'WC', 'Construction', 'Project Finance', 'RBF', 'FTL', 'Channel Financing'],
+            required: true
+        },
+        { id: 'amount', label: 'Loan Amount Required (₹)', type: 'number', required: true, conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Business', 'Mortgage', 'Education', 'Car', 'Machinery', 'WC', 'FTL', 'Channel Financing'] } },
+        { id: 'purpose', label: 'Purpose of Loan', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Personal', 'Business', 'Machinery', 'Mortgage'] } },
+        { id: 'timeline', label: 'Expected Disbursal Timeline', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Business', 'Machinery', 'Mortgage'] } },
+        { id: 'creditProfile', label: 'Credit Profile', type: 'select', options: ['Excellent', 'Average', 'Needs Assessment'], required: true },
+
+        // Retail Loans
+        { id: 'employmentType', label: 'Employment Type', type: 'select', options: ['Salaried', 'Business'], conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Car'] } },
+        { id: 'monthlyIncome', label: 'Monthly Income (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Car'] } },
+        { id: 'employer', label: 'Employer / Business Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Car'] } },
+        { id: 'cibil', label: 'Approx CIBIL Score', type: 'text', conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Car', 'Education'] } },
+        { id: 'emis', label: 'Existing Loans (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Home', 'Personal', 'Car', 'Education'] } },
+
+        // Additional Field in Home loan
+        { id: 'propertyType', label: 'Property Type', type: 'select', options: ['Construction', 'Ready', 'Plot'], conditional: { fieldId: 'loanType', value: ['Home'] } },
+        { id: 'propertyCity', label: 'City of Property', type: 'text', conditional: { fieldId: 'loanType', value: ['Home'] } },
+
+        // Additional Field in Education
+        { id: 'educationType', label: 'Course Type', type: 'select', options: ['Undergraduate', 'Postgraduate', 'PhD'], conditional: { fieldId: 'loanType', value: ['Education'] } },
+        { id: 'countryOfStudy', label: 'Country of Study', type: 'text', conditional: { fieldId: 'loanType', value: ['Education'] } },
+        { id: 'collageName', label: 'Collage Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Education'] } },
+
+        // Additional Field in Car loan
+        { id: 'assetType', label: 'Asset Type', type: 'select', options: ['New', 'Used'], conditional: { fieldId: 'loanType', value: ['Car'] } },
+        { id: 'carMktValue', label: 'Car Mkt value (₹)', type: 'text', conditional: { fieldId: 'loanType', value: ['Car'] } },
+
+        // Additional Field in WC loan
+        { id: 'businessType', label: 'Business Type', type: 'text', conditional: { fieldId: 'loanType', value: ['WC'] } },
+        { id: 'currentBankingRelationship', label: 'Current Banking Relationship', type: 'radio', options: ['OD', 'CC', 'Invoice discounting'], conditional: { fieldId: 'loanType', value: ['WC'] } },
+
+        // Additional Field in Construction
+        { id: 'fundingRequired', label: 'Funding Required', type: 'text', required: true, conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance', 'RBF'] } },
+        { id: 'projectType', label: 'Project Type', type: 'text', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
+        { id: 'totalProjectCost', label: 'Total Project Cost (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
+        { id: 'landOwnerStatus', label: 'Land Owner Status ', type: 'text', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
+        { id: 'stateOfProject', label: 'State of Project', type: 'text', conditional: { fieldId: 'loanType', value: ['Construction', 'Project Finance'] } },
+
+        // Additional field in RBF
+        { id: 'businessModal', label: 'Business Modal', type: 'text', conditional: { fieldId: 'loanType', value: ['RBF'] } },
+        { id: 'revenueSource', label: 'Revenue Source', type: 'text', conditional: { fieldId: 'loanType', value: ['RBF'] } },
+        { id: 'repaymentPreference', label: 'Repayment Preference', type: 'text', conditional: { fieldId: 'loanType', value: ['RBF'] } },
+
+        // Additional field in FTL
+        { id: 'loanTenureRequired', label: 'Loan Tenure Required', type: 'text', conditional: { fieldId: 'loanType', value: ['FTL'] } },
+        { id: 'businessVintage', label: 'Business Vintage', type: 'text', conditional: { fieldId: 'loanType', value: ['FTL'] } },
+
+
+
+
+
+
+
+
+        // Business Loans
+        { id: 'businessName', label: 'Business Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },
+        { id: 'vintage', label: 'Business Vintage (Years)', type: 'number', conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },
+        { id: 'turnover', label: 'Annual Turnover (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },
+        { id: 'netProfit', label: 'Net Profit (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },
+        { id: 'gst', label: 'GST Registered', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'loanType', value: ['Business', 'WC', 'Machinery'] } },
+        { id: 'gstTurnover', label: 'Last 12-month GST Turnover (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Machinery'] } },
+        { id: 'collateral', label: 'Collateral Available', type: 'radio', options: ['Yes', 'No'], conditional: { fieldId: 'loanType', value: ['Business', 'Machinery'] } },
+
+        // Mortgage
+        { id: 'propertyType', label: 'Property Type', type: 'select', options: ['Residential', 'Commercial'], conditional: { fieldId: 'loanType', value: ['Mortgage', 'Construction'] } },
+        { id: 'location', label: 'Property Location', type: 'text', conditional: { fieldId: 'loanType', value: ['Mortgage', 'Construction'] } },
+        { id: 'propertyValue', label: 'Approx Property Value (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Mortgage', 'Construction'] } },
+        { id: 'ownership', label: 'Ownership Status', type: 'text', conditional: { fieldId: 'loanType', value: ['Mortgage', 'Construction'] } },
+        { id: 'existingLoan', label: 'Existing Loan on Property', type: 'text', conditional: { fieldId: 'loanType', value: ['Mortgage', 'Construction'] } },
+
+        // Corporate / Project
+        { id: 'natureBusiness', label: 'Nature of Business', type: 'text', conditional: { fieldId: 'loanType', value: ['Project Finance', 'RBF', 'FTL', 'Channel Financing'] } },
+        { id: 'avgRevenue', label: 'Average Monthly Revenue (₹)', type: 'number', conditional: { fieldId: 'loanType', value: ['Project Finance', 'RBF', 'FTL', 'Channel Financing'] } },
+        { id: 'anchor', label: 'Anchor / OEM / Buyer Name', type: 'text', conditional: { fieldId: 'loanType', value: ['Project Finance', 'Channel Financing'] } },
+        { id: 'relationshipWithAnchor', label: 'Relationship with Anchor ', type: 'text', conditional: { fieldId: 'loanType', value: ['Channel Financing'] } },
+        { id: 'bankingRel', label: 'Existing Banking Relationship', type: 'text', conditional: { fieldId: 'loanType', value: ['Project Finance', 'RBF', 'FTL', 'Channel Financing'] } },
+        { id: 'security', label: 'Security Offered', type: 'text', conditional: { fieldId: 'loanType', value: ['Project Finance', 'FTL', 'Channel Financing'] } }
+    ],
+
+    equity: [
+        { id: 'companyName', label: 'Company Name', type: 'text', required: true },
+        { id: 'industry', label: 'Industry / Sector', type: 'text', required: true },
+        { id: 'stage', label: 'Stage', type: 'select', options: ['Growth', 'Late Stage', 'Pre-IPO'], required: true },
+        { id: 'capital', label: 'Capital Required (₹)', type: 'number', required: true },
+        { id: 'useOfFunds', label: 'Use of Funds', type: 'text', required: true },
+        { id: 'revenue', label: 'Revenue (Last FY & TTM)', type: 'text', required: true },
+        { id: 'ebitda', label: 'EBITDA Margin (%)', type: 'number', required: true },
+        { id: 'investors', label: 'Existing Investors', type: 'text', required: false },
+        { id: 'promoter', label: 'Promoter/ Key Contact name ', type: 'text', required: false },
+        { id: 'promoterContact', label: 'Promoter/ Key Contact', type: 'number', required: false },
+        { id: 'nda', label: 'Willing to share financials under NDA', type: 'radio', options: ['Yes', 'No'], required: true },
+        { id: 'auditedFinancials', label: 'Audited Financials Available ', type: 'radio', options: ['Yes', 'No'], required: true }
+
+    ],
+
+    unlisted: [
+        { id: 'clientType', label: 'Client Type', type: 'select', options: ['Retail', 'HNI', 'Family Office'], required: true },
+        { id: 'buySell', label: 'Action', type: 'radio', options: ['Buy', 'Sell'], required: true },
+        { id: 'companyName', label: 'Company Name (Unlisted)', type: 'text', required: true },
+        { id: 'ticketSize', label: 'Quantity / Ticket Size (₹)', type: 'number', required: true },
+        { id: 'horizon', label: 'Investment Horizon', type: 'text', required: true },
+        { id: 'prevExp', label: 'Previous Unlisted Investment Experience', type: 'radio', options: ['Yes', 'No'], required: true },
+        { id: 'demat', label: 'Demat Account Available', type: 'radio', options: ['Yes', 'No'], required: true }
+    ],
+
+    stocks: [
+        { id: 'category', label: 'Client Category', type: 'select', options: ['HNI', 'Institution', 'Trader'], required: true },
+        { id: 'buySell', label: 'Action', type: 'radio', options: ['Buy', 'Sell'], required: true },
+        { id: 'stockName', label: 'Stock Name', type: 'text', required: true },
+        { id: 'quantity', label: 'Approx Quantity / Value', type: 'text', required: true },
+        { id: 'timeSensitivity', label: 'Time Sensitivity', type: 'radio', options: ['Immediate', 'Flexible'], required: true },
+        { id: 'settlement', label: 'Settlement Preference', type: 'select', options: ['On-market', 'Off-market'], required: true }
+    ]
+};
+
+
 export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,7 +215,7 @@ export default function LeadsPage() {
     const [isEditRequirements, setIsEditRequirements] = useState(false);
     const [formData, setFormData] = useState<any>({
         name: '', email: '', phone: '', city: '',
-        product_type: 'Unlisted Shares',
+        product_type: 'unlisted', // Default strictly to a valid key in PRODUCT_FORMS
         requirement: '',
         product_details: {}
     });
@@ -240,6 +415,41 @@ export default function LeadsPage() {
         }
     };
 
+
+    const handleSubmit = async () => {
+
+        setActionLoading(true);
+
+
+
+        const { name, email, phone, city, ...rest } = formData;
+
+        const leadData: any = {
+            product_type: formData.product_type, // Or specific mapping if needed 'loan' vs 'loans'
+            lead_type: 'client',
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            city: formData.city,
+            product_details: {
+                ...formData.product_details,
+                source: 'web'
+            }
+        };
+
+        try {
+            const response = await createLead(leadData);
+            toast.success("Lead created successfully")
+            setFormData({});
+            setIsCreateOpen(false);
+        } catch (error) {
+            console.error("Lead submission error:", error);
+            toast.error("Failed to create lead")
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     return (
         <div>
             {/* Header & Filters (Keep same structure) */}
@@ -249,7 +459,7 @@ export default function LeadsPage() {
                 <div className="flex gap-2">
                     <button className="btn bg-gray-200 text-gray-800" onClick={() => loadData()}>Refresh</button>
                     <button className="btn btn-primary" onClick={() => {
-                        setFormData({ name: '', email: '', phone: '', city: '', product_type: 'Unlisted Shares', requirement: '', product_details: {} });
+                        setFormData({ name: '', email: '', phone: '', city: '', product_type: 'unlisted', requirement: '', product_details: {} });
                         setIsCreateOpen(true);
                     }}>+ Create Lead</button>
                 </div>
@@ -268,7 +478,7 @@ export default function LeadsPage() {
                         className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'web' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                         onClick={() => setActiveSourceTab('web')}
                     >
-                        Web Leads
+                        Direct Leads
                     </button>
                 </div>
 
@@ -337,7 +547,7 @@ export default function LeadsPage() {
                                 <div className="border p-4 rounded-lg">
                                     <div className="flex justify-between items-center mb-3">
                                         <h4 className="font-bold text-gray-700">Requirement Details</h4>
-                                        {!isEditRequirements ? (
+                                        {/* {!isEditRequirements ? (
                                             <button className="text-blue-600 text-sm hover:underline" onClick={() => {
                                                 setFormData({
                                                     ...selectedLead,
@@ -360,7 +570,7 @@ export default function LeadsPage() {
                                                     toast.success('Updated');
                                                 }}>Save</button>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
 
                                     {!isEditRequirements ? (
@@ -589,13 +799,14 @@ export default function LeadsPage() {
                                     <p>Email: {selectedLead.email}</p>
                                     <p>Phone: {selectedLead.phone}</p>
                                     <p>City: {selectedLead.city}</p>
+                                    <p>Lead Type: {selectedLead.lead_type}</p>
                                 </div>
 
                                 {/* Requirement & Product Details (Editable) */}
                                 <div className="border p-4 rounded-lg">
                                     <div className="flex justify-between items-center mb-3">
                                         <h4 className="font-bold text-gray-700">Requirement Details</h4>
-                                        {!isEditRequirements ? (
+                                        {/* {!isEditRequirements ? (
                                             <button className="text-blue-600 text-sm hover:underline" onClick={() => {
                                                 setFormData({
                                                     ...selectedLead,
@@ -618,7 +829,7 @@ export default function LeadsPage() {
                                                     toast.success('Updated');
                                                 }}>Save</button>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
 
                                     {!isEditRequirements ? (
@@ -781,94 +992,97 @@ export default function LeadsPage() {
                                     <div>
                                         <label className="label">Product Type</label>
                                         <select className="input" value={formData.product_type} onChange={e => setFormData({ ...formData, product_type: e.target.value, product_details: {} })}>
-                                            <option value="Unlisted Shares">Unlisted Shares</option>
-                                            <option value="Pre-IPO">Pre-IPO</option>
-                                            <option value="Insurance">Insurance</option>
-                                            <option value="Loan">Loan</option>
-                                            <option value="generic">Generic / Other</option>
-                                            <option value="insurance">insurance</option>
-                                            <option value="loans">loans</option>
-                                            <option value="equity">equity</option>
-                                            <option value="unlisted">unlisted</option>
-                                            <option value="stocks">stocks</option>
+                                            <option value="unlisted">Unlisted Shares</option>
+                                            <option value="stocks">Bulk Stocks</option>
+                                            <option value="insurance">Insurance</option>
+                                            <option value="loans">Loans</option>
+                                            <option value="equity">Private Equity/Funding </option>
                                         </select>
                                     </div>
 
                                     {/* Dynamic Requirements */}
                                     <div className="p-4 bg-gray-50 rounded border">
                                         <h4 className="font-bold text-sm mb-3 text-gray-700">Requirement Details</h4>
-                                        {(formData.product_type === 'Unlisted Shares' || formData.product_type === 'unlisted') && (
-                                            <div className="space-y-3">
-                                                <div>
-                                                    <label className="text-xs font-semibold text-gray-500">Scrip Name / Company</label>
-                                                    <input className="input" placeholder="e.g. Reliance Retail"
-                                                        value={formData.product_details.scripName || ''}
-                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, scripName: e.target.value } })}
-                                                    />
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <label className="text-xs font-semibold text-gray-500">Quantity</label>
-                                                        <input className="input" type="number"
-                                                            value={formData.product_details.quantity || ''}
-                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, quantity: e.target.value } })}
-                                                        />
+                                        <div className="space-y-3">
+                                            {PRODUCT_FORMS[formData.product_type]?.map((field) => {
+                                                // Check conditional visibility
+                                                if (field.conditional) {
+                                                    const relatedValue = formData.product_details[field.conditional.fieldId];
+                                                    const conditionMet = Array.isArray(field.conditional.value)
+                                                        ? field.conditional.value.includes(relatedValue)
+                                                        : relatedValue === field.conditional.value;
+
+                                                    if (!conditionMet) return null;
+                                                }
+
+                                                return (
+                                                    <div key={field.id} className="w-full">
+                                                        <label className="text-xs font-semibold text-gray-500 mb-1 block">
+                                                            {field.label} {field.required && <span className="text-red-500">*</span>}
+                                                        </label>
+
+                                                        {field.type === 'select' && (
+                                                            <select
+                                                                className="input w-full text-sm"
+                                                                value={formData.product_details[field.id] || ''}
+                                                                onChange={(e) => setFormData({
+                                                                    ...formData,
+                                                                    product_details: { ...formData.product_details, [field.id]: e.target.value }
+                                                                })}
+                                                            >
+                                                                <option value="">Select {field.label}</option>
+                                                                {field.options?.map(opt => (
+                                                                    <option key={opt} value={opt}>{opt}</option>
+                                                                ))}
+                                                            </select>
+                                                        )}
+
+                                                        {field.type === 'radio' && (
+                                                            <div className="flex gap-4 pt-1">
+                                                                {field.options?.map(opt => (
+                                                                    <label key={opt} className="flex items-center gap-2 cursor-pointer">
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={field.id}
+                                                                            className="w-4 h-4 text-blue-600"
+                                                                            checked={formData.product_details[field.id] === opt}
+                                                                            onChange={() => setFormData({
+                                                                                ...formData,
+                                                                                product_details: { ...formData.product_details, [field.id]: opt }
+                                                                            })}
+                                                                        />
+                                                                        <span className="text-sm">{opt}</span>
+                                                                    </label>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {(field.type === 'text' || field.type === 'number' || field.type === 'email' || field.type === 'date') && (
+                                                            <input
+                                                                type={field.type}
+                                                                className="input w-full text-sm"
+                                                                placeholder={field.placeholder || `Enter ${field.label}`}
+                                                                value={formData.product_details[field.id] || ''}
+                                                                onChange={(e) => setFormData({
+                                                                    ...formData,
+                                                                    product_details: { ...formData.product_details, [field.id]: e.target.value }
+                                                                })}
+                                                            />
+                                                        )}
                                                     </div>
-                                                    <div>
-                                                        <label className="text-xs font-semibold text-gray-500">Target Price</label>
-                                                        <input className="input" type="number"
-                                                            value={formData.product_details.price || ''}
-                                                            onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, price: e.target.value } })}
-                                                        />
-                                                    </div>
+                                                );
+                                            })}
+
+                                            {!PRODUCT_FORMS[formData.product_type] && (
+                                                <div className="text-center text-gray-400 text-sm py-4">
+                                                    No specific configuration for this product.
                                                 </div>
-                                            </div>
-                                        )}
-                                        {(formData.product_type === 'Insurance' || formData.product_type === 'insurance') && (
-                                            <div className="space-y-3">
-                                                <div>
-                                                    <label className="text-xs font-semibold text-gray-500">Insurance Type</label>
-                                                    <select className="input"
-                                                        value={formData.product_details.type || 'Health'}
-                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, type: e.target.value } })}
-                                                    >
-                                                        <option value="Health">Health</option>
-                                                        <option value="Life">Life / Term</option>
-                                                        <option value="Motor">Motor</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="text-xs font-semibold text-gray-500">Sum Insured / Coverage</label>
-                                                    <input className="input" placeholder="e.g. 1 Cr"
-                                                        value={formData.product_details.coverage || ''}
-                                                        onChange={e => setFormData({ ...formData, product_details: { ...formData.product_details, coverage: e.target.value } })}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-                                        {(!['Unlisted Shares', 'unlisted', 'Insurance', 'insurance'].includes(formData.product_type)) && (
-                                            <div>
-                                                <label className="text-xs font-semibold text-gray-500">Description / Amount</label>
-                                                <textarea className="input h-20" placeholder="Enter details..."
-                                                    value={formData.requirement}
-                                                    onChange={e => setFormData({ ...formData, requirement: e.target.value })}
-                                                />
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
 
-                                    <button className="btn btn-primary w-full py-3" onClick={async () => {
-                                        setActionLoading(true);
-                                        try {
-                                            await createLead(formData);
-                                            toast.success('Lead created successfully');
-                                            setIsCreateOpen(false);
-                                            loadData();
-                                        } catch (e) {
-                                            toast.error('Failed to create lead');
-                                        } finally {
-                                            setActionLoading(false);
-                                        }
+                                    <button className="btn btn-primary w-full py-3" onClick={() => {
+                                        handleSubmit();
                                     }} disabled={actionLoading}>
                                         {actionLoading ? 'Creating...' : 'Create Lead'}
                                     </button>
