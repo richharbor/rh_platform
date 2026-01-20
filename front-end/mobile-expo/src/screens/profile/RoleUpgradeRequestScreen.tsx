@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft, CheckCircle, Clock, XCircle } from 'lucide-react-native';
 
@@ -7,10 +7,11 @@ import { PrimaryButton, TextField, SecondaryButton } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
 import { roleUpgradeService, UpgradeStatusResponse } from '../../services/roleUpgradeService';
 import { ONBOARDING_CONFIG, Question } from '../../config/onboarding';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function RoleUpgradeRequestScreen() {
     const navigation = useNavigation();
-    const { user } = useAuthStore();
+    const { user, refreshProfile } = useAuthStore();
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [statusData, setStatusData] = useState<UpgradeStatusResponse | null>(null);
@@ -21,6 +22,7 @@ export function RoleUpgradeRequestScreen() {
 
     useEffect(() => {
         fetchStatus();
+        refreshProfile();
     }, []);
 
     const fetchStatus = async () => {
@@ -119,6 +121,7 @@ export function RoleUpgradeRequestScreen() {
             });
             Alert.alert('Success', 'Upgrade request submitted successfully!');
             fetchStatus(); // Refresh to show pending state
+            
         } catch (error: any) {
             const msg = error.response?.data?.error || 'Failed to submit request';
             Alert.alert('Error', msg);
@@ -144,7 +147,10 @@ export function RoleUpgradeRequestScreen() {
     const targetRole = currentRole === 'customer' ? 'Referral Partner' : 'Partner';
 
     return (
-        <View className="flex-1 bg-ink-50">
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            className="flex-1 bg-ink-50"
+        >
             {/* Header */}
             <View className="bg-white pt-14 pb-4 px-6 flex-row items-center border-b border-gray-100">
                 <TouchableOpacity onPress={handleBack} className="mr-4">
@@ -243,7 +249,9 @@ export function RoleUpgradeRequestScreen() {
                     </View>
                 )}
 
+                <View className="h-20" />
             </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
+
     );
 }

@@ -217,7 +217,7 @@ const listRMs = async (req, res) => {
                 as: 'role',
                 where: {
                     name: {
-                        [Op.in]: ['RM', 'Ops', 'Finance'],
+                        // [Op.in]: ['RM', 'Ops', 'Finance'],
                         [Op.ne]: 'Super Admin' // Exclude Super Admin from team list
                     }
                 }

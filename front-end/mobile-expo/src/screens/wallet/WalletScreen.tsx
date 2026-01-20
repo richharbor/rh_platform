@@ -76,10 +76,9 @@ export function WalletScreen() {
                         </View>
                     </View>
 
-                    <TouchableOpacity className="bg-white py-3.5 px-6 rounded-xl self-start flex-row items-center space-x-2">
-                        <Text className="text-black font-bold mr-2">Withdraw Funds</Text>
-                        <ArrowUpRight size={18} color="black" strokeWidth={2.5} />
-                    </TouchableOpacity>
+                    <Text className="text-white/80 text-sm mt-2">
+                        The amount will be credited to your account during the next cycle.
+                    </Text>
                 </View>
 
                 {/* Stats Row */}

@@ -3,6 +3,16 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { payoutService } from '@/services/Payouts/payoutService';
 import SidePanel from '@/components/ui/SidePanel';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function PayoutsPage() {
     const [payouts, setPayouts] = useState<any[]>([]);
@@ -13,6 +23,9 @@ export default function PayoutsPage() {
     const [selectedPayout, setSelectedPayout] = useState<any>(null);
     const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [processingId, setProcessingId] = useState<number | null>(null);
+
+    // Confirm Dialog State
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -30,9 +43,12 @@ export default function PayoutsPage() {
         }
     };
 
-    const handleMarkPaid = async () => {
+    const handleMarkPaidClick = () => {
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmMarkPaid = async () => {
         if (!selectedPayout) return;
-        if (!confirm('Are you sure you want to mark this reward as PAID? This cannot be undone.')) return;
 
         setProcessingId(selectedPayout.id);
         try {
@@ -46,6 +62,7 @@ export default function PayoutsPage() {
             toast.error('Failed to update status');
         } finally {
             setProcessingId(null);
+            setIsConfirmOpen(false);
         }
     };
 
@@ -154,7 +171,7 @@ export default function PayoutsPage() {
             </div>
 
             {/* Side Panel */}
-            <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)} title="Payout Details">
+            <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)} title="Payout Details" disableClickOutside={isConfirmOpen}>
                 {selectedPayout && (
                     <div className="space-y-6">
                         {/* Summary Card */}
@@ -209,7 +226,7 @@ export default function PayoutsPage() {
                             <div className="pt-4 mt-4 border-t">
                                 <button
                                     className="btn bg-green-600 hover:bg-green-700 text-white w-full py-3 text-lg"
-                                    onClick={handleMarkPaid}
+                                    onClick={handleMarkPaidClick}
                                     disabled={processingId === selectedPayout.id}
                                 >
                                     {processingId === selectedPayout.id ? 'Processing...' : 'Mark as Paid'}
@@ -228,6 +245,27 @@ export default function PayoutsPage() {
                     </div>
                 )}
             </SidePanel>
+
+            <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Payout Details</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to mark this reward as <span className="font-bold text-green-600">PAID</span>?
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleConfirmMarkPaid}
+                            className="bg-green-600 hover:bg-green-700 focus:ring-green-600"
+                        >
+                            Confirm Payment
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
