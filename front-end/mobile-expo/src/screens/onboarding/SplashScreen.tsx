@@ -11,8 +11,8 @@ export function SplashScreen({ navigation }: AuthStackScreenProps<'Splash'>) {
   useEffect(() => {
     const checkNavigation = async () => {
       const hasSeen = await AsyncStorage.getItem('has_seen_onboarding');
-      const nextRoute = hasSeen === 'true' ? 'Login' : 'OnboardingOne';
-
+      // const nextRoute = hasSeen === 'true' ? 'Login' : 'OnboardingOne';
+      const nextRoute = 'OnboardingOne';
       const timer = setTimeout(() => {
         navigation.replace(nextRoute);
       }, 1500); // Slightly longer for better logo visibility

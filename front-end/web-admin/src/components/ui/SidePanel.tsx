@@ -6,30 +6,33 @@ interface SidePanelProps {
     onClose: () => void;
     title: string;
     children: React.ReactNode;
+    disableClickOutside?: boolean;
 }
 
-export default function SidePanel({ isOpen, onClose, title, children }: SidePanelProps) {
+export default function SidePanel({ isOpen, onClose, title, children, disableClickOutside }: SidePanelProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
     // Close on escape key
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
+            if (disableClickOutside) return;
             if (e.key === 'Escape') onClose();
         };
         if (isOpen) window.addEventListener('keydown', handleEsc);
         return () => window.removeEventListener('keydown', handleEsc);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, disableClickOutside]);
 
     // Close on click outside
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
+            if (disableClickOutside) return;
             if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
                 onClose();
             }
         };
         if (isOpen) document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, disableClickOutside]);
 
     // Prevent body scroll when panel is open
     useEffect(() => {

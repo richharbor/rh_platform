@@ -77,6 +77,14 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validation: Target amount must be > 1000
+        const invalidTier = tiers.find(t => t.minAmount < 1000);
+        if (invalidTier) {
+            toast.error("Target Amount must be greater than 999");
+            return;
+        }
+
         setSubmitting(true);
         try {
             let uploadedUrl = formData.bannerUrl;
@@ -308,7 +316,7 @@ export default function ContestForm({ initialData, isEditing = false }: ContestF
                                             required
                                             type="number"
                                             className="w-full border border-slate-300 rounded md p-2 text-sm"
-                                            value={tier.minAmount}
+                                            value={tier.minAmount || ''}
                                             onChange={e => handleTierChange(index, 'minAmount', Number(e.target.value))}
                                         />
                                     </div>
