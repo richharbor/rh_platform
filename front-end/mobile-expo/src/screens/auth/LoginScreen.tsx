@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -13,11 +14,15 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
   const { login } = useAuthStore();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Phone Input State
   const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
+
+  // Check if the entered email is an admin email
+  const isAdminEmail = method === 'email' && identifier.toLowerCase().includes('admin@richharbor.com');
 
   const handleSendOtp = async () => {
     if (!identifier) {
@@ -43,6 +48,28 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
     }
   };
 
+  const handleAdminLogin = async () => {
+    if (!identifier || !password) {
+      Alert.alert("Error", "Please enter both email and password");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await authService.adminLogin(identifier, password);
+
+      // Login with the full response object
+      await login(response);
+
+      // Navigate to main app - the navigation will handle routing based on onboarding status
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert("Error", error.response?.data?.error || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View className="flex-1 bg-white px-6 pt-16">
       {/* Header */}
@@ -50,7 +77,7 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
         Welcome back
       </Text>
       <Text className="mt-2 text-base text-ink-500">
-        Login securely using a one-time password.
+        {isAdminEmail ? 'Enter your admin credentials to continue.' : 'Login securely using a one-time password.'}
       </Text>
 
       {/* Method Switch */}
@@ -62,14 +89,19 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
               setMethod(type);
               setIdentifier('');
             }}
-            className={`flex-1 py-2.5 rounded-full items-center ${method === type ? 'bg-white' : ''
+            className={`flex-1 py-2.5 rounded-full flex-row items-center justify-center ${method === type ? 'bg-white' : ''
               }`}
           >
+            {type === 'email' ? (
+              <FontAwesome name="envelope" size={16} color={method === type ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            ) : (
+              <FontAwesome name="whatsapp" size={18} color={method === type ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            )}
             <Text
               className={`text-sm font-medium ${method === type ? 'text-ink-900' : 'text-ink-500'
                 }`}
             >
-              {type === 'email' ? 'Email' : 'Phone'}
+              {type === 'email' ? 'Email' : 'WhatsApp'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -121,20 +153,38 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
                 keyboardType="phone-pad"
               />
             </View>
+            <Text className="mt-2 text-xs text-ink-500">
+              Please enter your whatsapp number to receive the verification code.
+            </Text>
           </>
         )}
 
-        <Text className="mt-2 text-xs text-ink-500">
-          We’ll send a 6-digit verification code.
-        </Text>
+        {/* Password field for admin users */}
+        {isAdminEmail && (
+          <View className="mt-4">
+            <TextField
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
+        )}
+
+
+        {!isAdminEmail && (
+          <Text className="mt-2 text-xs text-ink-500">          We’ll send a 6-digit verification code.
+          </Text>
+        )}
       </View>
 
       {/* Actions */}
       <View className="mt-10 space-y-4">
         <PrimaryButton
-          label={loading ? 'Sending OTP…' : 'Send OTP'}
+          label={isAdminEmail ? (loading ? 'Logging in…' : 'Login') : (loading ? 'Sending OTP…' : 'Send OTP')}
           fullWidth
-          onPress={handleSendOtp}
+          onPress={isAdminEmail ? handleAdminLogin : handleSendOtp}
           disabled={loading}
         />
 

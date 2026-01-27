@@ -32,6 +32,11 @@ export const authService = {
         return response.data;
     },
 
+    adminLogin: async (email: string, password: string) => {
+        const response = await api.post<VerifyOtpResponse>('/auth/login', { email, password });
+        return response.data;
+    },
+
     getOnboardingStatus: async () => {
         const response = await api.get('/auth/onboarding/status');
         return response.data;
