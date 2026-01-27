@@ -254,7 +254,13 @@ const login = async (req, res) => {
         res.json({
             access_token: token,
             token_type: "bearer",
-            user: { id: user.id, role: user.role }
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                onboarding_completed: user.onboarding_completed
+            }
         });
 
     } catch (error) {
