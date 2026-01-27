@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Text, View, Alert, TouchableOpacity, TextInput } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
 import { authService } from '../../services/authService';
@@ -110,14 +111,19 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
               setContactMethod(method);
               setIdentifier('');
             }}
-            className={`flex-1 py-2.5 rounded-full items-center ${contactMethod === method ? 'bg-white' : ''
+            className={`flex-1 py-2.5 rounded-full flex-row items-center justify-center ${contactMethod === method ? 'bg-white' : ''
               }`}
           >
+            {method === 'email' ? (
+              <FontAwesome name="envelope" size={16} color={contactMethod === method ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            ) : (
+              <FontAwesome name="whatsapp" size={18} color={contactMethod === method ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            )}
             <Text
               className={`text-sm font-medium ${contactMethod === method ? 'text-ink-900' : 'text-ink-500'
                 }`}
             >
-              {method === 'email' ? 'Email' : 'Phone'}
+              {method === 'email' ? 'Email' : 'WhatsApp'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -166,6 +172,10 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
                 keyboardType="phone-pad"
               />
             </View>
+
+            <Text className="mt-2 text-xs text-ink-500">
+              Please enter your whatsapp number to receive the verification code.
+            </Text>
           </>
         )}
 
