@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { FontAwesome } from '@expo/vector-icons';
 
 import { PrimaryButton, SecondaryButton, TextField } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -62,14 +63,19 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
               setMethod(type);
               setIdentifier('');
             }}
-            className={`flex-1 py-2.5 rounded-full items-center ${method === type ? 'bg-white' : ''
+            className={`flex-1 py-2.5 rounded-full flex-row items-center justify-center ${method === type ? 'bg-white' : ''
               }`}
           >
+            {type === 'email' ? (
+              <FontAwesome name="envelope" size={16} color={method === type ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            ) : (
+              <FontAwesome name="whatsapp" size={18} color={method === type ? '#1b1b23' : '#6f6f82'} style={{ marginRight: 8 }} />
+            )}
             <Text
               className={`text-sm font-medium ${method === type ? 'text-ink-900' : 'text-ink-500'
                 }`}
             >
-              {type === 'email' ? 'Email' : 'Phone'}
+              {type === 'email' ? 'Email' : 'WhatsApp'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -121,6 +127,9 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
                 keyboardType="phone-pad"
               />
             </View>
+            <Text className="mt-2 text-xs text-ink-500">
+              Please enter your whatsapp number to receive the verification code.
+            </Text>
           </>
         )}
 
