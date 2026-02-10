@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, useRoute, NavigationProp, RouteProp } from '@react-navigation/native';
 import { ChevronLeft } from 'lucide-react-native';
 import { CountryCode } from 'react-native-country-picker-modal';
 import { AppStackParamList } from '../../navigation/types';
@@ -9,6 +9,7 @@ import { PrimaryButton, SecondaryButton } from '../../components';
 
 
 import { DynamicField } from '../../components/inputs/DynamicField';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 import { COMMON_LEAD_FIELDS, PRODUCT_CATEGORIES, PRODUCT_FORMS, LeadField } from '../../config/leads';
@@ -19,10 +20,18 @@ import { validateField, validateEmail, validatePhone, validateName, validateCity
 // Steps: 0=Basic, 1=Product, 2=Dynamic, 3=Review
 export function CreateLeadScreen() {
     const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+    const route = useRoute<RouteProp<AppStackParamList, 'CreateLead'>>();
+    const existingLead = route.params?.lead;
+    const isEditMode = !!existingLead;
+
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
-    const { productType, setProductType, user } = useAuthStore();
+    const { productType: storeProductType, setProductType, user } = useAuthStore();
+
+    // In edit mode, use lead's product type, else use store default
+    const productType = isEditMode ? existingLead?.product_type : storeProductType;
+
     const userRole = (user?.role || 'customer').toLowerCase();
     const canSelectLeadType = userRole === 'partner' || userRole === 'referral_partner' || userRole === 'referral partner';
 
@@ -30,13 +39,36 @@ export function CreateLeadScreen() {
     const [isPreSelected] = useState(!!productType);
     const TOTAL_STEPS = isPreSelected ? 3 : 4;
 
-    const [consent, setConsent] = useState(false);
+    const [consent, setConsent] = useState(isEditMode ? true : false); // Auto-consent for edit
     const [showErrors, setShowErrors] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
 
     // Country code for phone input
     const [countryCode, setCountryCode] = useState<CountryCode>('IN');
     const [callingCode, setCallingCode] = useState('91');
+
+    useEffect(() => {
+        if (existingLead) {
+            // Populate form with existing data
+            const phoneStr = existingLead.phone || '';
+            // Simple parsing assuming +91 format (or similar)
+            let mobile = phoneStr.replace(/^\+\d+/, '');
+
+            setData({
+                ...existingLead.product_details, // Spread product details first
+                clientName: existingLead.name,
+                email: existingLead.email,
+                phone: mobile,
+                location: existingLead.city || existingLead.location, // Handle both key names if needed
+                leadType: existingLead.lead_type ? existingLead.lead_type.charAt(0).toUpperCase() + existingLead.lead_type.slice(1) : 'Self',
+                purpose: existingLead.requirement,
+                ...existingLead // Spread rest (though mainly we care about mapped fields above)
+            });
+
+            // If we need to extract country code from phone, more logic needed here. 
+            // For now assuming default country/code or user re-selects if wrong.
+        }
+    }, [existingLead]);
 
     // Alert State
 
@@ -266,14 +298,14 @@ export function CreateLeadScreen() {
     };
 
     const handleSubmit = async () => {
-        if (!consent) {
+        if (!consent && !isEditMode) {
             showAlert("Consent Required", "Please confirm that you have the client's consent to proceed.", [{ text: "I Understand", style: 'cancel' }], 'warning');
             return;
         }
 
         setLoading(true);
         try {
-            const payload = {
+            const commonPayload = {
                 product_type: productType,
                 lead_type: (data.leadType || "self").toLowerCase(),
                 name: data.clientName,
@@ -281,26 +313,58 @@ export function CreateLeadScreen() {
                 phone: `+${callingCode}${data.mobile}`, // Include country code with phone
                 city: data.location,
                 product_details: data,
-                consent_confirmed: true,
-                convert_to_referral: false,
-                requirement: data.purpose || "Generated from App",
             };
 
-            await leadService.createLead(payload);
+            if (isEditMode && existingLead) {
+                // Update existing lead
+                // Only send allowed fields
+                const updatePayload = {
+                    ...commonPayload,
+                    // Exclude fields that cannot be updated
+                };
 
-            if (Platform.OS === 'web') {
-                alert("Lead submitted successfully!");
-                navigation.navigate('Main', { screen: 'Leads' });
-            } else {
-                showAlert("Success", "Lead submitted successfully!", [
-                    {
-                        text: "Great!",
-                        onPress: () => {
-                            navigation.navigate('Main', { screen: 'Leads' });
+                await leadService.updateLead(existingLead.id, updatePayload);
+
+                if (Platform.OS === 'web') {
+                    alert("Lead updated successfully!");
+                    navigation.navigate('Main', { screen: 'Leads' });
+                } else {
+                    showAlert("Success", "Lead updated successfully!", [
+                        {
+                            text: "Great!",
+                            onPress: () => {
+                                navigation.navigate('Main', { screen: 'Leads' });
+                            }
                         }
-                    }
-                ]);
+                    ], 'success');
+                }
+            } else {
+                // Create new lead
+                const createPayload = {
+                    ...commonPayload,
+                    consent_confirmed: true,
+                    convert_to_referral: false,
+                    requirement: data.purpose || "Generated from App",
+                };
+
+                await leadService.createLead(createPayload);
+
+                if (Platform.OS === 'web') {
+                    alert("Lead submitted successfully!");
+                    navigation.navigate('Main', { screen: 'Leads' });
+                } else {
+                    showAlert("Success", "Lead submitted successfully!", [
+                        {
+                            text: "Great!",
+                            onPress: () => {
+                                navigation.navigate('Main', { screen: 'Leads' });
+                            }
+                        }
+                    ], 'success');
+                }
             }
+
+
             // Note: We don't setLoading(false) here because we want the button to stay disabled 
             // while the user sees the success alert and until navigation happens.
         } catch (error: any) {
@@ -312,12 +376,13 @@ export function CreateLeadScreen() {
     };
 
     return (
-        <View className="flex-1 relative bg-ink-50">
+        <View className="flex-1 bg-ink-50">
             <CustomAlert
                 visible={alertVisible}
                 title={alertConfig.title}
                 message={alertConfig.message}
                 actions={alertConfig.actions}
+                type={alertConfig.type}
                 onClose={() => setAlertVisible(false)}
             />
             {/* Header */}
@@ -333,7 +398,7 @@ export function CreateLeadScreen() {
                 </TouchableOpacity>
 
                 <View className="items-center">
-                    <Text className="font-bold text-lg text-gray-900">New Lead</Text>
+                    <Text className="font-bold text-lg text-gray-900">{isEditMode ? 'Edit Lead' : 'New Lead'}</Text>
                     <Text className="text-xs text-brand-600 font-medium tracking-wide">Step {step + 1} of {TOTAL_STEPS}</Text>
                 </View>
 
@@ -341,11 +406,15 @@ export function CreateLeadScreen() {
                 <View className="w-10" />
             </View>
 
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className="flex-1"
-            >
-                <ScrollView contentContainerClassName="p-6 pb-6">
+            <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView
+                    contentContainerStyle={{ padding: 24, paddingBottom: 10 }}
+                    enableOnAndroid
+                    keyboardShouldPersistTaps="handled"
+                    extraScrollHeight={5}
+                    showsVerticalScrollIndicator={false}
+
+                >
                     {step === 0 && renderBasicDetails()}
 
                     {/* If pre-selected, Step 1 is Dynamic. Else Step 1 is Product, Step 2 is Dynamic */}
@@ -355,19 +424,20 @@ export function CreateLeadScreen() {
                     {!isPreSelected && step === 1 && renderProductSelect()}
                     {!isPreSelected && step === 2 && renderDynamicForm()}
                     {!isPreSelected && step === 3 && renderReview()}
-                </ScrollView>
+                </KeyboardAwareScrollView>
 
                 <View className="px-6 pt-3 pb-3 flex  bg-white border-t border-gray-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
                     <View className='ml-auto'>
                         <PrimaryButton
-                            label={loading ? "Submitting..." : step === (TOTAL_STEPS - 1) ? "Submit Lead" : "Next"}
+                            label={loading ? (isEditMode ? "Updating..." : "Submitting...") : step === (TOTAL_STEPS - 1) ? (isEditMode ? "Update Lead" : "Submit Lead") : "Next"}
                             onPress={handleNext}
                             disabled={loading}
 
                         />
                     </View>
                 </View>
-            </KeyboardAvoidingView>
+            </View>
+
         </View>
     );
 }

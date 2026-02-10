@@ -1,5 +1,6 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Lead } from '../services/leadService';
 
 export type AuthStackParamList = {
   Splash: undefined;
@@ -22,7 +23,8 @@ export type MainTabParamList = {
 
 export type AppStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
-  CreateLead: undefined;
+  CreateLead: { lead?: Lead } | undefined;
+  LeadDetails: { lead: Lead };
   RoleUpgradeRequest: undefined;
   Support: undefined;
 };

@@ -7,7 +7,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 
 
 
-function LeadCard({ lead }: { lead: Lead }) {
+function LeadCard({ lead, onPress }: { lead: Lead; onPress: () => void }) {
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
             case 'new': return 'bg-blue-50 text-blue-700 border-blue-200';
@@ -32,7 +32,10 @@ function LeadCard({ lead }: { lead: Lead }) {
     const date = new Date(dateStr).toLocaleDateString();
 
     return (
-        <TouchableOpacity className="bg-white p-4 rounded-3xl mb-4 shadow-sm shadow-gray-200 border border-gray-100">
+        <TouchableOpacity
+            onPress={onPress}
+            className="bg-white p-4 rounded-3xl mb-4 shadow-sm shadow-gray-200 border border-gray-100"
+        >
             <View className="flex-row items-start justify-between">
                 {/* Icon & Main Info */}
                 <View className="flex-row items-center flex-1">
@@ -176,7 +179,12 @@ export function LeadsScreen() {
             <FlatList
                 data={filteredLeads}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <LeadCard lead={item} />}
+                renderItem={({ item }) => (
+                    <LeadCard
+                        lead={item}
+                        onPress={() => navigation.navigate('LeadDetails', { lead: item })}
+                    />
+                )}
                 contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100, paddingTop: 10 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainTabNavigator } from './MainTabNavigator';
 import { CreateLeadScreen } from '../screens/leads/CreateLeadScreen';
+import { LeadDetailsScreen } from '../screens/leads/LeadDetailsScreen';
 import { RoleUpgradeRequestScreen } from '../screens/profile/RoleUpgradeRequestScreen';
 import type { AppStackParamList } from './types';
 
@@ -17,6 +18,11 @@ export function AppStack() {
         name="CreateLead"
         component={CreateLeadScreen}
         options={{ presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="LeadDetails"
+        component={LeadDetailsScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="RoleUpgradeRequest"

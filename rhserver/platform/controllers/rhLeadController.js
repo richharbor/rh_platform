@@ -75,6 +75,56 @@ const create = async (req, res) => {
     }
 };
 
+// Update an existing lead
+const update = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            product_type,
+            lead_type,
+            name,
+            email,
+            phone,
+            city,
+            product_details,
+        } = req.body;
+
+        // Find the lead (ensure user owns it)
+        const lead = await Lead.findOne({ where: { id, user_id: req.user.id } });
+
+        if (!lead) {
+            return res.status(404).json({ error: "Lead not found or unauthorized" });
+        }
+
+        let updatedDetails = lead.product_details;
+
+        if (product_details && updatedDetails) {
+            updatedDetails = { ...updatedDetails };
+            for (const key in product_details) {
+                if (Object.prototype.hasOwnProperty.call(updatedDetails, key)) {
+                    updatedDetails[key] = product_details[key];
+                }
+            }
+        }
+
+        // Update fields (excluding consent_confirmed)
+        await lead.update({
+            product_type: product_type || lead.product_type,
+            lead_type: lead_type || lead.lead_type,
+            name: name || lead.name,
+            email: email || lead.email,
+            phone: phone || lead.phone,
+            city: city || lead.city,
+            product_details: updatedDetails,
+        });
+
+        res.json(lead);
+    } catch (error) {
+        console.error("Update lead error:", error);
+        res.status(500).json({ error: "Failed to update lead" });
+    }
+};
+
 // List user's own leads
 const listMyLeads = async (req, res) => {
     try {
@@ -141,6 +191,7 @@ const adminList = async (req, res) => {
 
 module.exports = {
     create,
+    update,
     listMyLeads,
     get,
     adminList,

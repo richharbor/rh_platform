@@ -20,5 +20,10 @@ export const leadService = {
     getMyLeads: async () => {
         const response = await api.get<Lead[]>('/leads');
         return response.data;
+    },
+
+    updateLead: async (id: number, data: any) => {
+        const response = await api.put(`/leads/${id}`, data);
+        return response.data;
     }
 };
