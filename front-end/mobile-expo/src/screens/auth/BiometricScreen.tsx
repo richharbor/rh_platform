@@ -29,7 +29,7 @@ export default function BiometricScreen() {
 
                 <TouchableOpacity
                     onPress={() => unlockApp()}
-                    className="bg-blue-600 px-8 py-4 rounded-xl w-full flex-row items-center justify-center gap-2"
+                    className="bg-blue-600 px-20 py-4 flex flex-row rounded-xl w-full text-center gap-2"
                 >
                     <MaterialCommunityIcons name="lock-open-outline" size={24} color="white" />
                     <Text className="text-white font-bold text-lg">Unlock App</Text>

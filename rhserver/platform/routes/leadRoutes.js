@@ -8,6 +8,7 @@ const { authenticate, requireAdmin } = require("../middleware/rhAuth");
 // User routes
 router.post("/leads", authenticate, leadController.create);
 router.get("/leads", authenticate, leadController.listMyLeads);
+router.put("/leads/:id", authenticate, leadController.update);
 router.get("/leads/:id", authenticate, leadController.get);
 
 

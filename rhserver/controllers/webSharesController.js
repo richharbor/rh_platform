@@ -3,7 +3,7 @@ const { WebShares, Sequelize } = require("../models");
 // Create a new WebShare
 const createWebShare = async (req, res) => {
     try {
-        const { id, name, sector, price, symbol } = req.body;
+        const { id, name, sector, price, symbol, label } = req.body;
 
         // Normalize name: lowercase and remove spaces
         const normalizedInputName = name.toLowerCase().replace(/\s+/g, '');
@@ -24,7 +24,8 @@ const createWebShare = async (req, res) => {
             name,
             sector,
             price,
-            symbol
+            symbol,
+            label
         });
 
         return res.status(201).json({
@@ -40,7 +41,7 @@ const createWebShare = async (req, res) => {
 // Update an existing WebShare
 const updateWebShare = async (req, res) => {
     try {
-        const { id, name, sector, price, symbol } = req.body;
+        const { id, name, sector, price, symbol, label } = req.body;
 
         if (!id) {
             return res.status(400).json({ error: "Share ID is required for update" });
@@ -57,7 +58,8 @@ const updateWebShare = async (req, res) => {
         if (name) webShare.name = name;
         if (sector) webShare.sector = sector;
         if (price) webShare.price = price;
-        if(symbol) webShare.symbol = symbol;
+        if (symbol) webShare.symbol = symbol;
+        if (label) webShare.label = label;
 
         await webShare.save();
 
@@ -75,6 +77,14 @@ const updateWebShare = async (req, res) => {
 const getAllWebShares = async (req, res) => {
     try {
         const webShares = await WebShares.findAll();
+
+        // Sort so that "Hot Selling" comes first
+        webShares.sort((a, b) => {
+            if (a.label === 'Hot Selling' && b.label !== 'Hot Selling') return -1;
+            if (a.label !== 'Hot Selling' && b.label === 'Hot Selling') return 1;
+            return 0;
+        });
+
         return res.status(200).json({
             data: webShares
         });
@@ -87,7 +97,7 @@ const getAllWebShares = async (req, res) => {
 // Update an existing WebShare
 const deleteWebShare = async (req, res) => {
     try {
-         const { id } = req.params; // 👈 from params
+        const { id } = req.params; // 👈 from params
 
         if (!id) {
             return res.status(400).json({ error: "Share ID is required for update" });
