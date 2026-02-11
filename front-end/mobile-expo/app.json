@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rfin",
     "slug": "rfin-mobile",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -19,6 +19,7 @@
       "bundleIdentifier": "com.rfin.app"
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

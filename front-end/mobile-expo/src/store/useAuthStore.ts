@@ -178,8 +178,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 // but strictly speaking we could clear it if we tracked "synced" status.
                 // For now, idempotent value overwrites are fine.
             }
-        } catch (error) {
-            console.error('[AuthStore] Failed to sync push token:', error);
+        } catch (error: any) {
+            // Silently fail on 401 (invalid token) - user will be logged out by refreshProfile
+            if (error?.response?.status !== 401) {
+                console.error('[AuthStore] Failed to sync push token:', error);
+            }
         }
     },
 
@@ -209,8 +212,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 set({ user, accountType: type });
                 console.log('[AuthStore] Profile refreshed, new role:', user.role);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('[AuthStore] Failed to refresh profile:', error);
+
+            // If 401, token is invalid or expired - logout user
+            if (error?.response?.status === 401) {
+                console.log('[AuthStore] 401 detected, logging out...');
+                get().logout();
+            }
         }
     }
 }));
