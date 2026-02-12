@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models"); // Uses platform/models/index.js
-const awsService = require("../services/awsService");
+const whatsappService = require("../services/whatsappService");
 const { sendEmail } = require("../services/emailService");
 const redisClient = require("../config/redis");
 
@@ -70,8 +70,7 @@ const requestOtp = async (req, res) => {
             await sendEmail(identifier, subject, htmlContent);
         } else {
             console.log(`SMS OTP to ${identifier}: ${code}`);
-            // Pass the controller-generated code to the service
-            const snsResult = await awsService.sendSnsOtp(identifier, code);
+            const whatsappResult = await whatsappService.sendWhatsAppOtp(identifier, code);
         }
 
         res.json({ message: "OTP sent successfully", type });
