@@ -469,13 +469,13 @@ export default function LeadsPage() {
                 {/* Source Tabs */}
                 <div className="flex border-b border-gray-200 mb-4">
                     <button
-                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'app' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'app' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 cursor-pointer hover:text-gray-700'}`}
                         onClick={() => setActiveSourceTab('app')}
                     >
                         App Leads
                     </button>
                     <button
-                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'web' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-6 py-2 font-medium text-sm focus:outline-none ${activeSourceTab === 'web' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 cursor-pointer hover:text-gray-700'}`}
                         onClick={() => setActiveSourceTab('web')}
                     >
                         Direct Leads
@@ -506,17 +506,18 @@ export default function LeadsPage() {
                     </thead>
                     <tbody>
                         {loading ? <tr><td colSpan={7} className="text-center p-4">Loading...</td></tr> :
-                            leads.map((lead) => (
-                                <tr key={lead.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => openLead(lead)}>
-                                    <td>{lead.id}</td>
-                                    <td>{lead.name}</td>
-                                    <td>{lead.product_type}</td>
-                                    <td><span className={`status-badge`}>{lead.status}</span></td>
-                                    <td>{lead.assigned_admin ? lead.assigned_admin.name : 'Unassigned'}</td>
-                                    <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                                    <td><button className="text-blue-600 hover:underline">View</button></td>
-                                </tr>
-                            ))}
+                            leads.length === 0 ? <tr><td colSpan={7} className="text-center p-4">No leads available</td></tr> :
+                                leads.map((lead) => (
+                                    <tr key={lead.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => openLead(lead)}>
+                                        <td>{lead.id}</td>
+                                        <td>{lead.name}</td>
+                                        <td>{lead.product_type}</td>
+                                        <td><span className={`status-badge`}>{lead.status}</span></td>
+                                        <td>{lead.assigned_admin ? lead.assigned_admin.name : 'Unassigned'}</td>
+                                        <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                        <td><button className="text-blue-600 hover:underline">View</button></td>
+                                    </tr>
+                                ))}
                     </tbody>
                 </table>
             </div>

@@ -128,13 +128,13 @@ export default function UsersPage() {
                     <h1 className="text-2xl font-bold mb-2">User Management</h1>
                     <div className="flex gap-4 border-b border-gray-200">
                         <button
-                            className={`pb-2 px-1 ${activeTab === 'users' ? 'border-b-2 border-brand-600 text-brand-600 font-bold' : 'text-gray-500'}`}
+                            className={`pb-2 px-1 ${activeTab === 'users' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 cursor-pointer'} transition-colors duration-300 ease-in-out`}
                             onClick={() => setActiveTab('users')}
                         >
                             App Users
                         </button>
                         <button
-                            className={`pb-2 px-1 ${activeTab === 'requests' ? 'border-b-2 border-brand-600 text-brand-600 font-bold' : 'text-gray-500'}`}
+                            className={`pb-2 px-1 ${activeTab === 'requests' ? 'border-b-2 border-blue-600 text-blue-600 ' : 'text-gray-500 cursor-pointer'} transition-colors duration-300 ease-in-out`}
                             onClick={() => setActiveTab('requests')}
                         >
                             Upgrade Requests

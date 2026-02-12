@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import api from '../../services/api';
+import { ChevronLeft } from 'lucide-react-native';
 
 export default function SupportScreen({ navigation }: any) {
     const [tickets, setTickets] = useState<any[]>([]);
@@ -65,8 +66,8 @@ export default function SupportScreen({ navigation }: any) {
         <View className="flex-1 bg-gray-50">
             {/* Header */}
             <View className="bg-white px-6 pt-14 pb-4 border-b border-gray-100 flex-row justify-between items-center">
-                <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
-                    <Text className="text-2xl text-gray-600">←</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()} className="h-10 w-10 bg-gray-50 rounded-full items-center justify-center mr-4">
+                    <ChevronLeft size={24} color="#374151" />
                 </TouchableOpacity>
                 <Text className="font-bold text-xl text-gray-900">Support Tickets</Text>
                 <View style={{ width: 40 }} />

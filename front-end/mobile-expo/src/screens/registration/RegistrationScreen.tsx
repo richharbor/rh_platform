@@ -7,6 +7,7 @@ import type { AuthStackScreenProps } from '../../navigation/types';
 import { ONBOARDING_CONFIG, type Question, type OnboardingFlow } from '../../config/onboarding';
 import { useAuthStore } from '../../store/useAuthStore';
 import { authService } from '../../services/authService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registration'>) {
   const { accountType, markSignedUp, login, updateUser } = useAuthStore();
@@ -185,29 +186,34 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
 
   return (
     <View className="flex-1 bg-ink-50">
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-6 pb-12 pt-12"
-        showsVerticalScrollIndicator={false}
-      >
-        <Text className="text-sm font-semibold text-brand-500">
-          Step {currentStepIndex + 1} of {steps.length}
-        </Text>
-        <Text className="mt-2 text-3xl font-bold text-ink-900">
-          {currentStep.title}
-        </Text>
+      <View style={{ flex: 1 }}>
 
-        <View className="mt-6 h-2 w-full rounded-full bg-ink-100">
-          <View
-            className="h-2 rounded-full bg-brand-500"
-            style={{ width: `${progress}%` }}
-          />
-        </View>
+        <KeyboardAwareScrollView
+          contentContainerStyle={{ padding: 24, paddingBottom: 10 }}
+          enableOnAndroid
+          keyboardShouldPersistTaps="handled"
+          extraScrollHeight={5}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text className="text-sm font-semibold text-brand-500">
+            Step {currentStepIndex + 1} of {steps.length}
+          </Text>
+          <Text className="mt-2 text-3xl font-bold text-ink-900">
+            {currentStep.title}
+          </Text>
 
-        <View className="mt-8 space-y-6">
-          {currentStep.questions.map(renderQuestion)}
-        </View>
-      </ScrollView>
+          <View className="mt-6 h-2 w-full rounded-full bg-ink-100">
+            <View
+              className="h-2 rounded-full bg-brand-500"
+              style={{ width: `${progress}%` }}
+            />
+          </View>
+
+          <View className="mt-8 space-y-6">
+            {currentStep.questions.map(renderQuestion)}
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
 
       <View className="border-t border-ink-100 px-6 pb-8 pt-4">
         <View className="flex-row items-center justify-between">
