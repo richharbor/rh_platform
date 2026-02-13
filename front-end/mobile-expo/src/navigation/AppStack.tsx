@@ -7,6 +7,7 @@ import { RoleUpgradeRequestScreen } from '../screens/profile/RoleUpgradeRequestS
 import type { AppStackParamList } from './types';
 
 import SupportScreen from '../screens/support/SupportScreen';
+import { NotificationScreen } from '../screens/notification/NotificationScreen';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -30,6 +31,11 @@ export function AppStack() {
         options={{ title: 'Upgrade Account' }}
       />
       <Stack.Screen name="Support" component={SupportScreen} />
+      <Stack.Screen
+        name="Notification"
+        component={NotificationScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

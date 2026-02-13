@@ -6,7 +6,11 @@ import { ContestCard } from '../../components/ContestCard';
 import { ArrowUpRight, Clock, CheckCircle2, History, Trophy, Wallet } from 'lucide-react-native';
 import { useAuthStore } from '../../store/useAuthStore';
 
+import { useRoute, useNavigation } from '@react-navigation/native';
+
 export function WalletScreen() {
+    const route = useRoute();
+    const navigation = useNavigation();
     const { accountType } = useAuthStore();
     const isCustomer = accountType === 'Customer';
     const [stats, setStats] = useState({ totalEarned: 0, pending: 0, paid: 0 });
@@ -50,7 +54,14 @@ export function WalletScreen() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+        // Check for tab param
+        // @ts-ignore
+        if (route.params?.tab === 'contests' && !isCustomer) {
+            setActiveTab('contests');
+            // @ts-ignore
+            navigation.setParams({ tab: undefined }); // Clear param
+        }
+    }, [(route.params as any)?.tab]);
 
     return (
         <View className="flex-1 bg-white">

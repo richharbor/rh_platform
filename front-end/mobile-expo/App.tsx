@@ -5,7 +5,9 @@ enableScreens(false); // Disable native screens to fix crashes on RN 0.81
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from './src/navigation/types';
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 
@@ -28,9 +30,26 @@ LogBox.ignoreLogs([
 
 function AppShell() {
   const insets = useSafeAreaInsets();
-  const { isAppReady, hydrate, handleAppStateChange, refreshProfile } = useAuthStore();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const {
+    isAppReady,
+    hydrate,
+    handleAppStateChange,
+    refreshProfile,
+    isLocked,
+    pendingNavigation,
+    setPendingNavigation
+  } = useAuthStore();
 
   useNotificationPermissionOnce();
+
+  useEffect(() => {
+    if (!isLocked && pendingNavigation) {
+      console.log('[App] App unlocked, executing pending navigation to:', pendingNavigation.screen);
+      navigation.navigate(pendingNavigation.screen as any, pendingNavigation.params);
+      setPendingNavigation(null);
+    }
+  }, [isLocked, pendingNavigation]);
 
   useEffect(() => {
     hydrate();
@@ -51,6 +70,18 @@ function AppShell() {
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data;
+
+      // Handle navigation to Notification Screen
+      if (data?.screen === 'Notification') {
+        const isLocked = useAuthStore.getState().isLocked;
+        if (isLocked) {
+          console.log('[App] App locked, queuing navigation to Notification');
+          useAuthStore.getState().setPendingNavigation({ screen: 'Notification' });
+        } else {
+          navigation.navigate('Notification');
+        }
+      }
+
       if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
         console.log('[App] Upgrade notification tapped, refreshing profile...');
         refreshProfile();

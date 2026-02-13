@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const { User, Sequelize } = require('../models');
+const { User, Sequelize, Notification } = require('../models');
 const { Op } = Sequelize;
 
 // Initialize Firebase Admin SDK (only once)
@@ -90,6 +90,7 @@ const sendPushNotification = async (userIds, title, body, data = {}, image = nul
             },
             data: stringifyDataPayload({
                 ...data,
+                screen: 'Notification',
                 ...(image && { image: image })
             }),
             android: {
@@ -112,6 +113,16 @@ const sendPushNotification = async (userIds, title, body, data = {}, image = nul
 
         console.log('[FCM] Sending notification to', tokens.length, 'devices');
         console.log('[FCM] Payload:', JSON.stringify({ ...message, tokens: ['...'] }, null, 2));
+        for (const user of users) {
+            await Notification.create({
+                title: title,
+                body: body,
+                user_id: user.id,
+                image_url: image,
+                type: type,
+                is_new: true
+            });
+        }
 
         // Send to multiple devices
         const response = await admin.messaging().sendEachForMulticast(message);
@@ -142,7 +153,7 @@ const broadcastNotification = async (title, body, data = {}, image = null) => {
 
         const users = await User.findAll({
             where: { push_token: { [Op.ne]: null } },
-            attributes: ['push_token']
+            attributes: ['push_token', 'id']
         });
 
         if (users.length === 0) {
@@ -172,6 +183,7 @@ const broadcastNotification = async (title, body, data = {}, image = null) => {
             },
             data: stringifyDataPayload({
                 ...data,
+                screen: 'Notification',
                 ...(image && { image: image })
             }),
             android: {
@@ -193,6 +205,16 @@ const broadcastNotification = async (title, body, data = {}, image = null) => {
         };
 
         console.log(`[FCM] Broadcasting to ${tokens.length} devices`);
+        for (const user of users) {
+            await Notification.create({
+                title: title,
+                body: body,
+                user_id: user.id,
+                image_url: image,
+                type: type,
+                is_new: true
+            });
+        }
 
         const response = await admin.messaging().sendEachForMulticast(message);
 

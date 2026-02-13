@@ -23,6 +23,7 @@ interface AuthState {
 
     accountType: 'Customer' | 'Partner' | 'Referral Partner';
     productType: string | null;
+    pendingNavigation: { screen: string; params?: any } | null;
 
     // Actions
     hydrate: () => Promise<void>;
@@ -39,6 +40,7 @@ interface AuthState {
     syncPushToken: () => Promise<void>;
     handleAppStateChange: (nextAppState: string) => void;
     refreshProfile: () => Promise<void>;
+    setPendingNavigation: (nav: { screen: string; params?: any } | null) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -50,6 +52,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isLocked: false,
     accountType: 'Customer',
     productType: null,
+    pendingNavigation: null,
 
     hydrate: async () => {
         try {
@@ -215,11 +218,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         } catch (error: any) {
             console.error('[AuthStore] Failed to refresh profile:', error);
 
-            // If 401, token is invalid or expired - logout user
             if (error?.response?.status === 401) {
                 console.log('[AuthStore] 401 detected, logging out...');
                 get().logout();
             }
         }
-    }
+    },
+
+    setPendingNavigation: (nav) => set({ pendingNavigation: nav }),
 }));

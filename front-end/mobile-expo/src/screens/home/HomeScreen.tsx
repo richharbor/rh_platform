@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { ScrollView, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Shield, Banknote, Rocket, TrendingUp, BarChart3, Plus, ChevronRight } from 'lucide-react-native';
+import { Shield, Banknote, Rocket, TrendingUp, BarChart3, Plus, ChevronRight, Bell } from 'lucide-react-native';
 
 import { PrimaryButton } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
-import type { AppStackScreenProps } from '../../navigation/types';
+import type { AppStackParamList } from '../../navigation/types';
 
 export function HomeScreen({ navigation }: any) {
   const { user, logout, setProductType } = useAuthStore();
@@ -60,9 +61,17 @@ export function HomeScreen({ navigation }: any) {
               {user?.name?.split(' ')[0] || user?.phone || 'Partner'}
             </Text>
           </View>
-          <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
-            <Text className="text-sm font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity
+              className="h-10 w-10 items-center justify-center rounded-full bg-gray-50 border border-gray-100"
+              onPress={() => navigation.navigate('Notification')}
+            >
+              <Bell size={20} color="#64748b" />
+            </TouchableOpacity>
+            <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
+              <Text className="text-sm font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Create Lead Callout */}
