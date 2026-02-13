@@ -17,6 +17,10 @@ export const notificationServices = {
         const response = await api.get<Notification[]>('/notifications/get');
         return response.data;
     },
+    updateNotification: async (id: number) => {
+        const response = await api.put<Notification>('/notifications/update/' + id);
+        return response.data;
+    },
 
     
 };

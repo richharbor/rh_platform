@@ -44,12 +44,12 @@ function AppShell() {
   useNotificationPermissionOnce();
 
   useEffect(() => {
-    if (!isLocked && pendingNavigation) {
-      console.log('[App] App unlocked, executing pending navigation to:', pendingNavigation.screen);
+    if (isAppReady && !isLocked && pendingNavigation) {
+      console.log('[App] App ready & unlocked, executing pending navigation to:', pendingNavigation.screen);
       navigation.navigate(pendingNavigation.screen as any, pendingNavigation.params);
       setPendingNavigation(null);
     }
-  }, [isLocked, pendingNavigation]);
+  }, [isAppReady, isLocked, pendingNavigation]);
 
   useEffect(() => {
     hydrate();
@@ -70,12 +70,13 @@ function AppShell() {
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data;
+      console.log('Notification tapped. Data:', JSON.stringify(data, null, 2));
 
       // Handle navigation to Notification Screen
       if (data?.screen === 'Notification') {
-        const isLocked = useAuthStore.getState().isLocked;
-        if (isLocked) {
-          console.log('[App] App locked, queuing navigation to Notification');
+        const { isLocked, isAppReady } = useAuthStore.getState();
+        if (isLocked || !isAppReady) {
+          console.log('[App] App locked or not ready, queuing navigation to Notification');
           useAuthStore.getState().setPendingNavigation({ screen: 'Notification' });
         } else {
           navigation.navigate('Notification');

@@ -119,7 +119,7 @@ const sendPushNotification = async (userIds, title, body, data = {}, image = nul
                 body: body,
                 user_id: user.id,
                 image_url: image,
-                type: type,
+                type: data?.type || "",
                 is_new: true
             });
         }
@@ -205,13 +205,14 @@ const broadcastNotification = async (title, body, data = {}, image = null) => {
         };
 
         console.log(`[FCM] Broadcasting to ${tokens.length} devices`);
+        console.log(users);
         for (const user of users) {
             await Notification.create({
                 title: title,
                 body: body,
                 user_id: user.id,
                 image_url: image,
-                type: type,
+                type: data?.type || "",
                 is_new: true
             });
         }
