@@ -18,15 +18,6 @@ export function NotificationScreen() {
     const fetchNotifications = async () => {
         try {
             const data = await notificationServices.getMyNotifications();
-            // Assuming the API returns { success: true, notifications: [...] } based on controller
-            // But service returns response.data directly. Let's assume service handles it or valid response is passed.
-            // Actually service code: return response.data;
-            // Controller returns: { success: true, notifications: [...] }
-            // So data will be { success: true, notifications: [...] }
-            // We need to extract notifications from it.
-            // Let's verify service again.
-            // Service: return response.data; containing { success: true, notifications: [] }
-            // So we should cast or check.
             if (data && (data as any).notifications) {
                 setNotifications((data as any).notifications);
             } else if (Array.isArray(data)) {
@@ -36,6 +27,7 @@ export function NotificationScreen() {
             console.error("Failed to fetch notifications:", error);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
@@ -43,13 +35,12 @@ export function NotificationScreen() {
         fetchNotifications();
     }, []);
 
-    const onRefresh = useCallback(async () => {
+    const onRefresh = () => {
         setRefreshing(true);
-        await fetchNotifications();
-        setRefreshing(false);
-    }, []);
+        fetchNotifications();
+    };
 
-    const handleNavigation = (notification: Notification) => {
+    const handleNavigation = async (notification: Notification) => {
         const type = notification.type?.toLowerCase();
 
         if (type === 'leads' || type === 'lead') {
@@ -64,6 +55,11 @@ export function NotificationScreen() {
             // Navigate to Home screen
             // @ts-ignore
             navigation.navigate('Main', { screen: 'Home' });
+        }
+        try{
+            await notificationServices.updateNotification(notification.id);
+        }catch(error){
+            console.error("Failed to update notification:", error);
         }
     };
 
@@ -134,13 +130,13 @@ export function NotificationScreen() {
         </TouchableOpacity>
     );
 
-    if (loading) {
-            return (
-                <View className="flex-1 justify-center items-center bg-white">
-                    <ActivityIndicator size="large" color="#000" />
-                </View>
-            );
-        }
+    if (loading && !refreshing) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <ActivityIndicator size="large" color="#000" />
+            </View>
+        );
+    }
 
     return (
         <View className="flex-1 bg-white">

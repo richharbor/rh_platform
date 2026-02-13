@@ -19,7 +19,7 @@ module.exports = {
         allowNull: false,
       },
       type: {
-        type: Sequelize.JSON,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       user_id: {
@@ -35,9 +35,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      is_new:{
+      is_new: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false,
+        defaultValue: false,
       },
       created_at: {
         allowNull: false,

@@ -56,8 +56,26 @@ const getNotifications = async (req, res) =>{
     }
 }
 
+const updateNotification = async (req, res) =>{
+    try{
+        const id = req.params;
+        const notification = await Notification.findByPk(id);
+
+        notification.is_new = false;
+        await notification.save();
+
+        res.json({ success: true, notification });
+
+    }catch(error){
+        console.error("Update Notification Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
 module.exports = {
     savePushToken,
     broadcast,
-    getNotifications
+    getNotifications,
+    updateNotification
 };
