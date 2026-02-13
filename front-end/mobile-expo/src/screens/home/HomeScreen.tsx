@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,9 +9,38 @@ import { Shield, Banknote, Rocket, TrendingUp, BarChart3, Plus, ChevronRight, Be
 import { PrimaryButton } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
 import type { AppStackParamList } from '../../navigation/types';
+import { notificationServices, Notification } from '../../services/notificationServices';
+
+import { useNotificationStore } from '../../store/useNotificationStore';
 
 export function HomeScreen({ navigation }: any) {
   const { user, logout, setProductType } = useAuthStore();
+  const { hasNewNotification, setHasNewNotification } = useNotificationStore();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await notificationServices.getMyNotifications();
+      let notificationsList: Notification[] = [];
+      if (Array.isArray(data)) {
+        notificationsList = data;
+      } else if (data && (data as any).notifications) {
+        notificationsList = (data as any).notifications;
+      }
+      setNotifications(notificationsList);
+
+      const hasNew = notificationsList.some((item) => item.is_new);
+      if (hasNew) {
+        setHasNewNotification(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -63,10 +92,13 @@ export function HomeScreen({ navigation }: any) {
           </View>
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
-              className="h-10 w-10 items-center justify-center rounded-full bg-gray-50 border border-gray-100"
-              onPress={() => navigation.navigate('Notification')}
+              className="relative h-10 w-10 items-center justify-center rounded-full bg-gray-50 border border-gray-100"
+              onPress={() => { setHasNewNotification(false); navigation.navigate('Notification') }}
             >
               <Bell size={20} color="#64748b" />
+              {hasNewNotification && (
+                <View className="absolute top-2 right-2.5 h-2.5 w-2.5 rounded-full bg-red-500 border border-white" />
+              )}
             </TouchableOpacity>
             <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 border border-brand-100">
               <Text className="text-sm font-bold text-brand-700">{(user?.name?.[0] || 'U').toUpperCase()}</Text>
