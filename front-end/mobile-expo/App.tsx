@@ -8,7 +8,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from './src/navigation/types';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 
 import { Loader } from './src/components';
@@ -80,14 +80,27 @@ function AppShell() {
 
       // Handle navigation to Notification Screen
       if (data?.screen === 'Notification') {
-
-        navigation.navigate('Notification');
-
+        setPendingNavigation({ screen: 'Notification' });
       }
 
       if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
         console.log('[App] Upgrade notification tapped, refreshing profile...');
         refreshProfile();
+      }
+    });
+
+    // Check if app was opened by a notification (Cold Start)
+    Notifications.getLastNotificationResponseAsync().then(response => {
+      if (response) {
+        const data = response.notification.request.content.data;
+        console.log('[App] App opened via notification (Cold Start). Data:', JSON.stringify(data, null, 2));
+
+        if (data?.screen === 'Notification') {
+          setPendingNavigation({ screen: 'Notification' });
+        }
+        if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
+          refreshProfile();
+        }
       }
     });
 
