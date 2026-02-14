@@ -28,6 +28,8 @@ LogBox.ignoreLogs([
 ]);
 
 
+import { useNotificationStore } from './src/store/useNotificationStore';
+
 function AppShell() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
@@ -40,6 +42,7 @@ function AppShell() {
     pendingNavigation,
     setPendingNavigation
   } = useAuthStore();
+  const { setHasNewNotification } = useNotificationStore();
 
   useNotificationPermissionOnce();
 
@@ -66,6 +69,9 @@ function AppShell() {
         console.log('[App] Upgrade notification received, refreshing profile...');
         refreshProfile();
       }
+
+      setHasNewNotification(true);
+
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
@@ -74,13 +80,9 @@ function AppShell() {
 
       // Handle navigation to Notification Screen
       if (data?.screen === 'Notification') {
-        const { isLocked, isAppReady } = useAuthStore.getState();
-        if (isLocked || !isAppReady) {
-          console.log('[App] App locked or not ready, queuing navigation to Notification');
-          useAuthStore.getState().setPendingNavigation({ screen: 'Notification' });
-        } else {
-          navigation.navigate('Notification');
-        }
+
+        navigation.navigate('Notification');
+
       }
 
       if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {

@@ -51,6 +51,10 @@ export function NotificationScreen() {
             // Navigate to Wallet tab with contest param
             // @ts-ignore
             navigation.navigate('Main', { screen: 'Wallet', params: { tab: 'contests' } });
+        } else if(type === 'incentive' || type === 'incentives'){
+            // Navigate to Wallet tab with incentive param
+            // @ts-ignore
+            navigation.navigate('Main', { screen: 'Wallet' });
         } else {
             // Navigate to Home screen
             // @ts-ignore
