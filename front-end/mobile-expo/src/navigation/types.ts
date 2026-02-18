@@ -27,6 +27,7 @@ export type AppStackParamList = {
   LeadDetails: { lead: Lead };
   RoleUpgradeRequest: undefined;
   Support: undefined;
+  Notification: undefined;
 };
 
 export type AuthStackScreenProps<T extends keyof AuthStackParamList> =

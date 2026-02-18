@@ -5,8 +5,10 @@ enableScreens(false); // Disable native screens to fix crashes on RN 0.81
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
-import { useEffect } from 'react';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from './src/navigation/types';
+import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 
 import { Loader } from './src/components';
@@ -26,11 +28,31 @@ LogBox.ignoreLogs([
 ]);
 
 
+import { useNotificationStore } from './src/store/useNotificationStore';
+
 function AppShell() {
   const insets = useSafeAreaInsets();
-  const { isAppReady, hydrate, handleAppStateChange, refreshProfile } = useAuthStore();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const {
+    isAppReady,
+    hydrate,
+    handleAppStateChange,
+    refreshProfile,
+    isLocked,
+    pendingNavigation,
+    setPendingNavigation
+  } = useAuthStore();
+  const { setHasNewNotification } = useNotificationStore();
 
   useNotificationPermissionOnce();
+
+  useEffect(() => {
+    if (isAppReady && !isLocked && pendingNavigation) {
+      console.log('[App] App ready & unlocked, executing pending navigation to:', pendingNavigation.screen);
+      navigation.navigate(pendingNavigation.screen as any, pendingNavigation.params);
+      setPendingNavigation(null);
+    }
+  }, [isAppReady, isLocked, pendingNavigation]);
 
   useEffect(() => {
     hydrate();
@@ -47,13 +69,38 @@ function AppShell() {
         console.log('[App] Upgrade notification received, refreshing profile...');
         refreshProfile();
       }
+
+      setHasNewNotification(true);
+
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data;
+      console.log('Notification tapped. Data:', JSON.stringify(data, null, 2));
+
+      // Handle navigation to Notification Screen
+      if (data?.screen === 'Notification') {
+        setPendingNavigation({ screen: 'Notification' });
+      }
+
       if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
         console.log('[App] Upgrade notification tapped, refreshing profile...');
         refreshProfile();
+      }
+    });
+
+    // Check if app was opened by a notification (Cold Start)
+    Notifications.getLastNotificationResponseAsync().then(response => {
+      if (response) {
+        const data = response.notification.request.content.data;
+        console.log('[App] App opened via notification (Cold Start). Data:', JSON.stringify(data, null, 2));
+
+        if (data?.screen === 'Notification') {
+          setPendingNavigation({ screen: 'Notification' });
+        }
+        if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
+          refreshProfile();
+        }
       }
     });
 

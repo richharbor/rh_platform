@@ -6,6 +6,8 @@ const { authenticate } = require('../middleware/rhAuth'); // Basic user auth
 
 // User Routes
 router.post('/push-token', authenticate, notificationController.savePushToken);
+router.get('/get', authenticate, notificationController.getNotifications);
+router.put('/update/:id', authenticate, notificationController.updateNotification);
 
 // Admin Routes
 router.post('/broadcast', authenticateAdmin, notificationController.broadcast);
