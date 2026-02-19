@@ -2,11 +2,21 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LogOut, ChevronRight, User, Shield, CreditCard, Bell, HelpCircle, Lock, Scroll } from 'lucide-react-native';
-import React from 'react'; // Added React import for useCallback
+import React, { useState } from 'react'; // Added React import for useCallback
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export function ProfileScreen() {
     const navigation = useNavigation<any>();
     const { logout, user, accountType, refreshProfile } = useAuthStore(); // Added accountType, refreshProfile
+    // Alert State
+    const [alertVisible, setAlertVisible] = useState(false);
+
+    const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+    const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+        setAlertConfig({ title, message, actions, type });
+        setAlertVisible(true);
+    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -30,8 +40,8 @@ export function ProfileScreen() {
                 // so I will keep the existing structure and replace icons with the new ones if they match conceptually.
                 // Given the instruction's `lucide-react-native` import, `FileCheck`, `ScrollText`, `LifeBuoy` are removed.
                 // I will replace them with `Shield`, `Bell`, `HelpCircle` respectively, as they are new and conceptually similar.
-                { label: 'KYC (Partner)', icon: Shield, color: '#0ea5e9', action: () => Alert.alert('Coming Soon') }, // Changed from FileCheck to Shield
-                { label: 'Bank Details', icon: CreditCard, color: '#10b981', action: () => Alert.alert('Coming Soon') },
+                { label: 'KYC (Partner)', icon: Shield, color: '#0ea5e9', action: () => showAlert('Coming Soon', "", [], "info") }, // Changed from FileCheck to Shield
+                { label: 'Bank Details', icon: CreditCard, color: '#10b981', action: () => showAlert('Coming Soon', "", [], "info") },
                 // Only show if not Partner
                 ...(user?.role !== 'partner' ? [{
                     label: 'Upgrade Account',
@@ -44,7 +54,7 @@ export function ProfileScreen() {
         {
             title: 'Legal',
             items: [
-                { label: 'Partner Agreement', icon: Scroll, color: '#8b5cf6', action: () => Alert.alert('Coming Soon') },
+                { label: 'Partner Agreement', icon: Scroll, color: '#8b5cf6', action: () => showAlert('Coming Soon', "", [], "info") },
             ]
         },
         {
@@ -57,6 +67,14 @@ export function ProfileScreen() {
 
     return (
         <ScrollView className="flex-1 bg-gray-100" contentContainerStyle={{ paddingBottom: 40 }}>
+            <CustomAlert
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                actions={alertConfig.actions}
+                type={alertConfig.type}
+                onClose={() => setAlertVisible(false)}
+            />
             {/* Header */}
             <View className="px-6 pt-16 pb-8">
                 <Text className="text-4xl font-bold text-gray-900 tracking-tight">Profile</Text>

@@ -8,6 +8,7 @@ import { OtpInput, PrimaryButton } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
 import type { AuthStackScreenProps } from '../../navigation/types';
 import { authService, VerifyOtpResponse } from '../../services/authService';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export function VerifyOtpScreen({
   navigation,
@@ -20,6 +21,16 @@ export function VerifyOtpScreen({
   const { mode, identifier, method, role } = route.params;
   const isLoginFlow = mode === 'login';
   const { login } = useAuthStore();
+
+  // Alert State
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+  const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+    setAlertConfig({ title, message, actions, type });
+    setAlertVisible(true);
+  };
 
   const isComplete = useMemo(() => code.filter(Boolean).length === 6, [code]);
 
@@ -66,7 +77,7 @@ export function VerifyOtpScreen({
 
     } catch (error: any) {
       console.error(error);
-      Alert.alert("Error", error.response?.data?.error || "Invalid OTP. Please try again.");
+      showAlert("Error", error.response?.data?.error || "Invalid OTP. Please try again.", [], 'error');
     } finally {
       setLoading(false);
     }
@@ -87,17 +98,25 @@ export function VerifyOtpScreen({
     setLoading(true);
     try {
       await authService.requestOtp(identifier, isLoginFlow ? 'login' : 'signup');
-      Alert.alert("Sent", `OTP sent to ${identifier}`);
+      showAlert("Sent", `OTP sent to ${identifier}`, [], 'success');
       setSeconds(45);
     } catch (error: any) {
       console.error(error);
-      Alert.alert("Error", error.response?.data?.error || "Failed to resend OTP");
+      showAlert("Error", error.response?.data?.error || "Failed to resend OTP", [], 'error');
     } finally {
       setLoading(false);
     }
   };
   return (
     <View className="flex-1 bg-ink-50">
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        type={alertConfig.type}
+        onClose={() => setAlertVisible(false)}
+      />
       {/* Header */}
       <View className="px-6 pt-14 pb-4">
         <TouchableOpacity

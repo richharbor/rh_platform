@@ -12,11 +12,21 @@ import type { AppStackParamList } from '../../navigation/types';
 import { notificationServices, Notification } from '../../services/notificationServices';
 
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export function HomeScreen({ navigation }: any) {
   const { user, logout, setProductType } = useAuthStore();
   const { hasNewNotification, setHasNewNotification } = useNotificationStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  // Alert State
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+  const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+    setAlertConfig({ title, message, actions, type });
+    setAlertVisible(true);
+  };
 
   useEffect(() => {
     fetchNotifications();
@@ -54,13 +64,14 @@ export function HomeScreen({ navigation }: any) {
         const enrolled = await LocalAuthentication.isEnrolledAsync();
         if (!enrolled) return;
 
-        Alert.alert(
+        showAlert(
           "Enable Biometrics",
           "Would you like to use Face ID / Touch ID for faster login next time?",
           [
             { text: "No", style: "cancel", onPress: async () => { await AsyncStorage.setItem('has_asked_biometrics', 'true'); } },
-            { text: "Yes", onPress: async () => { await AsyncStorage.setItem('biometric_enabled', 'true'); await AsyncStorage.setItem('has_asked_biometrics', 'true'); Alert.alert("Success", "Biometrics enabled!"); } }
+            { text: "Yes", onPress: async () => { await AsyncStorage.setItem('biometric_enabled', 'true'); await AsyncStorage.setItem('has_asked_biometrics', 'true'); showAlert("Success", "Biometrics enabled!"); } }
           ]
+          ,'info'
         );
       } catch (error) {
         console.log('Biometric check error:', error);
@@ -78,6 +89,14 @@ export function HomeScreen({ navigation }: any) {
 
   return (
     <View className="flex-1 bg-white">
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        type={alertConfig.type}
+        onClose={() => setAlertVisible(false)}
+      />
       <ScrollView
         contentContainerClassName="px-5 pb-24 pt-14"
         showsVerticalScrollIndicator={false}

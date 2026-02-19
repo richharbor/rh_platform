@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import api from '../../services/api';
 import { ChevronLeft } from 'lucide-react-native';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export default function SupportScreen({ navigation }: any) {
     const [tickets, setTickets] = useState<any[]>([]);
@@ -12,6 +13,15 @@ export default function SupportScreen({ navigation }: any) {
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    // Alert State
+    const [alertVisible, setAlertVisible] = useState(false);
+
+    const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+    const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+        setAlertConfig({ title, message, actions, type });
+        setAlertVisible(true);
+    };
 
     useEffect(() => {
         loadTickets();
@@ -29,7 +39,7 @@ export default function SupportScreen({ navigation }: any) {
     };
 
     const handleCreate = async () => {
-        if (!subject || !description) return Alert.alert('Error', 'Please fill all fields');
+        if (!subject || !description) return showAlert('Error', 'Please fill all fields', [], 'error');
         setSubmitting(true);
         try {
             await api.post('/support', { subject, description });
@@ -37,9 +47,9 @@ export default function SupportScreen({ navigation }: any) {
             setSubject('');
             setDescription('');
             loadTickets(); // Refresh
-            Alert.alert('Success', 'Ticket raised successfully');
+            showAlert('Success', 'Ticket raised successfully', [], 'success');
         } catch (e) {
-            Alert.alert('Error', 'Failed to create ticket');
+            showAlert('Error', 'Failed to create ticket', [], 'error');
         } finally {
             setSubmitting(false);
         }
@@ -64,6 +74,14 @@ export default function SupportScreen({ navigation }: any) {
 
     return (
         <View className="flex-1 bg-gray-50">
+            <CustomAlert
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                actions={alertConfig.actions}
+                type={alertConfig.type}
+                onClose={() => setAlertVisible(false)}
+            />
             {/* Header */}
             <View className="bg-white px-6 pt-14 pb-4 border-b border-gray-100 flex-row justify-between items-center">
                 <TouchableOpacity onPress={() => navigation.goBack()} className="h-10 w-10 bg-gray-50 rounded-full items-center justify-center mr-4">

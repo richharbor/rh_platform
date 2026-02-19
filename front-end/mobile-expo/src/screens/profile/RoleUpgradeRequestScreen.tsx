@@ -9,6 +9,7 @@ import { roleUpgradeService, UpgradeStatusResponse } from '../../services/roleUp
 import { ONBOARDING_CONFIG, Question } from '../../config/onboarding';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export function RoleUpgradeRequestScreen() {
     const navigation = useNavigation();
@@ -20,6 +21,15 @@ export function RoleUpgradeRequestScreen() {
     // Form State
     const [answers, setAnswers] = useState<Record<string, any>>({});
     const [reason, setReason] = useState('');
+    // Alert State
+    const [alertVisible, setAlertVisible] = useState(false);
+
+    const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+    const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+        setAlertConfig({ title, message, actions, type });
+        setAlertVisible(true);
+    };
 
     useEffect(() => {
         fetchStatus();
@@ -32,7 +42,7 @@ export function RoleUpgradeRequestScreen() {
             setStatusData(data);
         } catch (error) {
             console.error(error);
-            Alert.alert('Error', 'Failed to fetch upgrade status');
+            showAlert('Error', 'Failed to fetch upgrade status', [], 'error');
         } finally {
             setLoading(false);
         }
@@ -105,7 +115,7 @@ export function RoleUpgradeRequestScreen() {
             for (const step of partnerSteps) {
                 for (const q of step.questions) {
                     if (q.required && !answers[q.id]) {
-                        Alert.alert('Missing Info', `Please answer: ${q.question}`);
+                        showAlert('Missing Info', `Please answer: ${q.question}`, [], 'error');
                         return;
                     }
                 }
@@ -120,12 +130,12 @@ export function RoleUpgradeRequestScreen() {
                 reason: reason,
                 business_data: isCustomer ? answers : undefined
             });
-            Alert.alert('Success', 'Upgrade request submitted successfully!');
+            showAlert('Success', 'Upgrade request submitted successfully!', [], 'success');
             fetchStatus(); // Refresh to show pending state
 
         } catch (error: any) {
             const msg = error.response?.data?.error || 'Failed to submit request';
-            Alert.alert('Error', msg);
+            showAlert('Error', msg, [], 'error');
         } finally {
             setSubmitting(false);
         }
@@ -152,6 +162,14 @@ export function RoleUpgradeRequestScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1 bg-ink-50"
         >
+            <CustomAlert
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                actions={alertConfig.actions}
+                type={alertConfig.type}
+                onClose={() => setAlertVisible(false)}
+            />
             {/* Header */}
             <View className="bg-white pt-14 pb-4 px-6 flex-row items-center border-b border-gray-100">
                 <TouchableOpacity onPress={handleBack} className="mr-4">
