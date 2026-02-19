@@ -8,12 +8,22 @@ import { ONBOARDING_CONFIG, type Question, type OnboardingFlow } from '../../con
 import { useAuthStore } from '../../store/useAuthStore';
 import { authService } from '../../services/authService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registration'>) {
   const { accountType, markSignedUp, login, updateUser } = useAuthStore();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
+  // Alert State
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+  const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+    setAlertConfig({ title, message, actions, type });
+    setAlertVisible(true);
+  };
 
   // Load config based on account type
   const flowConfig: OnboardingFlow | undefined = ONBOARDING_CONFIG[accountType] || ONBOARDING_CONFIG['Customer'];
@@ -51,7 +61,7 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
 
     for (const q of currentStep.questions) {
       if (q.required && !answers[q.id]) {
-        Alert.alert("Missing Information", `Please answer: ${q.question}`);
+        showAlert("Missing Information", `Please answer: ${q.question}`, [], 'error');
         return;
       }
     }
@@ -84,7 +94,7 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
         };
 
         if (hasHardware && hasEnrolled) {
-          Alert.alert(
+          showAlert(
             "Enable Biometrics",
             "Would you like to use FaceID / TouchID for faster login next time?",
             [
@@ -96,7 +106,7 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
                   finish();
                 }
               }
-            ]
+            ], 'info'
           );
         } else {
           await finish();
@@ -106,7 +116,7 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "Failed to save progress");
+      showAlert("Error", "Failed to save progress", [], 'error');
     } finally {
       setLoading(false);
     }
@@ -186,6 +196,14 @@ export function RegistrationScreen({ navigation }: AuthStackScreenProps<'Registr
 
   return (
     <View className="flex-1 bg-ink-50">
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        type={alertConfig.type}
+        onClose={() => setAlertVisible(false)}
+      />
       <View style={{ flex: 1 }}>
 
         <KeyboardAwareScrollView

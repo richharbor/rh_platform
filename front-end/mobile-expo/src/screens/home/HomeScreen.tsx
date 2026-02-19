@@ -69,7 +69,7 @@ export function HomeScreen({ navigation }: any) {
           "Would you like to use Face ID / Touch ID for faster login next time?",
           [
             { text: "No", style: "cancel", onPress: async () => { await AsyncStorage.setItem('has_asked_biometrics', 'true'); } },
-            { text: "Yes", onPress: async () => { await AsyncStorage.setItem('biometric_enabled', 'true'); await AsyncStorage.setItem('has_asked_biometrics', 'true'); showAlert("Success", "Biometrics enabled!"); } }
+            { text: "Yes", onPress: async () => { await AsyncStorage.setItem('biometric_enabled', 'true'); await AsyncStorage.setItem('has_asked_biometrics', 'true'); showAlert("Success", "Biometrics enabled!",[],'success'); } }
           ]
           ,'info'
         );
