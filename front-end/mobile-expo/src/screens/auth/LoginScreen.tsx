@@ -7,6 +7,7 @@ import { PrimaryButton, SecondaryButton, TextField } from '../../components';
 import { useAuthStore } from '../../store/useAuthStore';
 import type { AuthStackScreenProps } from '../../navigation/types';
 import { authService } from '../../services/authService';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 
@@ -20,13 +21,22 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
   // Phone Input State
   const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
+  // Alert State
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+  const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+    setAlertConfig({ title, message, actions, type });
+    setAlertVisible(true);
+  };
 
   // Check if the entered email is an admin email
   const isAdminEmail = method === 'email' && identifier.toLowerCase().includes('admin@richharbor.com');
 
   const handleSendOtp = async () => {
     if (!identifier) {
-      Alert.alert("Error", `Please enter your ${method}`);
+      showAlert("Error", `Please enter your ${method}`,[],'error');
       return;
     }
 
@@ -42,7 +52,7 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
       });
     } catch (error: any) {
       console.error(error);
-      Alert.alert("Error", error.response?.data?.error || "Failed to send OTP");
+      showAlert("Error", error.response?.data?.error || "Failed to send OTP",[],'error');
     } finally {
       setLoading(false);
     }
@@ -50,7 +60,7 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
 
   const handleAdminLogin = async () => {
     if (!identifier || !password) {
-      Alert.alert("Error", "Please enter both email and password");
+      showAlert("Error", "Please enter both email and password",[],'error');
       return;
     }
 
@@ -64,7 +74,7 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
       // Navigate to main app - the navigation will handle routing based on onboarding status
     } catch (error: any) {
       console.error(error);
-      Alert.alert("Error", error.response?.data?.error || "Invalid credentials");
+      showAlert("Error", error.response?.data?.error || "Invalid credentials",[],'error');
     } finally {
       setLoading(false);
     }
@@ -72,6 +82,14 @@ export function LoginScreen({ navigation }: AuthStackScreenProps<'Login'>) {
 
   return (
     <View className="flex-1 bg-white px-6 pt-16">
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        type={alertConfig.type}
+        onClose={() => setAlertVisible(false)}
+      />
       {/* Header */}
       <Text className="text-3xl font-semibold text-ink-900">
         Welcome back

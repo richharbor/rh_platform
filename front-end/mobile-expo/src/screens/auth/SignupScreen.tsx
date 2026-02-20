@@ -9,6 +9,7 @@ import type { AuthStackScreenProps } from '../../navigation/types';
 
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 import { useAuthStore } from '../../store/useAuthStore';
+import { CustomAlert, AlertType } from '../../components/ui/CustomAlert';
 
 type AccountType = 'Partner' | 'Customer' | 'Referral Partner';
 
@@ -22,6 +23,15 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
   // Phone Input State
   const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
+  // Alert State
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', actions: [] as any[], type: 'info' as AlertType });
+
+  const showAlert = (title: string, message: string, actions: any[] = [], type: AlertType = 'info') => {
+    setAlertConfig({ title, message, actions, type });
+    setAlertVisible(true);
+  };
 
   const accountTypes: AccountType[] = [
     'Partner',
@@ -31,7 +41,7 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
 
   const handleContinue = async () => {
     if (!identifier) {
-      Alert.alert("Error", `Please enter your ${contactMethod} `);
+      showAlert("Error", `Please enter your ${contactMethod} `,[], 'error');
       return;
     }
 
@@ -54,7 +64,7 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
     } catch (error: any) {
       console.error(error);
       const errorMessage = error.response?.data?.error || "Failed to send OTP. Please check your connection or tries again.";
-      Alert.alert("Error", errorMessage);
+      showAlert("Error", errorMessage,[], 'error');
     } finally {
       setLoading(false);
     }
@@ -62,6 +72,14 @@ export function SignupScreen({ navigation }: AuthStackScreenProps<'Signup'>) {
 
   return (
     <View className="flex-1 bg-white px-6 pt-16">
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        actions={alertConfig.actions}
+        type={alertConfig.type}
+        onClose={() => setAlertVisible(false)}
+      />
       {/* Header */}
       <Text className="text-3xl font-semibold text-ink-900">
         Create account
