@@ -8,7 +8,8 @@
     "dev": "nodemon app.js",
     "db:create": "npx sequelize-cli db:create",
     "db:drop": "npx sequelize-cli db:drop",
-    "db:migrate": "npx sequelize-cli db:migrate"
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:seed:local": "sequelize-cli db:seed --config config/config.js --seeders-path seeders --seed 20260918000000-local-superadmin.js"
   },
   "keywords": [],
   "author": "",

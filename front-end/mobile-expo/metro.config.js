@@ -11,9 +11,15 @@ const config = getDefaultConfig(__dirname);
 
 config.resolver.sourceExts.push('cjs');
 
-// Aggressive resolution for problematic modules
-config.resolver.extraNodeModules = {
-    'react-async-hook': path.resolve(__dirname, 'node_modules/react-async-hook/dist/react-async-hook.esm.js'),
+// This package's module field points outside dist; resolve its shipped entry.
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+    if (moduleName === 'react-async-hook') {
+        return {
+            type: 'sourceFile',
+            filePath: path.resolve(__dirname, 'node_modules/react-async-hook/dist/react-async-hook.esm.js'),
+        };
+    }
+    return context.resolveRequest(context, moduleName, platform);
 };
 
 const { withNativeWind } = require('nativewind/metro');
