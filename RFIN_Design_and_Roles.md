@@ -27,7 +27,7 @@ The primary design principle is:
 
 > **One user. Three roles. One RFIN ecosystem.**
 
-Source: RFIN product brief, Product Vision and Architecture. fileciteturn0file0L6-L34
+Source: RFIN product brief, Product Vision and Architecture.
 
 ---
 

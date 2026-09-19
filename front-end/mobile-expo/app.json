@@ -1,12 +1,33 @@
 {
   "expo": {
-    "name": "Hello World",
+    "name": "RFIN",
     "slug": "mobile-expo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "scheme": "rfin",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#f9f7f4",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.richharbor.rfin"
+    },
+    "android": {
+      "package": "com.richharbor.rfin",
+      "adaptiveIcon": {
+        "backgroundColor": "#152341"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-status-bar"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
