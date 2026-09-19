@@ -1,140 +1,24 @@
-import 'react-native-gesture-handler';
-import { enableScreens } from 'react-native-screens';
-enableScreens(false); // Disable native screens to fix crashes on RN 0.81
-
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList } from './src/navigation/types';
-import { useEffect, useRef } from 'react';
-import * as Notifications from 'expo-notifications';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Loader } from './src/components';
-import { useNotificationPermissionOnce } from './src/hooks/useNotificationPermissionOnce';
-import { RootNavigator } from './src/navigation/RootNavigator';
-import { useAuthStore } from './src/store/useAuthStore';
-
-import "./global.css";
-import { LogBox } from 'react-native';
-
-import { AppState } from 'react-native';
-
-// Ignore specific warnings that are from dependencies (not our code)
-LogBox.ignoreLogs([
-  "SafeAreaView has been deprecated",
-  "Support for defaultProps will be removed"
-]);
-
-
-import { useNotificationStore } from './src/store/useNotificationStore';
-
-function AppShell() {
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
-  const {
-    isAppReady,
-    hydrate,
-    handleAppStateChange,
-    refreshProfile,
-    isLocked,
-    pendingNavigation,
-    setPendingNavigation
-  } = useAuthStore();
-  const { setHasNewNotification } = useNotificationStore();
-
-  useNotificationPermissionOnce();
-
-  useEffect(() => {
-    if (isAppReady && !isLocked && pendingNavigation) {
-      console.log('[App] App ready & unlocked, executing pending navigation to:', pendingNavigation.screen);
-      navigation.navigate(pendingNavigation.screen as any, pendingNavigation.params);
-      setPendingNavigation(null);
-    }
-  }, [isAppReady, isLocked, pendingNavigation]);
-
-  useEffect(() => {
-    hydrate();
-
-    // AppState Listener for Biometric Lock & Profile Refresh
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      handleAppStateChange(nextAppState);
-    });
-
-    // Notification Listener
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      const data = notification.request.content.data;
-      if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
-        console.log('[App] Upgrade notification received, refreshing profile...');
-        refreshProfile();
-      }
-
-      setHasNewNotification(true);
-
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      const data = response.notification.request.content.data;
-      console.log('Notification tapped. Data:', JSON.stringify(data, null, 2));
-
-      // Handle navigation to Notification Screen
-      if (data?.screen === 'Notification') {
-        setPendingNavigation({ screen: 'Notification' });
-      }
-
-      if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
-        console.log('[App] Upgrade notification tapped, refreshing profile...');
-        refreshProfile();
-      }
-    });
-
-    // Check if app was opened by a notification (Cold Start)
-    Notifications.getLastNotificationResponseAsync().then(response => {
-      if (response) {
-        const data = response.notification.request.content.data;
-        console.log('[App] App opened via notification (Cold Start). Data:', JSON.stringify(data, null, 2));
-
-        if (data?.screen === 'Notification') {
-          setPendingNavigation({ screen: 'Notification' });
-        }
-        if (data?.type === 'role_upgrade_approved' || data?.type === 'role_upgrade_rejected') {
-          refreshProfile();
-        }
-      }
-    });
-
-    return () => {
-      subscription.remove();
-      notificationListener.remove();
-      responseListener.remove();
-    };
-  }, []);
-
-  if (!isAppReady) {
-    return (
-      <View className="flex-1 items-center justify-center bg-ink-50">
-        <Loader />
-      </View>
-    );
-  }
-
-
-
+export default function App() {
   return (
-    <View style={{ flex: 1, paddingBottom: insets.bottom, backgroundColor: "white" }}>
-      <RootNavigator />
+    <View style={styles.container}>
+      <Text style={styles.text}>Hello World</Text>
+      <StatusBar style="auto" />
     </View>
   );
 }
 
-export default function App() {
-  return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <NavigationContainer>
-        <AppShell />
-      </NavigationContainer>
-    </SafeAreaProvider>
-  );
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 24,
+    color: '#000000',
+  },
+});
