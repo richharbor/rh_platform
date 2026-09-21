@@ -23,6 +23,12 @@ import type { Role } from "./rfin-data";
  */
 export type AuthStatus = "loading" | "signedOut" | "onboarding" | "ready";
 
+/** Why an OTP is being verified — decides where the user lands afterwards. */
+export type AuthIntent = "signin" | "signup";
+
+/** Where to go once the OTP clears. */
+export type VerifyResult = { ok: false } | { ok: true; next: "onboarding" | "app" };
+
 export type AuthProfile = {
   name: string;
   phone: string;
@@ -47,6 +53,8 @@ type Ctx = {
   profile: AuthProfile;
   /** the number awaiting OTP confirmation */
   pendingPhone: string;
+  /** whether the pending OTP belongs to a sign-in or a sign-up */
+  pendingIntent: AuthIntent;
   busy: boolean;
   signIn: (phone: string, password: string) => Promise<void>;
   register: (data: {
@@ -55,7 +63,7 @@ type Ctx = {
     email: string;
     password: string;
   }) => Promise<void>;
-  verifyOtp: (code: string) => Promise<boolean>;
+  verifyOtp: (code: string) => Promise<VerifyResult>;
   resendOtp: () => Promise<void>;
   setRoles: (roles: Role[]) => void;
   patchProfile: (p: Partial<AuthProfile>) => void;
@@ -73,10 +81,11 @@ const AuthContext = createContext<Ctx>({
   status: "loading",
   profile: emptyProfile,
   pendingPhone: "",
+  pendingIntent: "signin",
   busy: false,
   signIn: async () => {},
   register: async () => {},
-  verifyOtp: async () => false,
+  verifyOtp: async () => ({ ok: false }),
   resendOtp: async () => {},
   setRoles: () => {},
   patchProfile: () => {},
@@ -90,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [profile, setProfile] = useState<AuthProfile>(emptyProfile);
   const [pendingPhone, setPendingPhone] = useState("");
+  const [pendingIntent, setPendingIntent] = useState<AuthIntent>("signin");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -127,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     await fakeDelay();
     setPendingPhone(phone);
+    setPendingIntent("signin");
     setBusy(false);
   }, []);
 
@@ -136,24 +147,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await fakeDelay();
       setProfile((p) => ({ ...p, name: data.name, phone: data.phone, email: data.email }));
       setPendingPhone(data.phone);
+      setPendingIntent("signup");
       setBusy(false);
     },
     [],
   );
 
   const verifyOtp = useCallback(
-    async (code: string) => {
+    async (code: string): Promise<VerifyResult> => {
       setBusy(true);
       await fakeDelay(500);
       setBusy(false);
-      if (!/^\d{6}$/.test(code) || code === "000000") return false;
+      if (!/^\d{6}$/.test(code) || code === "000000") return { ok: false };
+
       const next = { ...profile, phone: pendingPhone || profile.phone };
       setProfile(next);
+
+      // Signing in means the account already exists, so onboarding is behind them.
+      // Only a fresh sign-up is sent through role selection and onboarding.
+      // With a real backend this would come from the server's `onboardingComplete`
+      // flag rather than the local intent.
+      if (pendingIntent === "signin") {
+        setStatus("ready");
+        await persist("ready", next);
+        return { ok: true, next: "app" };
+      }
+
       setStatus("onboarding");
       await persist("onboarding", next);
-      return true;
+      return { ok: true, next: "onboarding" };
     },
-    [profile, pendingPhone, persist],
+    [profile, pendingPhone, pendingIntent, persist],
   );
 
   const resendOtp = useCallback(async () => {
@@ -187,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       profile,
       pendingPhone,
+      pendingIntent,
       busy,
       signIn,
       register,
@@ -201,6 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       profile,
       pendingPhone,
+      pendingIntent,
       busy,
       signIn,
       register,

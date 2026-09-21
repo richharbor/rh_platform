@@ -25,7 +25,7 @@ export default function VerifyScreen() {
   const router = useRouter();
   const toast = useToast();
   const insets = useSafeAreaInsets();
-  const { verifyOtp, resendOtp, pendingPhone, busy } = useAuth();
+  const { verifyOtp, resendOtp, pendingPhone, pendingIntent, busy } = useAuth();
 
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -46,13 +46,15 @@ export default function VerifyScreen() {
 
   const submit = async (value: string) => {
     setError(null);
-    const ok = await verifyOtp(value);
-    if (!ok) {
+    const result = await verifyOtp(value);
+    if (!result.ok) {
       setError("That code didn't match. Try again.");
       setCode("");
       return;
     }
-    router.replace("/(auth)/role");
+    // Only a new account continues into role selection + onboarding; an existing
+    // account drops straight into the app.
+    router.replace(result.next === "onboarding" ? "/(auth)/role" : "/");
   };
 
   const masked = pendingPhone
