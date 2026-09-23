@@ -135,8 +135,8 @@ export default function BlogsTable({
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [scheduleBlogId, setScheduleBlogId] = useState<string | null>(null);
   const [publishAt, setPublishAt] = useState<string>("");
-  const handleEdit = (blogId: string) => {
-    router.push(`/dashboard/${routeSegment}/${blogId}/edit`);
+  const handleEdit = (blog: Blog) => {
+    router.push(`/dashboard/${routeSegment}/${blog.id}/edit`);
   };
 
   const handleDelete = (blogId: string) => {
@@ -409,7 +409,7 @@ export default function BlogsTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem
-                        onClick={() => handleEdit(blog.id)}
+                        onClick={() => handleEdit(blog)}
                       >
                         <Edit className="h-4 w-4" />
                         <span>Edit</span>

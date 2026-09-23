@@ -1,6 +1,6 @@
 "use client";
-import BlogV2CreateForm from "@/components/Pages/Blogs/v2/BlogV2CreateForm";
+import AddBlog from "@/components/Pages/Blogs/Add&EditBlog/AddBlog";
 
 export default function Page() {
-  return <BlogV2CreateForm placement="blog" routeSegment="blogs" />;
+  return <AddBlog />;
 }

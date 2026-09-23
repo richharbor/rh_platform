@@ -192,27 +192,7 @@ export default function BlogV2DetailForm({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="publish">Published</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="space-y-1.5">
-              <Label htmlFor="placement">Placement</Label>
-              <Select
-                value={value.placement}
-                onValueChange={(v) => set("placement", v)}
-              >
-                <SelectTrigger id="placement" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="blog">Blog (/blogs)</SelectItem>
-                  <SelectItem value="standalone">
-                    Standalone (root /slug)
-                  </SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import BlogsTable from "./BlogsTable/BlogsTable";
 import Pagination, { IPaginationMeta } from "@/components/ui/custom/Pagination";
 import { getBlogs } from "@/services/blog/blogService";
-import BlogV2CreateDialog from "./v2/BlogV2CreateDialog";
 
 interface Blog {
   id: string;
@@ -48,9 +48,9 @@ export default function Blogs({
     hasPrevPage: false,
   });
 
+  const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
   const [search, setSearch] = useState("");
   // keep the latest search term available to pagination/refresh callbacks
   const searchRef = useRef("");
@@ -125,9 +125,7 @@ export default function Blogs({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  // New blogs use the v2 (Tiptap) editor. The dialog creates a draft, then
-  // redirects to the v2 edit page. Existing v1 blogs stay on /edit.
-  const handleAddClick = () => setAddOpen(true);
+  const handleAddClick = () => router.push(`/dashboard/${routeSegment}/new`);
 
   // pagination handlers
   const handlePageChange = (newPage: number) => {
@@ -192,13 +190,6 @@ export default function Blogs({
           onLimitChange={handleLimitChange}
         />
       </div>
-
-      <BlogV2CreateDialog
-        open={addOpen}
-        onOpenChange={setAddOpen}
-        placement={placement}
-        routeSegment={routeSegment}
-      />
     </div>
   );
 }
