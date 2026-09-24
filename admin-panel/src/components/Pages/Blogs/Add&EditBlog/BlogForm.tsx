@@ -46,17 +46,18 @@ import {
 } from "@/services/blog/blogService";
 import { useNotification } from "@/helpers/NotificationContext";
 import { useRouter } from "next/navigation";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 import BlogEditor from "../BlogEditor/BlogEditor";
 import { useRef, useState } from "react";
 
 // Ported from product-space-admin's Add&EditBlog/BlogForm.tsx — the "v1"
 // structured-block editor (paragraph/image/video/youtube content array,
-// each paragraph rich-text-edited via Quill). Still actively used to edit
-// blogs authored before the v2 (TipTap) editor existed — see BlogsTable's
-// version-based edit routing. Deviations from source: no per-role route
-// prefix (`/${role}/...` → `/dashboard/...`, single route tree), no
-// `placement` prop (always "blog" — Landing Blogs / standalone placement is
-// out of scope for this build).
+// each paragraph rich-text-edited via Quill). This is the only blog editor
+// wired up in this build (see BlogsTable/Blogs.tsx — the v2 TipTap editor
+// is unrouted). Deviations from source: `roleSegment` comes from the
+// [role] URL param (useRoleSegment) instead of a `currentRole` cookie read
+// via js-cookie, and no `placement` prop (always "blog" — Landing Blogs /
+// standalone placement is out of scope for this build).
 
 interface BlogContentBase {
   type: string;
@@ -246,6 +247,7 @@ export default function BlogForm({
 }: BlogFormProps) {
   const { showNotification } = useNotification();
   const router = useRouter();
+  const roleSegment = useRoleSegment();
   const isEditing = !!initialData;
 
   const form = useForm<FormValues>({
@@ -343,7 +345,7 @@ export default function BlogForm({
         id,
       );
       showNotification("success", "Action Successful", response.message);
-      router.push(`/dashboard/${routeSegment}`);
+      router.push(`/${roleSegment}/${routeSegment}`);
     } catch (err) {
       showNotification(
         "error",
@@ -359,7 +361,7 @@ export default function BlogForm({
         requestbody as unknown as Parameters<typeof addBlog>[0],
       );
       showNotification("success", "Action Successful", response.message);
-      router.push(`/dashboard/${routeSegment}`);
+      router.push(`/${roleSegment}/${routeSegment}`);
     } catch {
       showNotification("error", "Action Failed", "Failed to add blog");
     }
@@ -1165,7 +1167,7 @@ export default function BlogForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(`/dashboard/${routeSegment}`)}
+                onClick={() => router.push(`/${roleSegment}/${routeSegment}`)}
               >
                 Cancel
               </Button>

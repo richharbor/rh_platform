@@ -40,6 +40,7 @@ import {
 } from "@/services/blog/blogService";
 import { useNotification } from "@/helpers/NotificationContext";
 import { useRouter } from "next/navigation";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 import {
   starIcon,
   starIconFilled,
@@ -118,6 +119,7 @@ export default function BlogsTable({
 }) {
   const { showNotification } = useNotification();
   const router = useRouter();
+  const roleSegment = useRoleSegment();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
   const [loadingFeatured, setLoadingFeatured] = useState<
@@ -136,7 +138,7 @@ export default function BlogsTable({
   const [scheduleBlogId, setScheduleBlogId] = useState<string | null>(null);
   const [publishAt, setPublishAt] = useState<string>("");
   const handleEdit = (blog: Blog) => {
-    router.push(`/dashboard/${routeSegment}/${blog.id}/edit`);
+    router.push(`/${roleSegment}/${routeSegment}/${blog.id}/edit`);
   };
 
   const handleDelete = (blogId: string) => {

@@ -13,6 +13,7 @@ import {
   AuthCredentialsLogin,
 } from "../services/auth/authService";
 import { useRouter } from "next/navigation";
+import { slugifyRole } from "./roleSlug";
 
 // Permissions shape returned by the backend's RBAC role, e.g.
 // { blogs: { view: true, create: true, ... }, leads: {...}, marketing: {...}, admin_management: {...} }
@@ -93,8 +94,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         expires: 7,
         secure: true,
       });
+      // A separate role-namespace tree (/<roleSlug>/blogs, /<roleSlug>/leads,
+      // ...) per PSA's pattern — see src/middleware.ts, which blocks a
+      // logged-in user from crossing into another role's URL segment.
+      const roleSlug = slugifyRole(loggedInUser.role);
+      Cookies.set("currentRole", roleSlug, { expires: 7, secure: true });
       setUser(loggedInUser);
-      router.push("/dashboard/blogs");
+      router.push(`/${roleSlug}/blogs`);
     } finally {
       setIsLoading(false);
     }
@@ -104,6 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     Cookies.remove("admin_token");
     Cookies.remove("admin_refreshToken");
     Cookies.remove("user");
+    Cookies.remove("currentRole");
     setUser(null);
     router.push("/auth/login");
   };

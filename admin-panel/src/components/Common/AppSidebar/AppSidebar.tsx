@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/helpers/AuthContext";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 
 // Single unified sidebar — exactly 3 main items. Role-based visibility comes
 // from RBAC permissions returned by the backend (see AuthContext.hasPermission),
@@ -23,16 +24,17 @@ export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { user, hasPermission } = useAuth();
+  const roleSegment = useRoleSegment();
 
   const navMain = [
     hasPermission("blogs", "view") && {
       title: "All Blogs",
-      url: "/dashboard/blogs",
+      url: `/${roleSegment}/blogs`,
       icon: NotebookPen,
     },
     hasPermission("leads", "view") && {
       title: "Leads",
-      url: "/dashboard/leads",
+      url: `/${roleSegment}/leads`,
       icon: LucideBadgeDollarSign,
     },
     hasPermission("marketing", "view") && {
@@ -40,9 +42,9 @@ export function AppSidebar({
       url: "#",
       icon: Megaphone,
       items: [
-        { title: "Campaigns", url: "/dashboard/marketing/campaigns" },
-        { title: "Contacts", url: "/dashboard/marketing/contacts" },
-        { title: "Unsubscribed", url: "/dashboard/marketing/unsubscribed-users" },
+        { title: "Campaigns", url: `/${roleSegment}/marketing/campaigns` },
+        { title: "Contacts", url: `/${roleSegment}/marketing/contacts` },
+        { title: "Unsubscribed", url: `/${roleSegment}/marketing/unsubscribed-users` },
       ],
     },
   ].filter(Boolean) as {

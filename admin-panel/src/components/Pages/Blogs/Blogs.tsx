@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import BlogsTable from "./BlogsTable/BlogsTable";
 import Pagination, { IPaginationMeta } from "@/components/ui/custom/Pagination";
 import { getBlogs } from "@/services/blog/blogService";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 
 interface Blog {
   id: string;
@@ -49,6 +50,7 @@ export default function Blogs({
   });
 
   const router = useRouter();
+  const roleSegment = useRoleSegment();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -125,7 +127,7 @@ export default function Blogs({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const handleAddClick = () => router.push(`/dashboard/${routeSegment}/new`);
+  const handleAddClick = () => router.push(`/${roleSegment}/${routeSegment}/new`);
 
   // pagination handlers
   const handlePageChange = (newPage: number) => {

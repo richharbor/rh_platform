@@ -20,6 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/helpers/AuthContext";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 
 export function NavUser({
   user,
@@ -31,6 +32,7 @@ export function NavUser({
   };
 }) {
   const { logout, hasPermission } = useAuth();
+  const roleSegment = useRoleSegment();
   const { isMobile } = useSidebar();
   const canManageTeam = hasPermission("admin_management", "view");
   const canManageRoles = hasPermission("admin_management", "manage_roles");
@@ -91,7 +93,7 @@ export function NavUser({
                 <DropdownMenuGroup>
                   {canManageTeam && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/settings/team">
+                      <Link href={`/${roleSegment}/settings/team`}>
                         <Users />
                         Team
                       </Link>
@@ -99,7 +101,7 @@ export function NavUser({
                   )}
                   {canManageRoles && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard/settings/roles">
+                      <Link href={`/${roleSegment}/settings/roles`}>
                         <Shield />
                         Roles
                       </Link>

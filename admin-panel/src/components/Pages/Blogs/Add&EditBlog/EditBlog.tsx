@@ -5,6 +5,7 @@ import { getBlogById } from "@/services/blog/blogService";
 import { FormValues } from "./BlogForm";
 import { useParams, useRouter } from "next/navigation";
 import { HoverLoading } from "@/components/Common/Loading/HoverLoading";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 
 interface EditBlogProps {
   routeSegment?: string;
@@ -22,6 +23,7 @@ export default function EditBlog({
 }: EditBlogProps) {
   const { id } = useParams<{ id?: string }>();
   const router = useRouter();
+  const roleSegment = useRoleSegment();
   const [blog, setBlog] = useState<FormValues | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +68,7 @@ export default function EditBlog({
         <p>Blog not found</p>
         <button
           className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded"
-          onClick={() => router.push(`/dashboard/${routeSegment}`)}
+          onClick={() => router.push(`/${roleSegment}/${routeSegment}`)}
         >
           Back to Blogs
         </button>

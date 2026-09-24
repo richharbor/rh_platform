@@ -31,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/helpers/AuthContext";
+import { useRoleSegment } from "@/helpers/useRoleSegment";
 import Pagination, { IPaginationMeta } from "@/components/ui/custom/Pagination";
 import { debounce } from "@/utils/debounce";
 
@@ -74,6 +75,7 @@ const COLUMN_CONFIG = [
 const PlatformLeads: React.FC = () => {
   const { hasPermission } = useAuth();
   const router = useRouter();
+  const roleSegment = useRoleSegment();
 
   const [data, setData] = useState<ILead[]>([]);
 
@@ -402,7 +404,7 @@ const PlatformLeads: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => router.push("/dashboard/leads/assignee")}
+              onClick={() => router.push(`/${roleSegment}/leads/assignee`)}
               className="bg-[#335DC8] hover:bg-[#335DC8] text-white flex items-center gap-2"
             >
               <BarChart3 className="w-4 h-4" />
