@@ -7,8 +7,7 @@ const serialize = require("../../service/rfin/serialize");
 // GET /rfin/kyc — the checklist, with any finished reviews applied (report #34).
 const listKyc = asyncWrapper(async (req, res) => {
   const items = await db.rfinKycItem.findAll({ where: { customer_id: req.customer.id }, order: [["sort", "ASC"]] });
-  await advanceKyc(items);
-  res.json(items.map(serialize.kycItem));
+  res.json((await advanceKyc(items)).map(serialize.kycItem));
 });
 
 // POST /rfin/kyc/:itemId/upload { fileName } — file storage (S3) comes later;
@@ -22,14 +21,16 @@ const uploadKyc = asyncWrapper(async (req, res) => {
   if (item.state === "verified") return res.status(409).json({ error: "Already verified" });
   Object.assign(item, { state: "in_progress", rejection_reason: null, file_name: String(fileName).slice(0, 255), review_until: later(TIMING.kycReviewMs) });
   await item.save();
+  // The documents centre shows it straight away, "in review" until the check finishes.
+  const [doc] = await db.rfinDocument.findOrCreate({ where: { customer_id: req.customer.id, kyc_item: item.item_key }, defaults: { kind: "kyc", title: item.label } });
+  await doc.update({ state: "in_review", file_name: item.file_name });
   res.status(202).json(serialize.kycItem(item));
 });
 
 // GET /rfin/banks
 const listBanks = asyncWrapper(async (req, res) => {
   const banks = await db.rfinBankAccount.findAll({ where: { customer_id: req.customer.id }, order: [["createdAt", "ASC"]] });
-  await advanceBanks(banks);
-  res.json(banks.map(serialize.bank));
+  res.json((await advanceBanks(banks)).map(serialize.bank));
 });
 
 // POST /rfin/banks { holder, account, ifsc } — simulated ₹1 penny-drop;

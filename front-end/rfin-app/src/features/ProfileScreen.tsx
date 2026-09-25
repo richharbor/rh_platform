@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ChevronRight, type LucideIcon, FileText, Landmark, Lock, ShieldCheck, Bell, Wrench } from "lucide-react-native";
+import { Sparkles, Target, UsersRound, SlidersHorizontal, ChevronRight, type LucideIcon, FileText, Landmark, LifeBuoy, Lock, ShieldCheck, Bell, Wrench } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { useTheme, type ThemePref, fonts, radius } from "@/design";
 import { needLabel } from "@/features/needs";
@@ -31,7 +31,7 @@ export function ProfileScreen() {
   const { pref, setPref } = useTheme();
   const { profile, phone, rfinId, needs, roles, mode, signOut } = useSession();
   const kyc = useKycLive();
-  const soon = () => {}; // documents, notifications, security: step 4
+  const soon = () => {}; // security & consent history: later step
   const items = kyc.data ?? [];
   const verified = items.filter((k) => k.state === "verified").length;
   const flagged = items.find((k) => k.state === "action_required");
@@ -50,10 +50,15 @@ export function ProfileScreen() {
       </Section>
 
       <Section title="Account" gap={0}>
+        <LinkRow icon={Sparkles} label="My financial life" detail="Net worth, cover, loans, goals" onPress={() => router.push("/life")} />
+        <LinkRow icon={Target} label="Goals" detail="Targets, pace and nudges" onPress={() => router.push("/goals")} />
+        <LinkRow icon={UsersRound} label="Family" detail="Who's covered, where the gaps are" onPress={() => router.push("/family")} />
+        <LinkRow icon={SlidersHorizontal} label="Financial profile" detail="Income, risk, horizon, products elsewhere" onPress={() => router.push("/profile/financial")} />
         <LinkRow icon={ShieldCheck} label="KYC" detail={kycDetail} onPress={() => router.push("/kyc")} />
         <LinkRow icon={Landmark} label="Bank accounts" detail="For payouts and refunds" onPress={() => router.push("/bank")} />
-        <LinkRow icon={FileText} label="Documents" onPress={soon} />
-        <LinkRow icon={Bell} label="Notifications" detail="Push, email, WhatsApp — your choice" onPress={soon} />
+        <LinkRow icon={FileText} label="Documents" detail="Policies, receipts, KYC" onPress={() => router.push("/documents")} />
+        <LinkRow icon={Bell} label="Notifications" detail="Push, email, WhatsApp — your choice" onPress={() => router.push("/notifications/preferences")} />
+        <LinkRow icon={LifeBuoy} label="Support" detail="FAQs and your requests" onPress={() => router.push("/support")} />
         <LinkRow icon={Lock} label="Security & consent" detail="Sessions, biometric lock, consent history" onPress={soon} />
         {__DEV__ ? <LinkRow icon={Wrench} label="Developer" detail="Component gallery, mock scenarios" onPress={() => router.push("/dev")} /> : null}
       </Section>

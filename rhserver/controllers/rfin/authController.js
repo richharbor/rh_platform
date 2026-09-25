@@ -11,6 +11,31 @@ const CUSTOMER_TTL = process.env.RFIN_CUSTOMER_TTL || "30d";
 const PHONE = /^[6-9]\d{9}$/;
 
 const rfinId = () => `RFIN-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+const ownCode = () => `RF-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+
+/**
+ * A new customer who signed up with someone's personal code becomes their
+ * pending referral (report #66, #67). Matches an invite sent to this phone if
+ * there is one; self-referral is impossible because the customer is brand new.
+ */
+async function linkReferral(customer, code, transaction) {
+  if (!code) return;
+  const referrer = await db.rfinCustomer.findOne({ where: { own_code: code }, transaction });
+  if (!referrer || referrer.id === customer.id) return;
+  const { REWARDS } = require("../../constants/rfin");
+  const invite = await db.rfinReferral.findOne({ where: { referrer_id: referrer.id, invitee_phone: customer.phone, referee_id: null }, transaction });
+  if (invite) {
+    invite.referee_id = customer.id;
+    await invite.save({ transaction });
+  } else {
+    await db.rfinReferral.create(
+      { id: `RF-${Math.floor(10000 + Math.random() * 89999)}`, referrer_id: referrer.id, need: "refer_someone", invitee_name: "Someone you invited", invitee_phone: customer.phone, reward: REWARDS.referral.reward, referee_id: customer.id },
+      { transaction },
+    );
+  }
+  const { notify } = require("../../service/rfin/notify");
+  await notify(referrer.id, { category: "rewards", tone: "pending", title: "Your invite joined RFIN", body: "You'll earn your reward after their first eligible transaction.", route: "/refer" }, transaction);
+}
 
 // POST /rfin/auth/otp — mobile only (report #12). No SMS provider yet: any
 // 6-digit code except 000000 verifies. Swap in the provider here later.
@@ -34,8 +59,10 @@ const verifyOtp = asyncWrapper(async (req, res) => {
     await otp.save({ transaction });
     let customer = await db.rfinCustomer.findOne({ where: { phone: otp.phone }, transaction });
     if (!customer) {
-      customer = await db.rfinCustomer.create({ phone: otp.phone, rfin_id: rfinId(), referral_code: referralCode || null }, { transaction });
+      const code = referralCode ? String(referralCode).trim().toUpperCase() : null;
+      customer = await db.rfinCustomer.create({ phone: otp.phone, rfin_id: rfinId(), referral_code: code, own_code: ownCode() }, { transaction });
       await provisionCustomer(customer, transaction);
+      await linkReferral(customer, code, transaction);
     }
     return customer;
   });

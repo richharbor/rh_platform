@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     roles: { type: DataTypes.JSONB, allowNull: false, defaultValue: ["buyer"] },
     referral_code: { type: DataTypes.STRING, allowNull: true },
     onboarded: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    own_code: { type: DataTypes.STRING(16), allowNull: true, unique: true },
+    financial: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
+    notification_prefs: { type: DataTypes.JSONB, allowNull: false, defaultValue: { channels: { push: true, email: true, sms: false, whatsapp: false }, categories: { applications: true, kyc: true, payments: true, rewards: true, product_updates: true, promotions: false } } },
     },
     { schema: getRfinSchema(), tableName: "customers", timestamps: true }
   );

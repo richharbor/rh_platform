@@ -7,3 +7,4 @@ export * from "./form";
 export * from "./cards";
 export * from "./screen";
 export { toneColors } from "./tone";
+export * from "./chips";

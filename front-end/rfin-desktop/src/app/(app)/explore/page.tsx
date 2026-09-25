@@ -78,14 +78,14 @@ export default function Explore() {
 
       {showPM ? (
         <section className="space-y-4">
-          <SectionLabel>Private markets</SectionLabel>
+          <SectionLabel action={<button className="text-xs font-semibold text-rfin-red hover:underline" onClick={() => router.push("/markets")}>All →</button>}>Private markets</SectionLabel>
           <QueryView query={companies} empty={{ title: "No companies match", body: "Try another name or sector." }}>
             {(list) => (
               <div className="grid gap-3 md:grid-cols-2">
                 {list.map((c) => {
                   const lead = c.prices[0];
                   return (
-                    <Card key={c.id} className="space-y-1.5">
+                    <Card key={c.id} onClick={() => router.push(`/company/${c.id}`)} className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-[11px] uppercase tracking-[.18em] text-rfin-mute">{c.sector}</span>
                         {c.isNewSupply ? <StatusCode label="New supply" tone="info" /> : !c.available ? <StatusCode label="Unavailable" tone="neutral" /> : null}
@@ -97,7 +97,7 @@ export default function Explore() {
                           <IndicativeBadge label={PRICE_KIND_LABEL[lead.kind]} />
                         </div>
                       ) : null}
-                      <p className="text-xs text-rfin-mute">Company pages and buy / sell open in step 5.</p>
+                      
                     </Card>
                   );
                 })}

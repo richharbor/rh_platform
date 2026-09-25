@@ -1,7 +1,7 @@
 {
   "name": "rhserver",
   "version": "1.0.0",
-  "description": "Rich Harbor admin backend \u2014 Blogs, Leads, Marketing (Express 5 + Sequelize 6 + Postgres, schema-parameterized)",
+  "description": "Rich Harbor admin backend — Blogs, Leads, Marketing (Express 5 + Sequelize 6 + Postgres, schema-parameterized)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -17,6 +17,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
     "@aws-sdk/client-s3": "^3.777.0",
     "@aws-sdk/s3-request-presigner": "^3.777.0",
     "bcryptjs": "^2.4.3",

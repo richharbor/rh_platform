@@ -1,15 +1,19 @@
-import { useRouter } from "expo-router";
-import { Check, FileText, TrendingUp, Trophy, Users } from "lucide-react-native";
+import { useRouter, type Href } from "expo-router";
+import { ago } from "@/features/notify";
+import { Bell, Check, FileText, Sparkles, TrendingUp, Trophy, Users } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { useDraws, useKycLive, useOrders, usePointsLedger } from "@/api/hooks";
+import { useDraws, useKycLive, useNotifications, useOrders, usePointsLedger, usePortfolio, useRecommendations } from "@/api/hooks";
+import { formatCompact } from "@/lib/format";
 import type { Need } from "@/domain/models";
 import { ORDER } from "@/domain/states";
 import { dateline } from "@/features/greeting";
 import { accentAt, NEEDS } from "@/features/needs";
+import { useTheme } from "@/design";
 import { useSession } from "@/stores/session";
 import {
   ActivityRow,
+  Card,
   AmountText,
   FocusCard,
   GoalTile,
@@ -24,6 +28,7 @@ import {
   StatusRow,
   SupportPanel,
   Text,
+  Button,
   TrustBanner,
   useToast,
 } from "@/ui";
@@ -46,6 +51,7 @@ const RECOMMENDATION: Partial<Record<Need, { label: string; title: string; detai
 export default function Home() {
   const router = useRouter();
   const toast = useToast();
+  const th = useTheme();
   const { profile, needs } = useSession();
   const [focus, setFocus] = useState<Need>(needs[0] ?? "grow_wealth");
   const [advisor, setAdvisor] = useState(false);
@@ -53,23 +59,38 @@ export default function Home() {
   const kyc = useKycLive();
   const points = usePointsLedger();
   const draws = useDraws();
+  const notes = useNotifications();
+  const portfolio = usePortfolio();
+  const recs = useRecommendations();
+  const unread = notes.data?.unread ?? 0;
+  const bell = (
+    <Row style={{ justifyContent: "flex-end" }} gap={16}>
+      <Pressable accessibilityLabel="Ask the RFIN Assistant" hitSlop={10} onPress={() => router.push("/assistant")} style={{ padding: 4 }}>
+        <Sparkles size={20} color={th.colors.foreground} />
+      </Pressable>
+      <Pressable accessibilityLabel={unread ? `${unread} unread notifications` : "Notifications"} hitSlop={10} onPress={() => router.push("/notifications")} style={{ padding: 4 }}>
+        <Bell size={20} color={th.colors.foreground} />
+        {unread ? <View style={{ position: "absolute", top: 0, right: 0, minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4, backgroundColor: th.colors.red, alignItems: "center", justifyContent: "center" }}><Text style={{ color: th.colors.onRed, fontSize: 10, fontFamily: "Inter_700Bold" }}>{unread}</Text></View> : null}
+      </Pressable>
+    </Row>
+  );
 
   const goals = (needs.length ? NEEDS.filter((n) => needs.includes(n.id)) : NEEDS.slice(0, 4)).slice(0, 4);
   const rec = RECOMMENDATION[focus] ?? RECOMMENDATION.grow_wealth!;
   const first = profile.name.split(" ")[0];
 
   return (
-    <Screen eyebrow={dateline()} title={first ? `${first}, what are you deciding today?` : "What are you deciding today?"} subtitle="One home for your goals, applications and financial life. Start with what matters now.">
-      {/* Action: the single most urgent thing, first (UX rule 1). */}
-      <QueryView query={orders}>
-        {(list) => {
-          const due = list.find((o) => o.state === "action_required" && o.action);
-          return due?.action ? (
+    <Screen header={bell} eyebrow={dateline()} title={first ? `${first}, what are you deciding today?` : "What are you deciding today?"} subtitle="One home for your goals, applications and financial life. Start with what matters now.">
+      {/* Action: the single most urgent thing, first (UX rule 1) — proactive alerts (Phase 3). */}
+      <QueryView query={recs}>
+        {(r) =>
+          r.alerts.length ? (
             <Rise delay={1}>
-              <FocusCard title={due.action.label} detail={`${due.title} · ${due.action.reason}`} cta="Do it now" onPress={() => router.push(`/order/${due.id}`)} />
+              <FocusCard title={r.alerts[0].title} detail={r.alerts[0].detail} cta="Do it now" onPress={() => router.push(r.alerts[0].route as Href)} />
+              {r.alerts.length > 1 ? <Text variant="xs" style={{ marginTop: 8 }}>+{r.alerts.length - 1} more below</Text> : null}
             </Rise>
-          ) : null;
-        }}
+          ) : null
+        }
       </QueryView>
 
       <Rise delay={2}>
@@ -90,6 +111,29 @@ export default function Home() {
       <Rise delay={3}>
         <HeroCard label={rec.label} title={rec.title} detail={rec.detail} onPress={() => router.push(rec.route as "/explore")} />
       </Rise>
+
+      <Section title="For you">
+        <QueryView query={recs}>
+          {(r) => (
+            <View style={{ gap: 12 }}>
+              {[...r.alerts.slice(1), ...r.forYou].slice(0, 4).map((x) => (
+                <Card key={x.id} onPress={() => router.push(x.route as Href)} style={{ gap: 6 }}>
+                  <Text variant="title">{x.title}</Text>
+                  <Text variant="caption">{x.detail}</Text>
+                  <Row style={{ flexWrap: "wrap" }} gap={6}>
+                    {x.reasons.map((reason) => (
+                      <View key={reason} style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: th.colors.pressed }}>
+                        <Text variant="xs">{reason}</Text>
+                      </View>
+                    ))}
+                  </Row>
+                </Card>
+              ))}
+              <Text variant="xs">{r.note}</Text>
+            </View>
+          )}
+        </QueryView>
+      </Section>
 
       <Section title="Applications">
         <QueryView query={orders} empty={{ title: "Nothing in progress", body: "When you apply for something, you'll track it here." }}>
@@ -121,9 +165,21 @@ export default function Home() {
         </QueryView>
       </Section>
 
-      <Section title="Portfolio">
-        <PortfolioSummary value="₹8.4L" delta="+12.6% this year · indicative" split={[{ label: "Equity", pct: 56 }, { label: "Debt", pct: 28 }, { label: "Cash", pct: 16 }]} />
-      </Section>
+      <QueryView query={portfolio}>
+        {(p) =>
+          p.holdings.length ? (
+            <Section title="Portfolio" action={<Button label="Open →" variant="link" onPress={() => router.push("/portfolio")} />}>
+              <Pressable onPress={() => router.push("/portfolio")}>
+                <PortfolioSummary
+                  value={formatCompact(p.totals.indicativeValue)}
+                  delta={`${p.totals.indicativeGain >= 0 ? "+" : "−"}${formatCompact(Math.abs(p.totals.indicativeGain))} · indicative`}
+                  split={p.sectors.slice(0, 3).map((s) => ({ label: s.sector.split(" ")[0], pct: s.pct }))}
+                />
+              </Pressable>
+            </Section>
+          ) : null
+        }
+      </QueryView>
 
       <Section title="RFIN Points">
         <QueryView query={points}>
@@ -141,10 +197,16 @@ export default function Home() {
         <QueryView query={draws}>{(d) => (d[0] ? <LuckyDrawCard draw={d[0]} onPress={() => router.push("/rewards")} /> : null)}</QueryView>
       </Section>
 
-      <Section title="Recent activity" gap={16}>
-        <ActivityRow icon={Trophy} title="1,000 welcome points issued" detail="Today · Unlock with your first transaction" tone="amber" />
-        <ActivityRow icon={Check} title="RFIN ID created" detail="Today · Mobile verified" />
-        <ActivityRow icon={FileText} title="Address proof needs a clearer photo" detail="KYC · Re-upload to continue" tone="red" />
+      <Section title="Recent activity" gap={16} action={<Button label="All →" variant="link" onPress={() => router.push("/notifications")} />}>
+        <QueryView query={notes} isEmpty={(d) => !d.items.length} empty={{ title: "Nothing yet", body: "Updates show up here." }}>
+          {(d) =>
+            d.items.slice(0, 3).map((n) => (
+              <Pressable key={n.id} onPress={() => n.route && router.push(n.route as Href)}>
+                <ActivityRow icon={n.category === "rewards" ? Trophy : n.category === "kyc" ? FileText : Check} title={n.title} detail={`${ago(n.at)} · ${n.body}`} tone={n.tone === "action" ? "red" : n.tone === "pending" ? "amber" : n.tone === "info" ? "blue" : "green"} />
+              </Pressable>
+            ))
+          }
+        </QueryView>
       </Section>
 
       <Section title="Learn">

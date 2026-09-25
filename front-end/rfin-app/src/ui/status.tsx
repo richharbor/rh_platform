@@ -103,7 +103,7 @@ export function Timeline({ steps }: { steps: TimelineStep[] }) {
 }
 
 /** 0/3 → 3/3 lucky-draw progress, amber ring and an Anton count. Calm, not a slot machine. */
-export function ProgressRing({ value, total, size = 72 }: { value: number; total: number; size?: number }) {
+export function ProgressRing({ value, total, size = 72, label }: { value: number; total: number; size?: number; label?: string }) {
   const { colors, figure } = useTheme();
   const stroke = 6;
   const r = (size - stroke) / 2;
@@ -128,7 +128,7 @@ export function ProgressRing({ value, total, size = 72 }: { value: number; total
         />
       </Svg>
       <Text style={figure(size / 3.4)}>
-        {value}/{total}
+        {label ?? `${value}/${total}`}
       </Text>
     </View>
   );

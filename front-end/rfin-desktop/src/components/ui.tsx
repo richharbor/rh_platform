@@ -1,6 +1,6 @@
 "use client";
 import type { UseQueryResult } from "@tanstack/react-query";
-import { AlertTriangle, Check, CircleHelp, Info, Lock, ShieldCheck, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Bell, Check, CircleHelp, Info, Lock, ShieldCheck, Sparkles, X } from "lucide-react";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
 import type { Accent, PriceKind, TimelineStep, Tone } from "@rfin/shared";
 import { cn } from "@/lib/cn";
@@ -274,7 +274,7 @@ export function Timeline({ steps }: { steps: TimelineStep[] }) {
 }
 
 /** 0/3 → 3/3 lucky-draw ring. Calm, not a slot machine. */
-export function ProgressRing({ value, total, size = 72 }: { value: number; total: number; size?: number }) {
+export function ProgressRing({ value, total, size = 72, label }: { value: number; total: number; size?: number; label?: string }) {
   const stroke = 6;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -286,7 +286,7 @@ export function ProgressRing({ value, total, size = 72 }: { value: number; total
         <circle cx={size / 2} cy={size / 2} r={r} className={pct >= 1 ? "stroke-rfin-green" : "stroke-rfin-amber"} strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={c * (1 - pct)} strokeLinecap="round" />
       </svg>
       <span className="font-display text-xl">
-        {value}/{total}
+        {label ?? `${value}/${total}`}
       </span>
     </div>
   );
@@ -460,3 +460,62 @@ export function QueryView<T>({ query, empty, children }: { query: UseQueryResult
 }
 
 export { TONE_TEXT, TONE_SOFT };
+
+// ---------- overlays ----------
+
+/** Centred dialog (bottom sheet on small screens). Esc and backdrop close it. */
+export function Dialog({ open, onClose, title, children }: { open: boolean; onClose: () => void; title?: string; children: ReactNode }) {
+  if (!open) return null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 z-40 flex items-end justify-center bg-rfin-ink/45 sm:items-center"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
+      <div className="rfin-rise w-full max-w-md rounded-t-3xl bg-rfin-surface p-6 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-4 flex items-start justify-between gap-4">
+          {title ? <h2 className="font-display text-3xl tracking-tight">{title}</h2> : <span />}
+          <button type="button" onClick={onClose} aria-label="Close" className="grid size-8 place-items-center rounded-full hover:bg-rfin-text/5">
+            <X className="size-4" />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Filter pills — ink when selected. */
+export function Chips<T extends string>({ items, value, onChange }: { items: { id: T; label: string; count?: number }[]; value: T; onChange: (v: T) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2" role="tablist">
+      {items.map((c) => (
+        <button
+          key={c.id}
+          type="button"
+          role="tab"
+          aria-selected={c.id === value}
+          onClick={() => onChange(c.id)}
+          className={cn("rounded-full border px-4 py-2.5 text-[13px] font-semibold transition-colors", c.id === value ? "border-rfin-inverse bg-rfin-inverse text-rfin-on-inverse" : "border-rfin-line/15 hover:bg-rfin-text/5")}
+        >
+          {c.label}
+          {c.count ? ` · ${c.count}` : ""}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Bell with unread badge. */
+export function BellBadge({ count }: { count: number }) {
+  return (
+    <span className="relative inline-grid size-9 place-items-center rounded-full hover:bg-rfin-text/5">
+      <Bell className="size-[18px]" aria-hidden />
+      {count ? <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-rfin-red px-1 text-[10px] font-bold text-rfin-paper">{count}</span> : null}
+      <span className="sr-only">{count ? `${count} unread notifications` : "Notifications"}</span>
+    </span>
+  );
+}

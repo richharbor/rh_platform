@@ -5,7 +5,7 @@ import { useCompanies, useProducts } from "@/api/hooks";
 import { track } from "@/analytics";
 import type { ProductCategory } from "@/domain/models";
 import { fonts, radius, useTheme } from "@/design";
-import { CompanyCard, FormField, ProductCard, QueryView, Screen, Section, Text } from "@/ui";
+import { Button, CompanyCard, FormField, ProductCard, QueryView, Screen, Section, Text } from "@/ui";
 
 const CATS: { id: ProductCategory | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -54,9 +54,9 @@ export default function Explore() {
       ) : null}
 
       {cat === "all" || cat === "private_markets" ? (
-        <Section title="Private markets">
+        <Section title="Private markets" action={<Button label="All →" variant="link" onPress={() => router.push("/markets")} />}>
           <QueryView query={companies} empty={{ title: "No companies match", body: "Try another name or sector." }}>
-            {(list) => list.map((c) => <CompanyCard key={c.id} company={c} onPress={() => track("company_viewed", { id: c.id })} />)}
+            {(list) => list.map((c) => <CompanyCard key={c.id} company={c} onPress={() => router.push(`/company/${c.id}`)} />)}
           </QueryView>
         </Section>
       ) : null}

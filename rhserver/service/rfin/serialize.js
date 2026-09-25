@@ -15,6 +15,7 @@ const customer = (c, kycState = "not_started") => {
     needs: c.needs,
     kyc: kycState,
     onboarded: c.onboarded,
+    referralCode: c.own_code || undefined,
     profileCompleteness: Math.round((fields.filter(Boolean).length / fields.length) * 100),
   };
 };
@@ -46,6 +47,13 @@ const company = (c) => ({
   isNewSupply: c.is_new_supply,
   risks: c.risks,
   transferRestrictions: c.transfer_restrictions,
+  founded: c.founded || undefined,
+  hq: c.hq || undefined,
+  business: c.business && c.business.model ? c.business : undefined,
+  financials: c.financials,
+  peers: c.peers,
+  documents: c.documents,
+  bidAsk: c.bid_ask || undefined,
 });
 
 const kycItem = (k) => ({ id: k.item_key, label: k.label, why: k.why, state: k.state, rejectionReason: k.rejection_reason || undefined });
@@ -72,11 +80,14 @@ const order = (o) => ({
   createdAt: iso(o.createdAt),
   timeline: o.timeline,
   action: o.action || undefined,
+  quantity: o.quantity || undefined,
+  unitPrice: n(o.unit_price),
 });
 
 const point = (p) => ({ id: `PT-${p.id}`, ledger: "points", at: iso(p.createdAt), description: p.description, points: p.points, state: p.state, ref: p.ref || undefined });
 
 const draw = (e) => ({
+  results: e.draw.results || undefined,
   id: e.draw.id,
   name: e.draw.name,
   threshold: e.draw.threshold,
@@ -94,4 +105,69 @@ const commission = (c) => ({ id: c.id, ledger: "commission", at: iso(c.createdAt
 
 const consent = (c) => ({ id: `CN-${c.id}`, at: iso(c.createdAt), subject: c.subject, items: c.items });
 
-module.exports = { customer, product, company, kycItem, bank, order, point, draw, lead, commission, consent };
+const document = (d) => ({ id: `DOC-${d.id}`, kind: d.kind, title: d.title, state: d.state, orderId: d.order_id || undefined, kycItem: d.kyc_item || undefined, fileName: d.file_name || undefined, at: iso(d.createdAt) });
+
+const notification = (x) => ({ id: x.id, category: x.category, title: x.title, body: x.body, route: x.route || undefined, tone: x.tone, read: !!x.read_at, at: iso(x.createdAt) });
+
+const ticket = (t) => ({ id: t.id, subject: t.subject, contextType: t.context_type, contextId: t.context_id || undefined, state: t.state, messages: t.messages, updatedAt: iso(t.updatedAt), advisorTyping: !!t.reply_at });
+
+const indicativePrice = (c) => {
+  const p = (c.prices || []).find((x) => x.kind === "current_indicative") || (c.prices || [])[0];
+  return p ? Number(p.perShare) : 0;
+};
+
+/** Holding with indicative (not realised) gain — the two are never merged (report #94). */
+const holding = (h) => {
+  const price = indicativePrice(h.company);
+  const cost = Number(h.avg_cost) * h.quantity;
+  const value = price * h.quantity;
+  return {
+    companyId: h.company_id,
+    name: h.company.name,
+    sector: h.company.sector,
+    quantity: h.quantity,
+    reserved: h.reserved,
+    avgCost: Number(h.avg_cost),
+    costBasis: cost,
+    indicativePrice: price,
+    indicativeValue: value,
+    indicativeGain: value - cost,
+    realizedGain: Number(h.realized_gain),
+    priceKind: ((h.company.prices || []).find((x) => x.kind === "current_indicative") || (h.company.prices || [])[0] || {}).kind,
+  };
+};
+
+const listing = (l) => ({
+  id: l.id,
+  companyId: l.company_id,
+  companyName: l.company ? l.company.name : undefined,
+  quantity: l.quantity,
+  ask: Number(l.ask),
+  state: l.state,
+  timeline: l.timeline,
+  buyerInterest: l.buyer_interest,
+  matchPrice: n(l.match_price),
+  proceeds: n(l.proceeds),
+  createdAt: iso(l.createdAt),
+});
+
+const benefit = (b) => ({
+  id: b.id,
+  ledger: "benefits",
+  kind: b.kind,
+  title: b.title,
+  issuer: b.issuer,
+  value: Number(b.value),
+  state: b.state,
+  code: b.state === "ready" || b.state === "partially_used" ? b.code : undefined,
+  terms: b.terms,
+  source: b.source,
+  sourceRef: b.source_ref || undefined,
+  at: iso(b.createdAt),
+  expiresAt: iso(b.expires_at),
+  redeemedAt: iso(b.redeemed_at),
+});
+
+const referral = (r) => ({ id: r.id, need: r.need, inviteeName: r.invitee_name, state: r.state, reward: Number(r.reward), joined: !!r.referee_id, at: iso(r.createdAt), updatedAt: iso(r.updatedAt) });
+
+module.exports = { holding, listing, benefit, referral, indicativePrice, document, notification, ticket, customer, product, company, kycItem, bank, order, point, draw, lead, commission, consent };

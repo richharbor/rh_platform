@@ -9,6 +9,12 @@ npm start           # i / a / w
 npm run typecheck
 ```
 
+All eight plan steps are built: auth/onboarding, home, explore + transaction flow, KYC/bank,
+activity/documents/notifications/support, private markets (discover, company, buy, portfolio,
+sell), rewards + referrals, partner onboarding and operations, and the Phase 2/3 screens —
+`life`, `goals`, `family`, `profile/financial`, `research`, `assistant` (linked from Profile
+and the Home header). The desktop app (`front-end/rfin-desktop`) has the same screens.
+
 ## Layout
 
 ```

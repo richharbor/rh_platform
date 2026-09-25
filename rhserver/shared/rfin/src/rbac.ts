@@ -32,8 +32,8 @@ export function can<M extends Module>(roles: readonly Role[], module: M, action:
  * partner role; investor mode needs buyer or seller.
  */
 export const MODE_MODULES: Record<Mode, Module[]> = {
-  investor: ["dashboard", "explore", "products", "applications", "orders", "kyc", "bank", "rewards", "private_markets", "profile"],
-  partner: ["partner_dashboard", "leads", "clients", "earnings", "kyc", "bank", "profile"],
+  investor: ["dashboard", "explore", "products", "applications", "orders", "documents", "kyc", "bank", "rewards", "referrals", "private_markets", "notifications", "support", "profile"],
+  partner: ["partner_dashboard", "leads", "clients", "earnings", "documents", "kyc", "bank", "notifications", "support", "profile"],
 };
 
 export const canUseMode = (roles: readonly Role[], mode: Mode) =>
@@ -41,6 +41,10 @@ export const canUseMode = (roles: readonly Role[], mode: Mode) =>
 
 /** Route prefix → the permission that guards it. First match wins. */
 export const ROUTE_GUARDS: { prefix: string; module: Module; action: string }[] = [
+  { prefix: "/partner/onboarding", module: "partner_onboarding", action: "view" },
+  { prefix: "/partner/leads/new", module: "leads", action: "create" },
+  { prefix: "/partner/cases", module: "cases", action: "view" },
+  { prefix: "/partner/resources", module: "resources", action: "view" },
   { prefix: "/partner/leads", module: "leads", action: "view" },
   { prefix: "/partner/clients", module: "clients", action: "view" },
   { prefix: "/partner/earnings", module: "earnings", action: "view" },
@@ -56,7 +60,22 @@ export const ROUTE_GUARDS: { prefix: string; module: Module; action: string }[] 
   { prefix: "/rewards", module: "rewards", action: "view" },
   { prefix: "/explore", module: "explore", action: "view" },
   { prefix: "/home", module: "dashboard", action: "view" },
+  { prefix: "/profile/financial", module: "customer360", action: "view" },
   { prefix: "/profile", module: "profile", action: "view" },
+  { prefix: "/documents", module: "documents", action: "view" },
+  { prefix: "/markets", module: "private_markets", action: "view" },
+  { prefix: "/company", module: "private_markets", action: "view" },
+  { prefix: "/portfolio", module: "private_markets", action: "view" },
+  { prefix: "/buy", module: "private_markets", action: "buy" },
+  { prefix: "/sell", module: "private_markets", action: "sell" },
+  { prefix: "/refer", module: "referrals", action: "view" },
+  { prefix: "/life", module: "insights", action: "view" },
+  { prefix: "/goals", module: "goals", action: "view" },
+  { prefix: "/family", module: "family", action: "view" },
+  { prefix: "/research", module: "insights", action: "view" },
+  { prefix: "/assistant", module: "assistant", action: "use" },
+  { prefix: "/notifications", module: "notifications", action: "view" },
+  { prefix: "/support", module: "support", action: "view" },
 ];
 
 export function canVisit(roles: readonly Role[], path: string): boolean {

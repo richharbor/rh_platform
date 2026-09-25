@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     prize: { type: DataTypes.STRING, allowNull: false },
     terms: { type: DataTypes.TEXT, allowNull: false },
     active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    results: { type: DataTypes.JSONB, allowNull: true },
     },
     { schema: getRfinSchema(), tableName: "lucky_draws", timestamps: true }
   );

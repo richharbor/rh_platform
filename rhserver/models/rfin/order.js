@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     next_at: { type: DataTypes.DATE, allowNull: true },
     fail_payment: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     idempotency_key: { type: DataTypes.STRING(64), allowNull: true },
+    quantity: { type: DataTypes.INTEGER, allowNull: true },
+    unit_price: { type: DataTypes.BIGINT, allowNull: true },
     },
     { schema: getRfinSchema(), tableName: "orders", timestamps: true }
   );

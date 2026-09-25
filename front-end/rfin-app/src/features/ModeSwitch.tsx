@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 import type { Mode } from "@/domain/models";
@@ -18,7 +17,7 @@ const OPTIONS: { mode: Mode; label: string }[] = [
 export function ModeSwitch() {
   const router = useRouter();
   const { colors } = useTheme();
-  const { mode, roles, setMode, addRole } = useSession();
+  const { mode, roles, setMode } = useSession();
   const partner = isPartner(roles);
 
   const go = (m: Mode) => {
@@ -27,18 +26,14 @@ export function ModeSwitch() {
     router.replace(m === "partner" ? "/partner/home" : "/home");
   };
 
-  const become = useMutation({
-    mutationFn: () => addRole("partner"),
-    onSuccess: () => go("partner"),
-  });
 
   if (!partner) {
     return (
       <View style={{ gap: 12 }}>
         <Text variant="muted">Refer clients and earn on every case — using the same RFIN ID you invest with.</Text>
         {/* Full partner onboarding (type, capability, KYC, payout) arrives in step 7. */}
-        <Button label="Become a partner" event="partner_signup" loading={become.isPending} onPress={() => become.mutate()} />
-        {become.isError ? <Text variant="xs" style={{ color: colors.red }}>{become.error.message}</Text> : null}
+        {/* Onboarding + verification grant the role (report #71–#81). */}
+        <Button label="Become a partner" event="partner_signup" onPress={() => router.push("/partner/onboarding")} />
       </View>
     );
   }

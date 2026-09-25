@@ -2,9 +2,13 @@
 
 Next.js 16 web app for RFIN customers, built on the pixel-perfect-main design
 (paper/ink palette, Anton · Inter · JetBrains Mono, red → blue → amber → green
-accents). Covers steps 1–3 of the plan: sign-in, onboarding, dashboard,
-Discover, product, compare, eligibility, checkout, orders, KYC, upload, bank,
-rewards and the partner pages.
+accents). Covers all eight steps of the plan, matching the Expo app screen for screen:
+sign-in and onboarding; dashboard with proactive alerts and "For you"; Discover,
+product, compare, eligibility, checkout, orders, KYC, bank; documents, notifications,
+support; private markets (company research, alerts, buy, portfolio, sell); rewards,
+draws, benefits and referrals; partner onboarding, leads, cases, clients, earnings,
+resources and performance; My financial life, goals, family, financial profile,
+research and the RFIN Assistant.
 
 ```bash
 npm run dev        # http://localhost:4400

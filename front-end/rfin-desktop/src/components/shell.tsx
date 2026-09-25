@@ -1,30 +1,43 @@
 "use client";
 import { can, canUseMode, canVisit, ROLE_LABEL, type Mode, type Module } from "@rfin/shared";
-import { FileText, IndianRupee, LayoutDashboard, Search, ShieldCheck, Trophy, UserRound, Users, Workflow, type LucideIcon } from "lucide-react";
+import { BookOpen, Briefcase, Compass, Newspaper, Sparkles, Target, FileText, Files, Gift, IndianRupee, LayoutDashboard, LifeBuoy, LineChart, Search, ShieldCheck, Trophy, UserRound, Users, Workflow, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/stores/session";
-import { Brand, Button, IdentityCard, LockedState } from "./ui";
+import { useNotifications } from "@/lib/hooks";
+import { BellBadge, Brand, Button, IdentityCard, LockedState } from "./ui";
 
-type NavItem = { label: string; href: string; icon: LucideIcon; module: Module };
+type NavItem = { label: string; href: string; icon: LucideIcon; module: Module; action?: string };
 
 /** Navigation per mode; each item is shown only if the user's roles grant `<module>.view`. */
 const NAV: Record<Mode, NavItem[]> = {
   investor: [
     { label: "Home", href: "/home", icon: LayoutDashboard, module: "dashboard" },
     { label: "Discover", href: "/explore", icon: Search, module: "explore" },
+    { label: "Markets", href: "/markets", icon: LineChart, module: "private_markets" },
+    { label: "Portfolio", href: "/portfolio", icon: Briefcase, module: "private_markets" },
+    { label: "My life", href: "/life", icon: Compass, module: "insights" },
+    { label: "Goals", href: "/goals", icon: Target, module: "goals" },
+    { label: "Research", href: "/research", icon: Newspaper, module: "insights" },
     { label: "Applications", href: "/activity", icon: FileText, module: "orders" },
+    { label: "Documents", href: "/documents", icon: Files, module: "documents" },
     { label: "KYC & bank", href: "/kyc", icon: ShieldCheck, module: "kyc" },
     { label: "Rewards", href: "/rewards", icon: Trophy, module: "rewards" },
+    { label: "Refer", href: "/refer", icon: Gift, module: "referrals" },
+    { label: "Support", href: "/support", icon: LifeBuoy, module: "support" },
+    { label: "Assistant", href: "/assistant", icon: Sparkles, module: "assistant", action: "use" },
   ],
   partner: [
     { label: "Home", href: "/partner/home", icon: LayoutDashboard, module: "partner_dashboard" },
     { label: "Leads", href: "/partner/leads", icon: Workflow, module: "leads" },
     { label: "Clients", href: "/partner/clients", icon: Users, module: "clients" },
     { label: "Earnings", href: "/partner/earnings", icon: IndianRupee, module: "earnings" },
+    { label: "Resources", href: "/partner/resources", icon: BookOpen, module: "resources" },
+    { label: "Documents", href: "/documents", icon: Files, module: "documents" },
     { label: "KYC & bank", href: "/kyc", icon: ShieldCheck, module: "kyc" },
+    { label: "Support", href: "/support", icon: LifeBuoy, module: "support" },
   ],
 };
 
@@ -80,18 +93,27 @@ function Forbidden() {
 export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname() ?? "/";
   const { roles, mode, profile } = useSession();
-  const items = NAV[mode].filter((i) => can(roles, i.module, "view" as never));
-  const allowed = canVisit(roles, path) && (path.startsWith("/partner") ? mode === "partner" || canUseMode(roles, "partner") : true);
+  const items = NAV[mode].filter((i) => can(roles, i.module, (i.action ?? "view") as never));
+  const notes = useNotifications();
+  const unread = notes.data?.unread ?? 0;
+  // Onboarding is how a non-partner becomes one, so it sits outside the partner-only check.
+  const partnerArea = path.startsWith("/partner") && !path.startsWith("/partner/onboarding");
+  const allowed = canVisit(roles, path) && (partnerArea ? canUseMode(roles, "partner") : true);
 
   return (
     <div className="min-h-screen bg-rfin-surface text-rfin-text">
       <div className="mx-auto flex min-h-screen max-w-[1680px]">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-8 border-r border-rfin-line/15 p-6 lg:flex rfin-rise">
-          <Link href={mode === "partner" ? "/partner/home" : "/home"} aria-label="RFIN home">
-            <Brand />
-          </Link>
+          <div className="flex items-start justify-between">
+            <Link href={mode === "partner" ? "/partner/home" : "/home"} aria-label="RFIN home">
+              <Brand />
+            </Link>
+            <Link href="/notifications" aria-current={path.startsWith("/notifications") ? "page" : undefined}>
+              <BellBadge count={unread} />
+            </Link>
+          </div>
           <ModeSwitch />
-          <nav className="flex flex-col gap-1 text-[15px] font-medium" aria-label="Main navigation">
+          <nav className="flex flex-col gap-0.5 overflow-y-auto text-[15px] font-medium" aria-label="Main navigation">
             {items.map((item, index) => {
               const on = isActive(path, item.href);
               return (
@@ -99,7 +121,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   key={item.href}
                   href={item.href}
                   aria-current={on ? "page" : undefined}
-                  className={cn("flex items-center justify-between rounded-xl px-4 py-3 text-left transition-colors", on ? "bg-rfin-inverse text-rfin-on-inverse" : "hover:bg-rfin-text/5")}
+                  className={cn("flex items-center justify-between rounded-xl px-4 py-2.5 text-left transition-colors", on ? "bg-rfin-inverse text-rfin-on-inverse" : "hover:bg-rfin-text/5")}
                 >
                   <span className="flex items-center gap-3">
                     <item.icon className="size-4" aria-hidden />
@@ -123,7 +145,12 @@ export function Shell({ children }: { children: ReactNode }) {
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1 pb-24 lg:pb-0">{allowed ? children : <Forbidden />}</div>
+        <div className="relative min-w-0 flex-1 pb-24 lg:pb-0">
+          <Link href="/notifications" className="absolute right-4 top-4 z-10 lg:hidden">
+            <BellBadge count={unread} />
+          </Link>
+          {allowed ? children : <Forbidden />}
+        </div>
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 border-t border-rfin-line/15 bg-rfin-surface px-5 py-4 lg:hidden" aria-label="Main navigation">

@@ -1,16 +1,17 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { can, formatINR, ORDER, PAYMENT } from "@rfin/shared";
-import { Check, Clock, RotateCcw } from "lucide-react";
+import { Check, Clock, FileText, RotateCcw } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api, track } from "@/lib/api";
 import { cn } from "@/lib/cn";
-import { useOrder } from "@/lib/hooks";
+import { useDocuments, useOrder } from "@/lib/hooks";
+import { slotLabel } from "@/lib/time";
 import { useSession } from "@/stores/session";
 import { BackLink, Page } from "@/components/shell";
 import { useToast } from "@/components/toast";
-import { Button, FocusCard, QueryView, SectionLabel, StatusCode, SupportPanel, Timeline, TrustBanner } from "@/components/ui";
+import { ActivityRow, Button, Dialog, FocusCard, QueryView, SectionLabel, StatusCode, SupportPanel, Timeline, TrustBanner } from "@/components/ui";
 
 /** Never leave the user wondering (report #8, #38–#40). */
 export default function OrderStatus() {
@@ -20,13 +21,28 @@ export default function OrderStatus() {
   const toast = useToast();
   const roles = useSession((s) => s.roles);
   const order = useOrder(id);
-  const [advisor, setAdvisor] = useState(false);
+  const docs = useDocuments();
+  const [picking, setPicking] = useState(false);
+  const [slot, setSlot] = useState<string>();
+  const act = useMutation({
+    mutationFn: () => api("orders.act", { id, choice: slot! }),
+    onSuccess: (updated) => {
+      qc.setQueryData(["order", id], updated);
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      setPicking(false);
+      toast("Booked — we'll confirm by SMS", "success");
+    },
+  });
+  const orderDocs = (docs.data ?? []).filter((d) => d.orderId === id);
+  const toSupport = (subject: string) => router.push(`/support?contextType=order&contextId=${id}&subject=${encodeURIComponent(subject)}`);
   const seen = useRef<string | undefined>(undefined);
   const o = order.data;
 
   useEffect(() => {
     if (!o || seen.current === o.state) return;
     seen.current = o.state;
+    // A state change on the server can issue documents, notifications, points and draw progress.
+    for (const key of ["documents", "notifications", "points", "draws", "orders"]) qc.invalidateQueries({ queryKey: [key] });
     if (o.state === "fulfilled") {
       track("order_completed", { id: o.id });
       track("eligible_transaction_completed", { id: o.id });
@@ -83,7 +99,9 @@ export default function OrderStatus() {
               </p>
             </header>
 
-            {o.action && !failed ? <FocusCard title={o.action.label} detail={o.action.reason} cta="Do it now" onClick={() => toast("Order actions arrive in step 4", "info")} /> : null}
+            {o.action && !failed ? (
+              <FocusCard title={o.action.label} detail={o.action.reason} cta={o.action.type === "schedule" ? "Pick a slot" : "Do it now"} onClick={() => (o.action?.type === "schedule" ? setPicking(true) : toSupport(o.action!.label))} />
+            ) : null}
 
             <section className="space-y-4">
               <SectionLabel>Timeline</SectionLabel>
@@ -98,11 +116,33 @@ export default function OrderStatus() {
               ) : null}
             </div>
 
-            {done ? (
-              <TrustBanner>Your documents are in Applications. If this was an eligible transaction, your reward shows in Rewards once it&apos;s confirmed.</TrustBanner>
-            ) : (
-              <SupportPanel body={`Questions about ${o.id}? An advisor already has the details, so you won't need to explain from scratch.`} requested={advisor} onClick={() => { setAdvisor(true); toast(`Advisor requested for ${o.id}`, "success"); }} />
-            )}
+            {orderDocs.length ? (
+              <section className="space-y-4">
+                <SectionLabel>Documents</SectionLabel>
+                {orderDocs.map((d) => (
+                  <button key={d.id} type="button" onClick={() => router.push("/documents")} className="block w-full text-left">
+                    <ActivityRow icon={<FileText className="size-4" />} title={d.title} detail={d.state === "available" ? "Ready to download" : "Being prepared"} />
+                  </button>
+                ))}
+              </section>
+            ) : null}
+            {done ? <TrustBanner>If this was an eligible transaction, your reward shows in Rewards once it&apos;s confirmed.</TrustBanner> : null}
+            <SupportPanel body={`Questions about ${o.id}? An advisor already has the details, so you won't need to explain from scratch.`} onClick={() => toSupport(`About ${o.title}`)} />
+
+            {o.action?.type === "schedule" ? (
+              <Dialog open={picking} onClose={() => setPicking(false)} title="Pick a slot">
+                <div role="radiogroup" className="space-y-2.5">
+                  {o.action.options.map((opt) => (
+                    <button key={opt} type="button" role="radio" aria-checked={slot === opt} onClick={() => setSlot(opt)} className={cn("block w-full rounded-2xl p-4 text-left", slot === opt ? "border-2 border-rfin-text" : "border border-rfin-line/10 hover:bg-rfin-text/5")}>
+                      <p className="text-sm font-semibold">{slotLabel(opt)}</p>
+                      <p className="text-xs text-rfin-mute">At home · about 20 minutes</p>
+                    </button>
+                  ))}
+                  {act.isError ? <p className="text-xs text-rfin-red">{act.error.message}</p> : null}
+                  <Button block disabled={!slot} loading={act.isPending} onClick={() => act.mutate()} className="mt-2">Book this slot</Button>
+                </div>
+              </Dialog>
+            ) : null}
           </>
         )}
       </QueryView>

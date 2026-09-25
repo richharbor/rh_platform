@@ -1,9 +1,10 @@
 "use client";
-import { accentAt, dateline, NEEDS, ORDER, type Need } from "@rfin/shared";
-import { Check, FileText, Trophy } from "lucide-react";
+import { accentAt, dateline, formatCompact, NEEDS, ORDER, type Need } from "@rfin/shared";
+import { Check, FileText, Sparkles, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useDraws, useKyc, useOrders, usePoints } from "@/lib/hooks";
+import { useDraws, useKyc, useNotifications, useOrders, usePoints, usePortfolio, useRecommendations } from "@/lib/hooks";
+import { ago } from "@/lib/time";
 import { useSession } from "@/stores/session";
 import { Page } from "@/components/shell";
 import { useToast } from "@/components/toast";
@@ -32,6 +33,10 @@ export default function Home() {
   const kyc = useKyc();
   const points = usePoints();
   const draws = useDraws();
+  const notes = useNotifications();
+  const portfolio = usePortfolio();
+  const recs = useRecommendations();
+  const alert = recs.data?.alerts[0];
   const rec = RECOMMENDATION[focus] ?? RECOMMENDATION.grow_wealth!;
   const first = profile.name.split(" ")[0];
   const due = orders.data?.find((o) => o.state === "action_required" && o.action);
@@ -51,7 +56,9 @@ export default function Home() {
       <div className="mt-auto border-t border-rfin-line/15 pt-6">
         <SectionLabel>Today&apos;s focus</SectionLabel>
         <div className="mt-3">
-          {due?.action ? (
+          {alert ? (
+            <FocusCard title={alert.title} detail={alert.detail} cta="Do it now" onClick={() => router.push(alert.route)} />
+          ) : due?.action ? (
             <FocusCard title={due.action.label} detail={`${due.title} · ${due.action.reason}`} cta="Do it now" onClick={() => router.push(`/order/${due.id}`)} />
           ) : (
             <FocusCard title="Review your recommendation" detail="A quick comparison can help you decide with confidence." cta="Open recommendation" onClick={() => router.push(rec.href)} />
@@ -79,6 +86,22 @@ export default function Home() {
       <div className="rfin-rise rfin-delay-3">
         <HeroCard label={rec.label} title={rec.title} detail={rec.detail} onClick={() => router.push(rec.href)} />
       </div>
+
+      {recs.data && recs.data.alerts.length + recs.data.forYou.length > 1 ? (
+        <section aria-labelledby="foryou-heading" className="space-y-3">
+          <SectionLabel id="foryou-heading" action={<button type="button" aria-label="Ask the assistant" className="text-rfin-mute hover:text-rfin-red" onClick={() => router.push("/assistant")}><Sparkles className="size-4" /></button>}>For you</SectionLabel>
+          <div className="grid items-start gap-3 md:grid-cols-2">
+            {[...recs.data.alerts.slice(1), ...recs.data.forYou].slice(0, 4).map((x) => (
+              <button key={x.id} type="button" onClick={() => router.push(x.route)} className="space-y-2 rounded-2xl border border-rfin-line/10 p-4 text-left hover:bg-rfin-text/5">
+                <p className="text-sm font-semibold">{x.title}</p>
+                <p className="text-[13px] text-rfin-mute">{x.detail}</p>
+                <div className="flex flex-wrap gap-1.5">{x.reasons.map((r) => <span key={r} className="rounded-full bg-rfin-blue/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-rfin-blue">{r}</span>)}</div>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-rfin-mute">{recs.data.note}</p>
+        </section>
+      ) : null}
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_240px]">
         <section aria-labelledby="kyc-heading">
@@ -109,17 +132,23 @@ export default function Home() {
         </section>
 
         <aside className="border-t border-rfin-line/15 pt-6 xl:border-l xl:border-t-0 xl:pl-7 xl:pt-0">
-          <SectionLabel>Portfolio</SectionLabel>
-          <div className="mt-3 font-display text-4xl tracking-tight">₹8.4L</div>
-          <div className="mt-1 text-[13px] font-medium text-rfin-green">+12.6% this year · indicative</div>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-rfin-text/10">
-            <div className="h-full w-[56%] bg-rfin-green" />
-          </div>
-          <div className="mt-2 flex justify-between text-[11px] text-rfin-mute">
-            <span>Equity 56%</span>
-            <span>Debt 28%</span>
-            <span>Cash 16%</span>
-          </div>
+          <SectionLabel action={<button className="text-xs font-semibold text-rfin-red hover:underline" onClick={() => router.push("/portfolio")}>Open →</button>}>Portfolio</SectionLabel>
+          <QueryView query={portfolio}>
+            {(p) =>
+              p.holdings.length ? (
+                <>
+                  <div className="mt-3 font-display text-4xl tracking-tight">{formatCompact(p.totals.indicativeValue)}</div>
+                  <div className={`mt-1 text-[13px] font-medium ${p.totals.indicativeGain >= 0 ? "text-rfin-green" : "text-rfin-red"}`}>{p.totals.indicativeGain >= 0 ? "+" : "−"}{formatCompact(Math.abs(p.totals.indicativeGain))} · indicative</div>
+                  <div className="mt-5 flex h-2 overflow-hidden rounded-full bg-rfin-text/10">
+                    {p.sectors.map((s, i) => <div key={s.sector} className={["bg-rfin-green", "bg-rfin-blue", "bg-rfin-amber", "bg-rfin-red"][i % 4]} style={{ width: `${s.pct}%` }} />)}
+                  </div>
+                  <div className="mt-2 flex flex-wrap justify-between gap-x-3 text-[11px] text-rfin-mute">{p.sectors.slice(0, 3).map((s) => <span key={s.sector}>{s.sector.split(" ")[0]} {s.pct}%</span>)}</div>
+                </>
+              ) : (
+                <p className="mt-3 text-[13px] text-rfin-mute">No holdings yet. <button className="font-semibold text-rfin-red hover:underline" onClick={() => router.push("/markets")}>Explore private markets →</button></p>
+              )
+            }
+          </QueryView>
           <div className="mt-8">
             <SectionLabel>RFIN Points</SectionLabel>
             <QueryView query={points}>
@@ -136,20 +165,22 @@ export default function Home() {
 
       <div className="grid gap-8 border-t border-rfin-line/15 pt-7 md:grid-cols-2">
         <section aria-labelledby="activity-heading">
-          <SectionLabel id="activity-heading">Recent activity</SectionLabel>
+          <SectionLabel id="activity-heading" action={<button className="text-xs font-semibold text-rfin-red hover:underline" onClick={() => router.push("/notifications")}>All →</button>}>Recent activity</SectionLabel>
           <div className="mt-4 space-y-4">
-            <ActivityRow icon={<Trophy className="size-4" />} tone="pending" title="1,000 welcome points issued" detail="Today · Unlock with your first transaction" />
-            <ActivityRow icon={<Check className="size-4" />} title="RFIN ID created" detail="Today · Mobile verified" />
-            <ActivityRow icon={<FileText className="size-4" />} tone="action" title="Address proof needs a clearer photo" detail="KYC · Re-upload to continue" />
+            <QueryView query={notes} empty={{ title: "Nothing yet" }}>
+              {(d) =>
+                d.items.slice(0, 3).map((n) => (
+                  <button key={n.id} type="button" onClick={() => n.route && router.push(n.route)} className="block w-full text-left">
+                    <ActivityRow icon={n.category === "rewards" ? <Trophy className="size-4" /> : n.category === "kyc" ? <FileText className="size-4" /> : <Check className="size-4" />} tone={n.tone} title={n.title} detail={`${ago(n.at)} · ${n.body}`} />
+                  </button>
+                ))
+              }
+            </QueryView>
           </div>
         </section>
         <SupportPanel
           body="A human advisor can help you understand your options before you decide."
-          requested={advisor}
-          onClick={() => {
-            setAdvisor(true);
-            toast("Advisor requested", "success");
-          }}
+          onClick={() => router.push("/support")}
         />
       </div>
     </Page>

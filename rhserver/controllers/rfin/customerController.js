@@ -38,6 +38,11 @@ const updateMe = asyncWrapper(async (req, res) => {
   if (roles !== undefined) {
     if (!Array.isArray(roles) || !roles.length || roles.some((r) => !ROLES.includes(r))) return res.status(400).json({ error: "Pick at least one valid role" });
     gainedPartner = roles.includes("partner") && !c.roles.includes("partner");
+    if (gainedPartner) {
+      // The partner role is granted by verification, never self-assigned (report #79, #81).
+      const pp = await db.rfinPartnerProfile.findOne({ where: { customer_id: c.id } });
+      if (!pp || pp.state !== "active") return res.status(403).json({ error: "Complete partner onboarding to become a partner" });
+    }
     c.roles = [...new Set(roles)];
   }
   if (onboarded !== undefined) c.onboarded = !!onboarded;

@@ -1,0 +1,56 @@
+{
+  "types": [
+    { "id": "advisor", "label": "Financial advisor / distributor" },
+    { "id": "wealth_manager", "label": "Wealth manager / private banker" },
+    { "id": "dsa", "label": "DSA / loan partner" },
+    { "id": "insurance", "label": "Insurance professional" },
+    { "id": "ca", "label": "CA / professional" },
+    { "id": "corporate", "label": "Corporate / institution" },
+    { "id": "individual", "label": "Individual / referral" },
+    { "id": "other", "label": "Other (manual review)" }
+  ],
+  "capabilityCategories": [
+    { "id": "private_markets", "label": "Unlisted / private markets" },
+    { "id": "life", "label": "Life insurance" },
+    { "id": "health", "label": "Health / general insurance" },
+    { "id": "loans", "label": "Loans" },
+    { "id": "ipo", "label": "IPO" },
+    { "id": "bonds", "label": "Bonds / fixed income" },
+    { "id": "mutual_funds", "label": "Mutual funds" }
+  ],
+  "capabilityLevels": ["none", "interested", "experienced"],
+  "clientBaseRanges": ["Under 25", "25–100", "100–500", "500+"],
+  "segments": ["Retail", "HNI", "UHNI", "NRI", "Corporate"],
+  "annualBusinessRanges": ["Under ₹25 L", "₹25 L – 1 Cr", "₹1–5 Cr", "₹5 Cr+"],
+  "steps": ["Partner type", "About you", "Professional", "Capabilities", "Network", "Business", "Compliance", "Payout", "Agreement", "Review"],
+  "leadTransitions": {
+    "new": ["contacted", "lost"],
+    "contacted": ["qualified", "lost"],
+    "qualified": ["processing", "lost"],
+    "processing": ["converted", "lost"],
+    "converted": [],
+    "lost": []
+  },
+  "caseStages": [
+    { "id": "kyc_pending", "label": "Client KYC", "next": "Collect client KYC" },
+    { "id": "kyc_verified", "label": "KYC verified", "next": "Await payment" },
+    { "id": "payment_received", "label": "Payment received", "next": "Initiate transfer with provider" },
+    { "id": "transfer_initiated", "label": "Transfer initiated", "next": "Provider confirmation" },
+    { "id": "completed", "label": "Completed", "next": null }
+  ],
+  "commissionPct": 1.5,
+  "tdsPct": 5,
+  "payoutThreshold": 100000,
+  "resources": {
+    "training": [
+      { "id": "pm-101", "title": "Private markets 101", "minutes": 12, "kind": "Course" },
+      { "id": "suitability", "title": "Suitability & disclosures", "minutes": 8, "kind": "Compliance" },
+      { "id": "insurance-needs", "title": "Sizing term cover for clients", "minutes": 10, "kind": "Course" }
+    ],
+    "marketing": [
+      { "id": "kit-pm", "title": "Pre-IPO opportunities — client deck", "kind": "Deck" },
+      { "id": "kit-term", "title": "Why term insurance — WhatsApp card", "kind": "Image" },
+      { "id": "kit-intro", "title": "Introduce RFIN — email template", "kind": "Template" }
+    ]
+  }
+}

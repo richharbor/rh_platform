@@ -24,6 +24,8 @@ export default function Profile() {
   const { pref, setPref } = useThemePref();
 
   const toggle = (r: Role) => {
+    // Partner is granted by onboarding + verification, never toggled on (report #79).
+    if (r === "partner" && !roles.includes("partner")) return router.push("/partner/onboarding");
     const next = roles.includes(r) ? roles.filter((x) => x !== r) : [...roles, r];
     if (!next.length) return toast("Keep at least one role", "action");
     setRoles(next)
@@ -39,7 +41,7 @@ export default function Profile() {
 
       <section className="space-y-4">
         <SectionLabel>Roles</SectionLabel>
-        <p className="text-sm text-rfin-mute">Same RFIN ID for every role — no duplicate accounts. Adding the partner role unlocks Partner mode. Full partner onboarding (type, capability, KYC, payout) arrives in step 7.</p>
+        <p className="text-sm text-rfin-mute">Same RFIN ID for every role — no duplicate accounts. Becoming a partner runs through a short onboarding and verification; activation issues your Partner ID.</p>
         <div className="grid gap-3 md:grid-cols-3">
           {ROLES.map((r) => {
             const on = roles.includes(r);
@@ -105,6 +107,9 @@ export default function Profile() {
 
       <div className="flex flex-wrap gap-3 border-t border-rfin-line/15 pt-6">
         <Button variant="outline" onClick={() => router.push("/kyc")}>KYC &amp; bank</Button>
+        <Button variant="outline" onClick={() => router.push("/profile/financial")}>Financial profile</Button>
+        <Button variant="outline" onClick={() => router.push("/family")}>Family</Button>
+        <Button variant="outline" onClick={() => router.push("/goals")}>Goals</Button>
         {process.env.NODE_ENV !== "production" ? <Button variant="outline" onClick={() => router.push("/dev")}>Mock scenarios</Button> : null}
         <Button variant="outline" onClick={signOut}>Sign out</Button>
       </div>

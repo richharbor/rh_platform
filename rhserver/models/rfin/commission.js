@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     amount: { type: DataTypes.BIGINT, allowNull: false },
     state: { type: DataTypes.STRING(16), allowNull: false, defaultValue: "pending" },
     case_id: { type: DataTypes.STRING(16), allowNull: true },
+    available_at: { type: DataTypes.DATE, allowNull: true },
     },
     { schema: getRfinSchema(), tableName: "commissions", timestamps: true }
   );

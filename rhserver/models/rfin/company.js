@@ -18,6 +18,13 @@ module.exports = (sequelize, DataTypes) => {
     is_new_supply: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     risks: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
     transfer_restrictions: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
+    founded: { type: DataTypes.INTEGER, allowNull: true },
+    hq: { type: DataTypes.STRING, allowNull: true },
+    business: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} },
+    financials: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
+    peers: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
+    documents: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
+    bid_ask: { type: DataTypes.JSONB, allowNull: true },
     },
     { schema: getRfinSchema(), tableName: "companies", timestamps: true }
   );
