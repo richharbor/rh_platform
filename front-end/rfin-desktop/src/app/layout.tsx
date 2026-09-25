@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "Discover, understand and manage your financial goals with RFIN.",
 };
 
-export const viewport: Viewport = { themeColor: "#f4f0e6" };
+export const viewport: Viewport = { themeColor: "#f6f3ed" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

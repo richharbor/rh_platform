@@ -7,9 +7,11 @@ import { AuthHeader } from "@/features/AuthHeader";
 import { accentAt, NEEDS } from "@/features/needs";
 import { useSession } from "@/stores/session";
 import { Button, GoalTile, Row, Screen, StickyCTA, Stepper, Text } from "@/ui";
+import { useTheme } from "@/design";
 
 /** Need-first discovery: start from the goal, not the product category (report #4). */
 export default function Needs() {
+  const { colors } = useTheme();
   const { needs: saved, saveNeeds, finishOnboarding, profile } = useSession();
   const [picked, setPicked] = useState<Need[]>(saved);
 
@@ -39,7 +41,7 @@ export default function Needs() {
             eventProps={{ needs: picked }}
             onPress={() => finish.mutate()}
           />
-          {finish.isError ? <Text variant="xs" style={{ color: "#e7422c", textAlign: "center", marginTop: 8 }}>{finish.error.message}</Text> : null}
+          {finish.isError ? <Text variant="xs" style={{ color: colors.destructive, textAlign: "center", marginTop: 8 }}>{finish.error.message}</Text> : null}
         </StickyCTA>
       }
     >

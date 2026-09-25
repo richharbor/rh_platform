@@ -1,20 +1,20 @@
 /**
- * RFIN palette — pixel-perfect-main/src/styles.css `--rfin-*`, oklch → sRGB.
+ * RFIN palette — layout from pixel-perfect-main, colours from the Rich Harbor brand
+ * (midnight navy, champagne gold, emerald, warm off-white). Slot names are kept from
+ * the reference so every component picks the brand up unchanged:
  *
- *   paper  oklch(0.958 0.018 92)   #f5f1e4   page background
- *   ink    oklch(0.18 0.018 70)    #171009   text, dark surfaces, lines
- *   mute   oklch(0.49 0.028 76)    #6a5f4f   secondary text, labels
- *   red    oklch(0.62 0.205 31)    #e7422c   brand dot, eyebrows, active nav, focus items
- *   amber  oklch(0.79 0.16 75)     #f5a91f   insight, pending, support tint
- *   blue   oklch(0.46 0.205 265)   #1d47c8   information, docs due
- *   green  oklch(0.54 0.135 158)   #00854f   growth, approved, success
+ *   paper  #f6f3ed   warm off-white — page background
+ *   ink    #111d38   midnight navy — text, dark surfaces, lines
+ *   mute   #6d6860   warm gray — secondary text, labels
+ *   red    #a88142   deep gold — brand dot, eyebrows, active nav, "needs action"
+ *   blue   #27457e   navy accent — information, docs due
+ *   amber  #d9bd82   champagne — insight, pending, support tint
+ *   green  #0e7a58   emerald — growth, approved, success
+ *   destructive #c2372b — real errors only
  *
- * The reference uses `ink/NN` and `amber/NN` opacity modifiers everywhere
- * (line/15, line/10, ink/10, ink/5, amber/20, amber/15, green/15, paper/10…),
- * so those are pre-mixed below as named tints.
- *
- * The reference only defines a light RFIN theme. The dark scheme swaps paper and
- * ink and keeps the four accents, so the same components read the same way.
+ * Accents still run red → blue → amber → green by position. The `/NN` opacity
+ * modifiers from the reference are pre-mixed below as named tints. Dark mode puts
+ * the same accents on deep midnight and lifts blue and green to stay readable.
  */
 export type Palette = {
   paper: string;
@@ -78,13 +78,13 @@ function mix(fg: string, bg: string, alpha: number) {
   return "#" + a.map((v, i) => Math.round(v * alpha + b[i] * (1 - alpha)).toString(16).padStart(2, "0")).join("");
 }
 
-const PAPER = "#f5f1e4";
-const INK = "#171009";
-const MUTE = "#6a5f4f";
-const RED = "#e7422c";
-const AMBER = "#f5a91f";
-const BLUE = "#1d47c8";
-const GREEN = "#00854f";
+const PAPER = "#f6f3ed";
+const INK = "#111d38";
+const MUTE = "#6d6860";
+const RED = "#a88142";
+const AMBER = "#d9bd82";
+const BLUE = "#27457e";
+const GREEN = "#0e7a58";
 
 export const lightColors: Palette = {
   paper: PAPER,
@@ -115,25 +115,27 @@ export const lightColors: Palette = {
   redSoft: mix(RED, PAPER, 0.15),
   blueSoft: mix(BLUE, PAPER, 0.15),
 
-  onRed: PAPER,
+  onRed: INK,
   onBlue: PAPER,
   onAmber: INK,
   onGreen: PAPER,
 
-  destructive: "#e7000b",
-  scrim: "rgba(23,16,9,0.45)",
+  destructive: "#c2372b",
+  scrim: "rgba(17,29,56,0.45)",
   shadowInk: INK,
 };
 
-const DARK_BG = "#15100a";
+const DARK_BG = "#0a1328";
 const DARK_FG = PAPER;
-const DARK_MUTE = "#a89c88";
-const DARK_BLUE = "#6f8ff0"; // blue on ink needs lifting to stay readable
+const DARK_MUTE = "#a8a296";
+const DARK_BLUE = "#5a7ec4"; // navy accent on midnight needs lifting to stay readable
+const DARK_GREEN = "#2fa57c";
 
 export const darkColors: Palette = {
   ...lightColors,
   mute: DARK_MUTE,
   blue: DARK_BLUE,
+  green: DARK_GREEN,
 
   background: DARK_BG,
   foreground: DARK_FG,
@@ -151,7 +153,7 @@ export const darkColors: Palette = {
 
   amberTint: mix(AMBER, DARK_BG, 0.2),
   amberSoft: mix(AMBER, DARK_BG, 0.15),
-  greenSoft: mix(GREEN, DARK_BG, 0.25),
+  greenSoft: mix(DARK_GREEN, DARK_BG, 0.25),
   redSoft: mix(RED, DARK_BG, 0.2),
   blueSoft: mix(DARK_BLUE, DARK_BG, 0.2),
 

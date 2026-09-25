@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "scheme": "rfin",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#f9f7f4",
+    "backgroundColor": "#f6f3ed",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.richharbor.rfin"
@@ -14,7 +14,7 @@
     "android": {
       "package": "com.richharbor.rfin",
       "adaptiveIcon": {
-        "backgroundColor": "#152341"
+        "backgroundColor": "#111d38"
       }
     },
     "web": {

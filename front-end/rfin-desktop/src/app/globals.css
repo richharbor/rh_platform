@@ -2,11 +2,15 @@
 @import "tw-animate-css";
 
 /*
- * RFIN design system — tokens lifted verbatim from pixel-perfect-main/src/styles.css.
- * The `--rfin-*` palette is the whole visual language: warm paper, ink, a muted
- * brown-grey, and four accents (red · blue · amber · green) that always run in
- * that order. Only a light theme exists in the reference; `.dark` swaps paper and
- * ink and lifts blue, matching the Expo app's dark scheme.
+ * RFIN design system — layout and type from pixel-perfect-main, colours from the
+ * Rich Harbor brand: midnight navy, champagne gold, emerald, warm off-white.
+ * Token names are the original slot names; what each slot now holds:
+ *   paper → warm off-white   ink → midnight navy   mute → warm gray
+ *   red   → deep gold (brand dot, eyebrows, active nav, "needs action")
+ *   blue  → navy accent (info)   amber → champagne (pending, insight tints)
+ *   green → emerald (success, growth)   destructive → red, for real errors only
+ * Accents still run red → blue → amber → green by position (gold · navy · champagne · emerald).
+ * `.dark` swaps paper and ink onto a deep midnight background, matching the Expo app.
  */
 
 @custom-variant dark (&:is(.dark *));
@@ -42,15 +46,15 @@
 
 :root {
   --radius: 0.625rem;
-  --rfin-paper: oklch(0.958 0.018 92);
-  --rfin-ink: oklch(0.18 0.018 70);
-  --rfin-mute: oklch(0.49 0.028 76);
-  --rfin-line: oklch(0.18 0.018 70);
-  --rfin-red: oklch(0.62 0.205 31);
-  --rfin-amber: oklch(0.79 0.16 75);
-  --rfin-blue: oklch(0.46 0.205 265);
-  --rfin-green: oklch(0.54 0.135 158);
-  --rfin-destructive: oklch(0.577 0.245 27.325);
+  --rfin-paper: #f6f3ed;
+  --rfin-ink: #111d38;
+  --rfin-mute: #6d6860;
+  --rfin-line: #111d38;
+  --rfin-red: #a88142;
+  --rfin-amber: #d9bd82;
+  --rfin-blue: #27457e;
+  --rfin-green: #0e7a58;
+  --rfin-destructive: #c2372b;
 
   --rfin-surface: var(--rfin-paper);
   --rfin-text: var(--rfin-ink);
@@ -60,13 +64,14 @@
 }
 
 .dark {
-  --rfin-mute: oklch(0.7 0.03 80);
-  --rfin-line: oklch(0.958 0.018 92);
-  --rfin-blue: oklch(0.66 0.14 265);
-  --rfin-surface: oklch(0.16 0.012 70);
-  --rfin-text: oklch(0.958 0.018 92);
-  --rfin-inverse: oklch(0.958 0.018 92);
-  --rfin-on-inverse: oklch(0.18 0.018 70);
+  --rfin-mute: #a8a296;
+  --rfin-line: #f6f3ed;
+  --rfin-blue: #5a7ec4;
+  --rfin-green: #2fa57c;
+  --rfin-surface: #0a1328;
+  --rfin-text: #f6f3ed;
+  --rfin-inverse: #f6f3ed;
+  --rfin-on-inverse: #111d38;
   color-scheme: dark;
 }
 

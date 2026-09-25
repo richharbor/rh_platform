@@ -4,11 +4,13 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { AuthHeader } from "@/features/AuthHeader";
 import { useSession } from "@/stores/session";
 import { Button, FormField, Screen, StickyCTA, Stepper, Text } from "@/ui";
+import { useTheme } from "@/design";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Basic profile — only what's needed now; financial profile comes later (report #12, #14). */
 export default function ProfileSetup() {
+  const { colors } = useTheme();
   const { profile, saveProfile } = useSession();
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
@@ -45,7 +47,7 @@ export default function ProfileSetup() {
         <FormField label="Full name" value={name} onChangeText={setName} autoComplete="name" textContentType="name" placeholder="As on your PAN" why="Must match your PAN when you complete KYC." error={touched && name.trim().length < 2 ? "Enter your full name" : undefined} />
         <FormField label="Email · optional" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" placeholder="you@example.com" why="Where we send statements and policy documents." error={emailError} />
         <FormField label="City · optional" value={city} onChangeText={setCity} autoComplete="postal-address-locality" placeholder="Mumbai" why="Some products and advisors are city-specific." />
-        {save.isError ? <Text variant="xs" style={{ color: "#e7422c" }}>{save.error.message}</Text> : null}
+        {save.isError ? <Text variant="xs" style={{ color: colors.destructive }}>{save.error.message}</Text> : null}
       </Screen>
     </KeyboardAvoidingView>
   );

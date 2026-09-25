@@ -35,7 +35,7 @@ const TONE_SOFT: Record<Tone, string> = {
   pending: "bg-rfin-amber/20",
   info: "bg-rfin-blue/15",
   action: "bg-rfin-red/15",
-  danger: "bg-rfin-red/15",
+  danger: "bg-rfin-destructive/15",
   neutral: "bg-rfin-text/5",
 };
 
@@ -129,7 +129,7 @@ export function Card({ children, className, tint, onClick }: { children: ReactNo
 }
 
 const ACCENT: Record<Accent, string> = {
-  red: "bg-rfin-red text-rfin-paper",
+  red: "bg-rfin-red text-rfin-ink",
   blue: "bg-rfin-blue text-rfin-paper",
   amber: "bg-rfin-amber text-rfin-ink",
   green: "bg-rfin-green text-rfin-paper",
