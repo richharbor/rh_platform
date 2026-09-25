@@ -38,6 +38,17 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
+// RFIN customer-platform models live in models/rfin/ (rfin schema).
+const rfinDir = path.join(__dirname, "rfin");
+if (fs.existsSync(rfinDir)) {
+  fs.readdirSync(rfinDir)
+    .filter((file) => file.slice(-3) === ".js" && file.indexOf(".test.js") === -1)
+    .forEach((file) => {
+      const model = require(path.join(rfinDir, file))(sequelize, Sequelize.DataTypes);
+      db[model.name] = model;
+    });
+}
+
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "RFIN",
+    "slug": "rfin-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "rfin",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#f9f7f4",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.richharbor.rfin"
+    },
+    "android": {
+      "package": "com.richharbor.rfin",
+      "adaptiveIcon": {
+        "backgroundColor": "#152341"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-status-bar",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "RFIN uses your photos so you can upload KYC documents.",
+          "cameraPermission": "RFIN uses the camera so you can photograph KYC documents and complete the face check."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

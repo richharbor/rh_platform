@@ -1,0 +1,168 @@
+{
+  "modules": {
+    "dashboard": [
+      "view"
+    ],
+    "explore": [
+      "view",
+      "search"
+    ],
+    "products": [
+      "view",
+      "compare",
+      "check_eligibility"
+    ],
+    "applications": [
+      "create",
+      "pay"
+    ],
+    "orders": [
+      "view",
+      "retry_payment"
+    ],
+    "kyc": [
+      "view",
+      "upload"
+    ],
+    "bank": [
+      "view",
+      "add"
+    ],
+    "rewards": [
+      "view"
+    ],
+    "private_markets": [
+      "view",
+      "buy",
+      "sell"
+    ],
+    "partner_dashboard": [
+      "view"
+    ],
+    "leads": [
+      "view",
+      "create"
+    ],
+    "clients": [
+      "view"
+    ],
+    "earnings": [
+      "view"
+    ],
+    "profile": [
+      "view",
+      "switch_mode"
+    ]
+  },
+  "roles": {
+    "buyer": {
+      "dashboard": [
+        "view"
+      ],
+      "explore": [
+        "view",
+        "search"
+      ],
+      "products": [
+        "view",
+        "compare",
+        "check_eligibility"
+      ],
+      "applications": [
+        "create",
+        "pay"
+      ],
+      "orders": [
+        "view",
+        "retry_payment"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "rewards": [
+        "view"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ],
+      "private_markets": [
+        "view",
+        "buy"
+      ]
+    },
+    "seller": {
+      "dashboard": [
+        "view"
+      ],
+      "explore": [
+        "view",
+        "search"
+      ],
+      "products": [
+        "view",
+        "compare",
+        "check_eligibility"
+      ],
+      "applications": [
+        "create",
+        "pay"
+      ],
+      "orders": [
+        "view",
+        "retry_payment"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "rewards": [
+        "view"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ],
+      "private_markets": [
+        "view",
+        "sell"
+      ]
+    },
+    "partner": {
+      "partner_dashboard": [
+        "view"
+      ],
+      "leads": [
+        "view",
+        "create"
+      ],
+      "clients": [
+        "view"
+      ],
+      "earnings": [
+        "view"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ]
+    }
+  }
+}

@@ -15,6 +15,7 @@ const leadRoutes = require("./routes/leadRoutes");
 const campaignRoutes = require("./routes/campaignRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const unsubscribeRoutes = require("./routes/unsubscribeRoutes");
+const rfinRoutes = require("./routes/rfin");
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -41,6 +42,9 @@ app.use("/leads", leadRoutes);
 app.use("/campaigns", campaignRoutes);
 app.use("/contacts", contactRoutes);
 app.use("/unsubscribe", unsubscribeRoutes);
+
+// RFIN customer platform (rfin schema) — Expo app + desktop app.
+app.use("/rfin", rfinRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

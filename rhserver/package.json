@@ -1,7 +1,7 @@
 {
   "name": "rhserver",
   "version": "1.0.0",
-  "description": "Rich Harbor admin backend — Blogs, Leads, Marketing (Express 5 + Sequelize 6 + Postgres, schema-parameterized)",
+  "description": "Rich Harbor admin backend \u2014 Blogs, Leads, Marketing (Express 5 + Sequelize 6 + Postgres, schema-parameterized)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,7 +9,10 @@
     "db:prepare": "node scripts/ensure-schema.js",
     "db:migrate": "sequelize-cli db:migrate",
     "db:migrate:undo": "sequelize-cli db:migrate:undo",
-    "db:seed": "sequelize-cli db:seed:all"
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:migrate:rfin": "sequelize-cli db:migrate --config config/rfin.config.js --migrations-path migrations/rfin",
+    "db:migrate:rfin:undo": "sequelize-cli db:migrate:undo --config config/rfin.config.js --migrations-path migrations/rfin",
+    "db:seed:rfin": "sequelize-cli db:seed:all --config config/rfin.config.js --seeders-path seeders/rfin"
   },
   "license": "UNLICENSED",
   "private": true,

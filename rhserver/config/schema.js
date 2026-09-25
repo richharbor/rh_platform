@@ -4,4 +4,9 @@
 // DB_SCHEMA in the environment.
 const getSchema = () => process.env.DB_SCHEMA || "admin";
 
-module.exports = { getSchema };
+// RFIN customer platform (the Expo app + desktop app) lives in its own schema
+// alongside the admin one, so the two datasets never share tables. RFIN models
+// and migrations pin this explicitly rather than inheriting `define.schema`.
+const getRfinSchema = () => process.env.RFIN_SCHEMA || "rfin";
+
+module.exports = { getSchema, getRfinSchema };

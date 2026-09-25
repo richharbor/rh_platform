@@ -1,0 +1,30 @@
+{
+  "loans": {
+    "steps": ["review", "consent", "kyc", "submit"],
+    "kycRequired": ["pan", "address", "bank"],
+    "extraConsent": "The lender may run a credit check (this can affect my score)",
+    "kind": "application",
+    "cta": "Submit application"
+  },
+  "insurance": {
+    "steps": ["review", "consent", "kyc", "pay"],
+    "kycRequired": ["pan", "address"],
+    "extraConsent": "The information I've given about my health is true and complete",
+    "kind": "application",
+    "cta": "Pay first premium"
+  },
+  "investments": {
+    "steps": ["review", "consent", "kyc", "pay"],
+    "kycRequired": ["pan", "address", "bank"],
+    "extraConsent": "I understand returns are not guaranteed",
+    "kind": "application",
+    "cta": "Pay"
+  },
+  "private_markets": {
+    "steps": ["review", "consent", "kyc", "pay"],
+    "kycRequired": ["pan", "address", "bank"],
+    "extraConsent": "I understand returns are not guaranteed",
+    "kind": "pm_buy",
+    "cta": "Pay"
+  }
+}
