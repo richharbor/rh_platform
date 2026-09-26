@@ -10,7 +10,7 @@ export default function ComingSoon() {
         initial={{ scale: 0 }}
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-96 h-96 bg-white/10 rounded-full blur-3xl"
+        className="absolute w-96 h-96 bg-foreground/5 rounded-full blur-3xl"
       />
 
       {/* Content */}
@@ -20,10 +20,10 @@ export default function ComingSoon() {
         transition={{ duration: 1.2, ease: "easeOut" }}
         className="relative z-10 text-center"
       >
-        <h1 className="text-5xl font-batman md:text-7xl font-extrabold text-white drop-shadow-lg">
+        <h1 className="text-5xl font-batman md:text-7xl font-extrabold text-foreground drop-shadow-lg">
           Coming Soon 🚀
         </h1>
-        <p className="mt-6 text-xl md:text-2xl text-white/90 font-light">
+        <p className="mt-6 text-xl md:text-2xl text-foreground/80 font-light">
           Good things take time. Almost there.
         </p>
 
@@ -31,7 +31,7 @@ export default function ComingSoon() {
         {/* <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="mt-10 px-8 py-3 rounded-2xl bg-white text-indigo-700 font-semibold shadow-lg hover:bg-indigo-100 transition-all"
+          className="mt-10 px-8 py-3 rounded-2xl bg-white text-rh-navy font-semibold shadow-lg hover:bg-rh-navy/10 transition-all"
         >
           Notify Me
         </motion.button> */}

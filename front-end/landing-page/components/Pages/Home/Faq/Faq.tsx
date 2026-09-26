@@ -1,6 +1,5 @@
 "use client";
 
-import Tag from "@/components/ui/Tag";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -62,67 +61,58 @@ interface FaqItem {
 
 interface FaqsProps {
   items?: FaqItem[];
+  /** "light" (default) on paper; "dark" for use inside a navy panel. */
+  tone?: "light" | "dark";
 }
 
-export default function Faqs({ items }: FaqsProps) {
+export default function Faqs({ items, tone = "light" }: FaqsProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const displayFaqs = items || faqs;
+  const light = tone === "light";
 
   return (
-    <section id="faq" className="py-20 max-md:py-10 px-3 ">
-      <div className="container mx-auto">
-        <h2 className="text-5xl max-md:text-4xl max-sm:text-3xl font-medium font-batman text-center max-w-3xl mx-auto">
-          Questions? We&apos;ve got{" "}
-          <span className="text-[#FFFFFF]">answers</span>
-        </h2>
+    <section id="faq" className={twMerge("w-full scroll-mt-28 py-20 max-md:py-10 px-3", light && "mx-auto max-w-7xl px-0 py-0 max-md:py-0 md:px-6")}>
+      <div className={twMerge("container mx-auto grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]", light && "max-w-none")}>
+        <div className="space-y-4">
+          <p className={twMerge("font-mono text-[11px] uppercase tracking-[0.2em]", light ? "text-rh-gold" : "text-rh-champagne")}>FAQ</p>
+          <h2 className={twMerge("font-display text-5xl leading-[0.98] tracking-tight max-md:text-4xl", light ? "text-rh-navy" : "text-rh-paper")}>
+            Questions? We&apos;ve got <span className={light ? "text-rh-gold" : "text-rh-champagne"}>answers.</span>
+          </h2>
+        </div>
 
-        <div className="mt-12 flex flex-col gap-6 max-w-6xl mx-auto">
-          {displayFaqs.map((faq, faqIndex) => (
-            <div
-              key={faq.question}
-              onClick={() => {
-                if (selectedIndex === faqIndex) {
-                  setSelectedIndex(-1)
-                } else {
-                  setSelectedIndex(faqIndex)
-                }
-              }}
-              className="bg-neutral-900 z-10 rounded-2xl border border-white/10 p-6 "
-            >
-              <div className="flex justify-between items-start">
-                <h3 className="font-medium m-0">{faq.question}</h3>
-                <Plus
-                  size={30}
-                  className={twMerge(
-                    "feather feather-plus text-[#FFFFFF] flex-shrink-0 transition duration-300",
-                    selectedIndex === faqIndex && "rotate-45"
+        <div className={twMerge("flex flex-col border-t", light ? "border-rh-navy/15" : "border-rh-paper/15")}>
+          {displayFaqs.map((faq, faqIndex) => {
+            const open = selectedIndex === faqIndex;
+            return (
+              <div key={faq.question} className={twMerge("border-b", light ? "border-rh-navy/10" : "border-rh-paper/10")}>
+                <button
+                  type="button"
+                  aria-expanded={open}
+                  onClick={() => setSelectedIndex(open ? -1 : faqIndex)}
+                  className={twMerge("flex w-full items-start justify-between gap-6 py-6 text-left text-lg font-semibold", light ? "text-rh-navy" : "text-rh-paper")}
+                >
+                  {faq.question}
+                  <Plus
+                    size={24}
+                    className={twMerge("mt-0.5 shrink-0 transition duration-300", light ? "text-rh-gold" : "text-rh-champagne", open && "rotate-45")}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <p className={twMerge("max-w-2xl pb-6 leading-relaxed", light ? "text-rh-mute" : "text-rh-paper/60")}>{faq.answer}</p>
+                    </motion.div>
                   )}
-                />
+                </AnimatePresence>
               </div>
-
-              <AnimatePresence>
-                {selectedIndex === faqIndex && (
-                  <motion.div
-                    initial={{
-                      height: 0,
-                      marginTop: 0,
-                    }}
-                    animate={{
-                      height: "auto",
-                      marginTop: 24,
-                    }}
-                    exit={{
-                      height: 0,
-                      marginTop: 0,
-                    }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-white/50">{faq.answer}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

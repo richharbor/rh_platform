@@ -129,10 +129,10 @@ export default function PartnerWithUs() {
                             ))}
                         </div>
                     </div>
-                    <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-neutral-900 border border-neutral-800">
+                    <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-rh-navy border border-rh-paper/15">
                         {/* Abstract Product Visual */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-blue-500/10" />
-                        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-rh-midnight/90 to-transparent">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center text-white border border-white/20">
                                     <Wallet className="w-6 h-6" />
@@ -148,7 +148,7 @@ export default function PartnerWithUs() {
             </section>
 
             {/* 4. Why Partner with Richharbor */}
-            <section className="py-24 text-white relative px-6">
+            <section className="py-24 text-foreground relative px-6">
                 <motion.div
                     initial={{ rotate: -90, x: -200, opacity: 0, scale: 0.5 }}
                     whileInView={{ rotate: 0, x: 0, opacity: [0, 0.5, 1], scale: 1 }}
@@ -172,7 +172,7 @@ export default function PartnerWithUs() {
                         <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4">Why Partner with Richharbor?</h2>
                         <div className="flex flex-wrap justify-center gap-4 mt-6">
                             {["Best Deals", "Faster Execution", "Higher Earnings"].map((tag) => (
-                                <span key={tag} className="px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-sm font-medium">
+                                <span key={tag} className="px-4 py-1.5 rounded-full bg-foreground/5 border border-border text-sm font-medium">
                                     {tag}
                                 </span>
                             ))}
@@ -192,10 +192,10 @@ export default function PartnerWithUs() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-primary/50 transition-colors"
+                                className="p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors"
                             >
                                 <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                                <p className="text-neutral-400 leading-relaxed">{item.desc}</p>
+                                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -241,14 +241,14 @@ export default function PartnerWithUs() {
             </div>
 
             {/* 7. Trust & Compliance Footer */}
-            <section className="py-12 bg-neutral-950 text-neutral-400 border-t border-neutral-900">
+            <section className="py-12 bg-card text-muted-foreground border-t border-border">
                 <div className="max-w-7xl mx-auto px-6 text-center">
-                    <div className="flex flex-wrap justify-center gap-8 mb-8 text-neutral-300 font-medium">
-                        <span className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-green-500" /> Secure & Confidential</span>
-                        <span className="flex items-center gap-2"><Zap className="w-5 h-5 text-yellow-500" /> Tech-Driven Platform</span>
-                        <span className="flex items-center gap-2"><Users className="w-5 h-5 text-blue-500" /> Partner-First Ecosystem</span>
+                    <div className="flex flex-wrap justify-center gap-8 mb-8 text-foreground/80 font-medium">
+                        <span className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-rh-emerald" /> Secure & Confidential</span>
+                        <span className="flex items-center gap-2"><Zap className="w-5 h-5 text-rh-gold" /> Tech-Driven Platform</span>
+                        <span className="flex items-center gap-2"><Users className="w-5 h-5 text-rh-navy" /> Partner-First Ecosystem</span>
                     </div>
-                    <p className="text-xs text-neutral-600 max-w-2xl mx-auto">
+                    <p className="text-xs text-foreground max-w-2xl mx-auto">
                         Richharbor is a technology platform connecting users to financial products and opportunities. All investments are subject to market risks. Please review details before participation.
                     </p>
                 </div>

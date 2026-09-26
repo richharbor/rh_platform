@@ -1,82 +1,80 @@
 "use client";
 
-import { TrendingUp, Banknote, Shield, Briefcase, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { accentAt, Eyebrow, Headline, pad, Section } from "./brand";
+
+const OFFERINGS = [
+    {
+        title: "Unlisted Shares & Pre-IPO",
+        description: "Verified unlisted and pre-IPO opportunities with transparent pricing and secure off-market transfers.",
+        cta: "Explore unlisted shares",
+        href: "/unlisted-shares",
+    },
+    {
+        title: "Bulk Deals",
+        description: "Large-volume transactions in listed securities, executed with minimal market impact.",
+        cta: "View bulk deals",
+        href: "/bulk-deals",
+    },
+    {
+        title: "Private Markets",
+        description: "Private equity, venture capital and AIF opportunities, with mandate-led capital introduction.",
+        cta: "Private markets",
+        href: "/private-markets",
+    },
+    {
+        title: "Loans & Structured Credit",
+        description: "Retail, SME and corporate loans — working capital, project finance, RBF and structured funding.",
+        cta: "Apply for loans",
+        href: "/loans",
+    },
+    {
+        title: "Insurance",
+        description: "Life, health, motor and business cover, curated to protect individuals and enterprises.",
+        cta: "View insurance",
+        href: "/insurance",
+    },
+    {
+        title: "Corporate Finance",
+        description: "Strategic advisory, debt syndication and capital raising for growth-stage and pre-IPO companies.",
+        cta: "Corporate finance",
+        href: "/corporate-finance",
+    },
+];
 
 export default function CoreOfferings() {
-    const offerings = [
-        {
-            icon: TrendingUp,
-            title: "Unlisted Shares & Pre-IPO",
-            description: "Access verified unlisted shares and pre-IPO opportunities with transparent pricing and secure off-market transfers.",
-            cta: "Explore Unlisted Shares",
-            href: "/unlisted-shares"
-        },
-        {
-            icon: Banknote,
-            title: "Loans & Structured Credit",
-            description: "Retail, SME, and corporate loans including working capital, project finance, RBF, and structured funding solutions.",
-            cta: "Apply for Loans",
-            href: "/loans"
-        },
-        {
-            icon: Shield,
-            title: "Insurance Solutions",
-            description: "Life, health, motor, and business insurance solutions curated to protect individuals and enterprises.",
-            cta: "View Insurance Solutions",
-            href: "/insurance"
-        },
-        {
-            icon: Briefcase,
-            title: "Private Markets & Capital Advisory",
-            description: "Mandate-led capital introduction for growth-stage and pre-IPO companies.",
-            cta: "Private Markets",
-            href: "/private-markets"
-        }
-    ];
-
     return (
-        <section id="products" className="py-24 relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none opacity-50" />
-
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-white">
-                        One Platform. Multiple Financial Solutions.
-                    </h2>
-                    <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
-                        Comprehensive wealth management and capital opportunities for every stage of growth.
-                    </p>
+        <Section id="products" className="space-y-12">
+            <div className="grid gap-6 lg:grid-cols-2 lg:items-end">
+                <div className="space-y-4">
+                    <Eyebrow>What we do</Eyebrow>
+                    <Headline className="text-4xl md:text-6xl">One platform. Multiple financial solutions.</Headline>
                 </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {offerings.map((item, index) => (
-                        <div
-                            key={index}
-                            className="bg-card rounded-2xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-start h-full border border-neutral-800 hover:border-primary/50"
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-neutral-700">
-                                <item.icon className="w-6 h-6 stroke-[1.5]" />
-                            </div>
-
-                            <h3 className="text-xl font-bold text-white mb-3 font-batman tracking-tight">
-                                {item.title}
-                            </h3>
-
-                            <p className="text-neutral-400 text-sm leading-relaxed mb-8 flex-grow">
-                                {item.description}
-                            </p>
-
-                            <Link href={item.href} className="flex items-center text-white/90 font-semibold text-sm group/btn mt-auto hover:text-primary transition-colors">
-                                <span className="group-hover/btn:mr-2 transition-all duration-300">{item.cta}</span>
-                                <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+                <p className="max-w-xl text-lg leading-relaxed text-rh-mute lg:justify-self-end">
+                    Wealth, credit, protection and capital opportunities for every stage of growth — handled by one team,
+                    under one process.
+                </p>
             </div>
-        </section>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {OFFERINGS.map((o, i) => (
+                    <Link
+                        key={o.href}
+                        href={o.href}
+                        className="group relative flex min-h-64 flex-col overflow-hidden rounded-3xl border border-rh-navy/10 bg-white/40 p-7 transition-all hover:-translate-y-1 hover:border-rh-navy/25 hover:bg-white/70"
+                    >
+                        <span className={`absolute inset-x-0 top-0 h-1.5 ${accentAt(i).bar}`} />
+                        <span className="font-mono text-sm text-rh-mute">{pad(i + 1)}</span>
+                        <h3 className="mt-6 font-display text-3xl leading-none">{o.title}</h3>
+                        <p className="mt-4 flex-1 text-[15px] leading-relaxed text-rh-mute">{o.description}</p>
+                        <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-rh-gold">
+                            {o.cta}
+                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                        </span>
+                    </Link>
+                ))}
+            </div>
+        </Section>
     );
 }

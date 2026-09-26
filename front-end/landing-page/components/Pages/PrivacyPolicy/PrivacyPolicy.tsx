@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
             {/* Intro */}
             <section className="mb-8 space-y-4">
                 <p>
-                    This Privacy Policy (“Policy”) governs the use of the website of Rich Harbor (<a className="text-blue-600 underline" href="https://richharbor.com">https://richharbor.com</a>) (“Website”, “we”, “us”, “our”) and the services offered on or through it (“Services”).
+                    This Privacy Policy (“Policy”) governs the use of the website of Rich Harbor (<a className="text-rh-navy underline" href="https://richharbor.com">https://richharbor.com</a>) (“Website”, “we”, “us”, “our”) and the services offered on or through it (“Services”).
                 </p>
                 <p>
                     We value your trust and are committed to protecting your privacy. This Policy has been formulated in accordance with the Information Technology Act, 2000, and applicable rules and regulations, to ensure transparent and lawful handling of your personal and financial information.
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
                 </p>
             </section>
 
-            <hr className="my-8 border-gray-300" />
+            <hr className="my-8 border-border" />
 
             {/* Sections */}
             <section className="space-y-12">
@@ -167,7 +167,7 @@ export default function PrivacyPolicy() {
                         <br />
 
                         Rich Harbor – Compliance & Legal Department
-                        <a href="mailto:info@richharbor.com" className="text-blue-600 underline">info@richharbor.com</a>.
+                        <a href="mailto:info@richharbor.com" className="text-rh-navy underline">info@richharbor.com</a>.
                         <br />
                         Grievances will be acknowledged and resolved within 30 days, in accordance with applicable laws.
                     </p>

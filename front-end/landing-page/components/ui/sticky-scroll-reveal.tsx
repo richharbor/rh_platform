@@ -42,14 +42,14 @@ export const StickyScroll = ({
   });
 
   const backgroundColors = [
-    "#0f172a", // slate-900
-    "#000000", // black
-    "#171717", // neutral-900
+    "#111d38", // brand navy
+    "#0b1428", // midnight
+    "#1a2848", // raised navy
   ];
   const linearGradients = [
-    "linear-gradient(to bottom right, #06b6d4, #10b981)", // cyan-500 to emerald-500
-    "linear-gradient(to bottom right, #ec4899, #6366f1)", // pink-500 to indigo-500
-    "linear-gradient(to bottom right, #f97316, #eab308)", // orange-500 to yellow-500
+    "linear-gradient(to bottom right, #a88142, #d9bd82)", // gold to champagne
+    "linear-gradient(to bottom right, #27457e, #5a7ec4)", // navy accent
+    "linear-gradient(to bottom right, #0e7a58, #2fa57c)", // emerald
   ];
 
   const [backgroundGradient, setBackgroundGradient] = useState(
@@ -66,7 +66,7 @@ export const StickyScroll = ({
       animate={{
         backgroundColor: backgroundColors[activeCard % backgroundColors.length],
       }}
-      className="relative flex border-1 border-white/50 h-[30rem] justify-center space-x-10 overflow-y-auto rounded-2xl p-10 max-sm:px-2"
+      className="relative flex border-1 border-rh-navy/20 h-[30rem] justify-center space-x-10 overflow-y-auto rounded-2xl p-10 max-sm:px-2"
       ref={ref}
     >
       <div className="div relative flex items-start">

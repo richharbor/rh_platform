@@ -276,11 +276,11 @@ export default function BulkDeals() {
             </section>
 
             {/* Disclosure */}
-            <section className="py-12 bg-neutral-900 text-neutral-400">
+            <section className="py-12 bg-card text-muted-foreground">
                 <div className="container px-4 md:px-6 mx-auto">
-                    <div className="max-w-4xl mx-auto border border-neutral-800 bg-neutral-950/50 p-8 rounded-2xl backdrop-blur-sm">
-                        <h3 className="text-lg font-semibold text-neutral-200 mb-3 flex items-center gap-2">
-                            <ShieldCheck className="w-5 h-5 text-yellow-500" /> Disclosure
+                    <div className="max-w-4xl mx-auto border border-border bg-card p-8 rounded-2xl backdrop-blur-sm">
+                        <h3 className="text-lg font-semibold text-foreground/80 mb-3 flex items-center gap-2">
+                            <ShieldCheck className="w-5 h-5 text-rh-gold" /> Disclosure
                         </h3>
                         <p className="text-sm leading-relaxed">
                             Bulk deals are subject to market risk and regulatory requirements. Execution depends on availability and counterparty confirmation.
@@ -306,7 +306,7 @@ export default function BulkDeals() {
                                 name="shareName"
                                 onChange={handleChange}
                                 placeholder="Enter share name"
-                                className="bg-gray-100"
+                                className="bg-secondary"
                             />
                         </div>
 

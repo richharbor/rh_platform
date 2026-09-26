@@ -63,7 +63,7 @@ export default function EmailPage({formData, setFormData, setStep, mobileNumber}
                     <Button type="submit">{loading ?<Loader2 className="animate-spin" /> :"Get OTP"  }</Button>
                 </div>
             </form>
-            <p className="text-white/50">By proceeding, I accept the <a href="#" className="underline"> Terms & Conditions</a>.</p>
+            <p className="text-muted-foreground">By proceeding, I accept the <a href="#" className="underline"> Terms & Conditions</a>.</p>
         </div>
     )
 }

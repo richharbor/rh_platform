@@ -93,7 +93,7 @@ export default function OTPpage({ page, data, setStep }: OTPPageProps) {
       <h2 className="text-4xl max-md:text-3xl max-sm:text-2xl font-bold">
         Verify Your {page === 'email' ? "Email" : "Number"}
       </h2>
-      <p className="text-gray-300 mb-6">
+      <p className="text-foreground/80 mb-6">
         Enter the 4-digit code sent to *****{page === 'email' ? data.slice(-13) : data.slice(-4)} <button className="underline" onClick={() => setStep((pre) => pre - 1)}>{page === 'email' ? 'change email' : 'change number'}</button>
       </p>
       <form onSubmit={handleSubmit} autoComplete="off" className="space-y-6">
@@ -108,7 +108,7 @@ export default function OTPpage({ page, data, setStep }: OTPPageProps) {
               autoComplete="off"
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-500 rounded-lg  focus:outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"
+              className="w-12 h-12 text-center text-2xl font-bold bg-card text-foreground border-2 border-border rounded-lg  focus:outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-inner-spin-button]:appearance-none"
             />
           ))}
         </div>

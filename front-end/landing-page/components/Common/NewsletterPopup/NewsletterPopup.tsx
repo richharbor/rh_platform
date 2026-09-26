@@ -112,7 +112,7 @@ export default function NewsletterPopup() {
                             whileHover={{ x: 5 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             onClick={() => setIsOpen(true)}
-                            className="bg-[#2a2a2a] text-white py-3 px-2 rounded-r-lg shadow-xl cursor-pointer flex flex-col items-center gap-2 border-r border-t border-b border-gray-700/50 backdrop-blur-md hover:bg-[#333] transition-colors"
+                            className="bg-rh-navy text-white py-3 px-2 rounded-r-lg shadow-xl cursor-pointer flex flex-col items-center gap-2 border-r border-t border-b border-rh-paper/15 backdrop-blur-md hover:bg-rh-midnight transition-colors"
                         >
                             <Bell size={20} className="text-white/70" />
                             <span className="text-xs font-medium [writing-mode:vertical-rl] rotate-180 uppercase tracking-widest text-white/50">
@@ -185,7 +185,7 @@ export default function NewsletterPopup() {
                             You have successfully subscribed to our newsletter.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="my-5 text-green-500 w-full ">
+                    <div className="my-5 text-rh-emerald w-full ">
                         <CircleCheckBig className="mx-auto font-light" size={100} />
                     </div>
                 </DialogContent>

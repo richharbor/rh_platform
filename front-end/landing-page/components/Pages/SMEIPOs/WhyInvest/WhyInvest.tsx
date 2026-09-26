@@ -27,12 +27,12 @@ const benefits = [
 
 export default function SmeIpoBenefits() {
   return (
-    <section className="max-w-7xl mx-auto w-full text-white py-20 px-6 md:px-12 lg:px-20 rounded-2xl">
+    <section className="max-w-7xl mx-auto w-full text-foreground py-20 px-6 md:px-12 lg:px-20 rounded-2xl">
       <div className="max-w-5xl mx-auto text-center mb-12">
         <h2 className="text-3xl font-batman md:text-4xl font-bold mb-4">
           Why Invest in SME IPOs?
         </h2>
-        <p className="text-lg text-gray-400">
+        <p className="text-lg text-muted-foreground">
           Discover the key benefits that make SME IPOs an attractive investment opportunity.
         </p>
       </div>
@@ -42,11 +42,11 @@ export default function SmeIpoBenefits() {
         {benefits.map((item, i) => (
           <div
             key={i}
-            className="bg-card border border-gray-800 rounded-xl p-6 hover:border-rich-violet hover:shadow-lg hover:shadow-rich-violet/30 transition"
+            className="bg-card border border-border rounded-xl p-6 hover:border-rich-violet hover:shadow-lg hover:shadow-rich-violet/30 transition"
           >
             <item.icon className="h-10 w-10 text-rich-violet mb-4" />
             <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-            <p className="text-gray-400 text-sm">{item.desc}</p>
+            <p className="text-muted-foreground text-sm">{item.desc}</p>
           </div>
         ))}
       </div>

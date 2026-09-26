@@ -40,12 +40,12 @@ export default function SmeIpoFAQs() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto text-white py-16 px-6 md:px-12 lg:px-20 rounded-2xl">
+    <section className="w-full max-w-7xl mx-auto text-foreground py-16 px-6 md:px-12 lg:px-20 rounded-2xl">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold font-batman">FAQs</h2>
-          <p className="text-gray-400 mt-2">
+          <p className="text-muted-foreground mt-2">
             Find answers to the most commonly asked questions about SME IPOs.
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function SmeIpoFAQs() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-800 rounded-xl overflow-hidden"
+              className="border border-border rounded-xl overflow-hidden"
             >
               <button
                 className="w-full flex justify-between items-center px-6 py-4 text-left focus:outline-none"
@@ -84,7 +84,7 @@ export default function SmeIpoFAQs() {
                     }}
                     className="overflow-hidden px-4 pb-2"
                   >
-                    <p className="text-white/50">{faq.answer}</p>
+                    <p className="text-muted-foreground">{faq.answer}</p>
                   </motion.div>
               )}
             </div>

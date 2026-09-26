@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function SmeIpoHero() {
   return (
-    <section className="relative w-full bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 text-white py-20 px-6 md:px-12 lg:px-20 shadow-lg overflow-hidden">
+    <section className="relative w-full bg-rh-navy text-white py-20 px-6 md:px-12 lg:px-20 shadow-lg overflow-hidden">
       {/* Background Glow */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
@@ -23,7 +23,7 @@ export default function SmeIpoHero() {
           <Link href='#filter-search'>
           <Button
             size="lg"
-            className="bg-white text-indigo-600 hover:bg-indigo-100 font-semibold"
+            className="bg-rh-champagne text-rh-navy hover:bg-[#e4cb96] font-semibold"
             
           >
             <ArrowRight className="mr-2 h-5 w-5" /> View Upcoming IPOs

@@ -1,23 +1,27 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
+import { Section } from "../brand";
 
 export default function WhatsAppBanner() {
     return (
-        <div className="w-full px-4 md:px-6">
-            <Link href="/whatsapp-community" className="block w-full relative z-10">
-                <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="w-full bg-[#128C7E] hover:bg-[#075E54] text-white py-3 md:py-4 px-4 rounded-xl flex flex-row items-center justify-center gap-2 md:gap-3 transition-colors shadow-lg cursor-pointer group"
-                >
-                    <MessageCircle className="w-5 h-5 md:w-6 md:h-6 animate-bounce shrink-0" />
-                    <span className="font-semibold text-xs md:text-lg text-center">Join our exclusive WhatsApp Community for real-time deal flow</span>
-                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform shrink-0" />
-                </motion.div>
+        <Section>
+            <Link
+                href="/whatsapp-community"
+                className="group flex items-center justify-between gap-4 rounded-3xl bg-rh-emerald px-5 py-5 text-rh-paper transition-colors hover:bg-[#0b6a4c] md:px-8"
+            >
+                <span className="flex items-center gap-4">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-rh-paper/15">
+                        <MessageCircle className="size-5" />
+                    </span>
+                    <span>
+                        <span className="block font-mono text-[11px] uppercase tracking-[0.2em] text-rh-paper/70">WhatsApp community</span>
+                        <span className="block text-[15px] font-semibold md:text-lg">Join for real-time deal flow and new supply</span>
+                    </span>
+                </span>
+                <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>
-        </div>
+        </Section>
     );
 }

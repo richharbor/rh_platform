@@ -53,10 +53,10 @@ const StrengthsWeaknesses = () => {
       <ul className="list-none space-y-4">
         {swotAnalysis.strengths.map((strength, index) => (
           <li key={index} className="flex items-start">
-            <Check className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" />
+            <Check className="h-6 w-6 text-rh-emerald mr-2 flex-shrink-0" />
             <div>
               <h4 className=" text-lg">{strength.title}:</h4>
-              <p className="text-white/50">{strength.description}</p>
+              <p className="text-muted-foreground">{strength.description}</p>
             </div>
           </li>
         ))}
@@ -69,7 +69,7 @@ const StrengthsWeaknesses = () => {
             <X className="h-6 w-6 text-red-500 mr-2 flex-shrink-0" />
             <div>
               <h4 className=" text-lg">{weakness.title}:</h4>
-              <p className="text-white/50">{weakness.description}</p>
+              <p className="text-muted-foreground">{weakness.description}</p>
             </div>
           </li>
         ))}

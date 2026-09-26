@@ -76,7 +76,7 @@ export function HeroSection() {
                     transition={{ duration: 0.5 }}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-sm mb-8"
                 >
-                    <span className="w-2 h-2 rounded-full bg-[#4AA651]" />
+                    <span className="w-2 h-2 rounded-full bg-[#0e7a58]" />
                     <span className="text-muted-foreground">Announcing $50M in funding</span>
                     <ChevronRight size={14} className="text-muted-foreground" />
                 </motion.div>

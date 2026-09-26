@@ -43,7 +43,7 @@ export function Hero() {
             variants={itemVariants}
             className="mb-8 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm"
           >
-            <span className="h-2 w-2 rounded-full bg-[#4AA651]" />
+            <span className="h-2 w-2 rounded-full bg-[#0e7a58]" />
             <span className="text-muted-foreground">Trusted by 500,000+ families nationwide</span>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
           </motion.div>
@@ -82,7 +82,7 @@ export function Hero() {
                 transition={{ delay: 0.8 + index * 0.1 }}
                 className="flex items-center gap-2 text-sm text-muted-foreground"
               >
-                <CheckCircle2 className="h-5 w-5 text-[#4AA651]" />
+                <CheckCircle2 className="h-5 w-5 text-[#0e7a58]" />
                 <span>{benefit}</span>
               </motion.div>
             ))}

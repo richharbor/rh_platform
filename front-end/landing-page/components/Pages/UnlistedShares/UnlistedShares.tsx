@@ -158,7 +158,7 @@ export default function UnlistedShares() {
                                     transition={{ delay: 0.8 + index * 0.1 }}
                                     className="flex items-center gap-2 text-sm text-muted-foreground"
                                 >
-                                    <CheckCircle2 className="h-5 w-5 text-[#4AA651]" />
+                                    <CheckCircle2 className="h-5 w-5 text-[#0e7a58]" />
                                     <span>{benefit}</span>
                                 </motion.div>
                             ))}
@@ -188,12 +188,12 @@ export default function UnlistedShares() {
             />
 
             <div className="container max-w-7xl mx-auto px-4 md:px-6 -mt-10">
-                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex gap-3 items-start">
+                <div className="bg-rh-gold/10 border border-rh-gold/20 rounded-xl p-4 flex gap-3 items-start">
                     <div className="mt-1">
-                        <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                        <AlertTriangle className="h-5 w-5 text-rh-gold" />
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-yellow-500 mb-1">Risk Disclosure</h4>
+                        <h4 className="text-sm font-semibold text-rh-gold mb-1">Risk Disclosure</h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
                             Unlisted shares are illiquid and may have a lock-in period after listing (typically 6 months). Investment in unlisted equities carries high risk, including potential loss of capital.
                         </p>

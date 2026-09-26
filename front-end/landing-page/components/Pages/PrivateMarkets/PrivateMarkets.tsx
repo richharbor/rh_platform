@@ -40,7 +40,7 @@ const suitability = [
     {
         title: "Appropriate for Companies That:",
         icon: CheckCircle,
-        iconColor: "text-emerald-500",
+        iconColor: "text-rh-emerald",
         items: [
             "Seek ₹50–100+ crore of growth or pre-IPO capital",
             "Demonstrate strong operating fundamentals",
@@ -177,7 +177,7 @@ export default function PrivateMarkets() {
     return (
         <div className="min-h-screen bg-background pt-20">
             {/* Hero Section */}
-            <section className="relative overflow-hidden w-[99vw] py-20 lg:py-32">
+            <section className="relative overflow-hidden w-full py-20 lg:py-32">
                 <div className="absolute inset-0 bg-[url('https://richharbor.s3.us-east-1.amazonaws.com/WhatsApp+Image+2026-01-20+at+11.56.39.jpeg')] bg-cover bg-center opacity-20 blur-sm scale-105 pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background pointer-events-none" />
                 <div className="container px-4 md:px-6 mx-auto relative z-10">
@@ -484,7 +484,7 @@ export default function PrivateMarkets() {
                             Your request has been submitted successfully. We will review it and get back to you shortly.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="my-5 text-green-500 w-full ">
+                    <div className="my-5 text-rh-emerald w-full ">
                         <CircleCheckBig className="mx-auto font-light" size={100} />
                     </div>
                 </DialogContent>

@@ -26,12 +26,12 @@ const ipoList = [
 
 export default function OngoingSmeIpos() {
   return (
-    <section className="w-full text-white py-20 px-6 md:px-12 lg:px-20 rounded-2xl">
+    <section className="w-full text-foreground py-20 px-6 md:px-12 lg:px-20 rounded-2xl">
       <div className="max-w-6xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Ongoing SME IPOs
         </h2>
-        <p className="text-lg text-gray-400">
+        <p className="text-lg text-muted-foreground">
           Stay updated with the latest SME IPOs currently open for subscription.
         </p>
       </div>
@@ -41,27 +41,27 @@ export default function OngoingSmeIpos() {
         {ipoList.map((ipo, i) => (
           <div
             key={i}
-            className="bg-card border border-gray-800 rounded-xl p-6 shadow-md hover:border-rich-violet hover:shadow-lg hover:shadow-rich-violet/30 transition"
+            className="bg-card border border-border rounded-xl p-6 shadow-md hover:border-rich-violet hover:shadow-lg hover:shadow-rich-violet/30 transition"
           >
             <h3 className="text-xl font-semibold mb-2">{ipo.name}</h3>
-            <ul className="text-gray-400 space-y-2 text-sm">
+            <ul className="text-muted-foreground space-y-2 text-sm">
               <li>
-                <span className="text-white">Issue Date:</span> {ipo.issueDate}
+                <span className="text-foreground">Issue Date:</span> {ipo.issueDate}
               </li>
               <li>
-                <span className="text-white">Price Band:</span> {ipo.priceBand}
+                <span className="text-foreground">Price Band:</span> {ipo.priceBand}
               </li>
               <li>
-                <span className="text-white">Lot Size:</span> {ipo.lotSize}
+                <span className="text-foreground">Lot Size:</span> {ipo.lotSize}
               </li>
               <li>
-                <span className="text-white">Status:</span>{" "}
+                <span className="text-foreground">Status:</span>{" "}
                 <span
                   className={`${
                     ipo.status === "Open"
-                      ? "text-green-400"
+                      ? "text-rh-emerald"
                       : ipo.status === "Upcoming"
-                      ? "text-yellow-400"
+                      ? "text-rh-gold"
                       : "text-red-400"
                   } font-medium`}
                 >
@@ -75,7 +75,7 @@ export default function OngoingSmeIpos() {
 
       {/* CTA */}
       <div className="flex justify-center mt-12">
-        <button className="z-10 bg-gradient-to-r from-rich-violet to-[#704bd2] px-6 py-3 rounded-xl text-white font-medium hover:from-rich-violet/60 hover:to-[#704bd2]/60 transition ease-in-out duration-200">
+        <button className="z-10 bg-primary px-6 py-3 rounded-xl text-foreground font-medium hover:bg-primary/90 transition ease-in-out duration-200">
           View All SME IPOs
         </button>
       </div>

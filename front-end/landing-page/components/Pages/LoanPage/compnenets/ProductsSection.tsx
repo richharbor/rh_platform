@@ -24,7 +24,7 @@ export function ProductsSection() {
             ],
             icon: User,
             link: "#contact",
-            color: "bg-pink-500/10 text-pink-600 border-pink-200"
+            color: "bg-rh-gold/10 text-rh-gold border-rh-gold/20"
         },
         {
             name: "Business & SME Loans",
@@ -39,7 +39,7 @@ export function ProductsSection() {
             ],
             icon: Factory,
             link: "#contact",
-            color: "bg-teal-500/10 text-teal-600 border-teal-200"
+            color: "bg-rh-emerald/10 text-rh-emerald border-rh-emerald/20"
         },
         {
             name: "Structured & Corporate Credit",
@@ -53,7 +53,7 @@ export function ProductsSection() {
             ],
             icon: Building2,
             link: "#contact",
-            color: "bg-purple-500/10 text-purple-600 border-purple-200"
+            color: "bg-rh-navy/10 text-rh-navy border-rh-navy/20"
         }
     ];
 
@@ -106,7 +106,7 @@ export function ProductsSection() {
                             <div className="space-y-4 mb-8">
                                 {product.features.map((feature, i) => (
                                     <div key={i} className="flex items-start gap-3">
-                                        <CheckCircle2 size={18} className="text-green-500 shrink-0 mt-0.5" />
+                                        <CheckCircle2 size={18} className="text-rh-emerald shrink-0 mt-0.5" />
                                         <span className="text-sm font-medium opacity-80">{feature}</span>
                                     </div>
                                 ))}

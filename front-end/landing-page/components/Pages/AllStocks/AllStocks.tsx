@@ -50,7 +50,7 @@ export default function AllStocks() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-white/50" />
+                <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -61,7 +61,7 @@ export default function AllStocks() {
                 <h1 className="text-2xl md:text-3xl lg:text-5xl font-batman text-center">
                     Where Your Wealth Takes Shape
                 </h1>
-                <p className="text-white/50 max-w-3xl text-center mx-auto">
+                <p className="text-muted-foreground max-w-3xl text-center mx-auto">
                     See all your stocks come together in one powerful view, giving you the clarity, confidence, and control to navigate your financial future.
                 </p>
             </div>
@@ -69,8 +69,8 @@ export default function AllStocks() {
                 <h2 className="text-2xl font-bold mb-4 max-sm:text-center">Unlisted Shares Price List</h2>
 
                 {shares.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center min-h-[300px] border border-white/10 rounded-xl bg-card">
-                        <p className="text-xl text-white/50 font-medium">No stock available now</p>
+                    <div className="flex flex-col items-center justify-center min-h-[300px] border border-border rounded-xl bg-card">
+                        <p className="text-xl text-muted-foreground font-medium">No stock available now</p>
                     </div>
                 ) : (
                     <>

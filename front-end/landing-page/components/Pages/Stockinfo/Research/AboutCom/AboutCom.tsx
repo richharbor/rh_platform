@@ -24,7 +24,7 @@ const AboutSection = () => {
       transition={{ duration: 0.5, ease: 'easeInOut' }}
       className="bg-transparent font-sans">
       <h2 className=" text-3xl mb-6">About Co.</h2>
-      <p className="text-white/50 leading-relaxed mb-8">{aboutData.about}</p>
+      <p className="text-muted-foreground leading-relaxed mb-8">{aboutData.about}</p>
 
       <h3 className=" text-2xl mb-4">Board of Directors & Management</h3>
       <h4 className=" text-xl mb-4">Board of Directors</h4>
@@ -32,7 +32,7 @@ const AboutSection = () => {
         {aboutData.boardOfDirectors.map((director, index) => (
           <div key={index} className="flex flex-col">
             <h5 className=" text-lg mb-1">{director.name}</h5>
-            <p className="text-white/50">{director.role}</p>
+            <p className="text-muted-foreground">{director.role}</p>
           </div>
         ))}
       </div>

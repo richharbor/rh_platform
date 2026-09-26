@@ -260,7 +260,7 @@ export function LoanFormDialog({ open, onOpenChange }: LoanFormDialogProps) {
                             Your loan application has been submitted successfully.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="my-5 text-green-500 w-full ">
+                    <div className="my-5 text-rh-emerald w-full ">
                         <CircleCheckBig className="mx-auto font-light" size={100} />
                     </div>
                 </DialogContent>

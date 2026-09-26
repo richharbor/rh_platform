@@ -10,7 +10,7 @@ const communities = [
         name: "Unlisted Shares Network",
         description: "Get exclusive access to pre-IPO opportunities and daily price updates for top unlisted companies.",
         icon: TrendingUp,
-        color: "bg-blue-500/10 text-blue-600",
+        color: "bg-rh-navy/10 text-rh-navy",
         link: "https://chat.whatsapp.com/GltIpxF5emI5PIwiD22VCD" // Placeholder link
     },
     {
@@ -18,7 +18,7 @@ const communities = [
         name: "Loans Community",
         description: "Stay updated on the lowest interest rates for Personal, Home, and Business loans.",
         icon: Coins,
-        color: "bg-green-500/10 text-green-600",
+        color: "bg-rh-emerald/10 text-rh-emerald",
         link: "https://chat.whatsapp.com/KCpcv6Ic05k8dCVWNwtCY0"
     },
     {
@@ -26,7 +26,7 @@ const communities = [
         name: "Insurance Insights",
         description: "Expert tips on Life, Health, and General Insurance. Decode policies and find the best coverage.",
         icon: ShieldCheck,
-        color: "bg-indigo-500/10 text-indigo-600",
+        color: "bg-rh-gold/10 text-rh-gold",
         link: "https://chat.whatsapp.com/Ft4ynhxP8gJEqYXd2WG7YC"
     }
 ];
@@ -40,9 +40,9 @@ export default function WhatsAppCommunityClient() {
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5 }}
-                        className="inline-flex items-center justify-center p-3 bg-[#25D366]/10 rounded-full mb-6"
+                        className="inline-flex items-center justify-center p-3 bg-[#0e7a58]/10 rounded-full mb-6"
                     >
-                        <MessageCircle className="w-10 h-10 text-[#25D366]" />
+                        <MessageCircle className="w-10 h-10 text-[#0e7a58]" />
                     </motion.div>
 
                     <motion.h1
@@ -85,7 +85,7 @@ export default function WhatsAppCommunityClient() {
 
                             <Button
                                 asChild
-                                className="rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white shrink-0 min-w-[140px]"
+                                className="rounded-full bg-[#0e7a58] hover:bg-[#0b6a4c] text-white shrink-0 min-w-[140px]"
                             >
                                 <a href={community.link} target="_blank" rel="noopener noreferrer">
                                     Join Now <ArrowRight className="ml-2 w-4 h-4" />

@@ -20,7 +20,7 @@ export function ServicesSection() {
             description: "Providing a wide range of loan products through India's largest loan distributor network.",
             features: ["Home Loans", "Business Loans", "Loan Against Property", "Personal Loans"],
             icon: Landmark,
-            color: "bg-blue-500/10 text-blue-500",
+            color: "bg-rh-navy/10 text-rh-navy",
             delay: 0.1
         },
         {
@@ -29,7 +29,7 @@ export function ServicesSection() {
             description: "Non-dilutive growth capital for companies with recurring revenue streams.",
             features: ["Recurring Revenue Financing", "Up to ₹10 Crore Funding", "Fast 48h Disbursal", "No Collateral"],
             icon: Rocket,
-            color: "bg-purple-500/10 text-purple-500",
+            color: "bg-rh-navy/10 text-rh-navy",
             delay: 0.2
         },
         {
@@ -38,7 +38,7 @@ export function ServicesSection() {
             description: "Data-driven funding for eCommerce and D2C brands to fuel growth.",
             features: ["Marketing Spend Capital", "Inventory Financing", "Flexible Repayment", "Founder-Friendly"],
             icon: TrendingUp,
-            color: "bg-green-500/10 text-green-500",
+            color: "bg-rh-emerald/10 text-rh-emerald",
             delay: 0.3
         },
         {
@@ -47,7 +47,7 @@ export function ServicesSection() {
             description: "Accessible retail loans helping individuals and small businesses bridge financial gaps.",
             features: ["Retail Loans", "Credit Solutions", "Simplified Process", "Quick Approval"],
             icon: CreditCard,
-            color: "bg-orange-500/10 text-orange-500",
+            color: "bg-rh-gold/10 text-rh-gold",
             delay: 0.4
         }
     ];

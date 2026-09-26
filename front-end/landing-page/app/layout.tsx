@@ -1,6 +1,6 @@
 import type React from "react";
 import "@/app/globals.css";
-import { Inter } from "next/font/google";
+import { Anton, Inter, JetBrains_Mono } from "next/font/google";
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
 import Script from "next/script"; // 👈 important
@@ -11,7 +11,9 @@ import Chatbot from "@/components/Common/Chatbot/Chatbot";
 import QueryWidget from "@/components/Common/QueryWidget/QueryWidget";
 import NewsletterPopup from "@/components/Common/NewsletterPopup/NewsletterPopup";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 export const metadata: Metadata = {
   title: "Rich Harbor | Invest in Unlisted Shares & Upcoming IPOs",
@@ -33,7 +35,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preload" as="font" href="/fonts/batman.ttf" type="font/truetype" crossOrigin="anonymous"></link>
 
         {/* Google Analytics (gtag.js) */}
         <Script
@@ -81,7 +82,7 @@ export default function RootLayout({
           />
         </noscript>
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${inter.variable} ${anton.variable} ${mono.variable}`}>
         <Navbar />
         <div className="mx-auto items-center max-md:px-4 flex flex-col relative">
           {children}

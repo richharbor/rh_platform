@@ -212,7 +212,7 @@ export function EMICalculator() {
                                             transition={{ duration: 0.5, ease: "easeOut" }}
                                         />
                                         <motion.div
-                                            className="bg-[#4AA651]"
+                                            className="bg-[#0e7a58]"
                                             initial={{ width: 0 }}
                                             animate={{ width: `${(totalInterest / totalAmount) * 100}%` }}
                                             transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
@@ -224,7 +224,7 @@ export function EMICalculator() {
                                             {((amount / totalAmount) * 100).toFixed(1)}%
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <span className="w-2 h-2 rounded-full bg-[#4AA651]" />
+                                            <span className="w-2 h-2 rounded-full bg-[#0e7a58]" />
                                             {((totalInterest / totalAmount) * 100).toFixed(1)}%
                                         </span>
                                     </div>

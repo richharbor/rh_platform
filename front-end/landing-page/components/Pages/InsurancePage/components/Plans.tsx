@@ -65,11 +65,11 @@ export function Plans() {
             <div
               key={plan.name}
               className={`relative flex flex-col rounded-2xl border p-8 ${
-                plan.popular ? "border-[#4AA651] bg-card shadow-lg scale-105" : "border-border bg-card"
+                plan.popular ? "border-[#0e7a58] bg-card shadow-lg scale-105" : "border-border bg-card"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-[#4AA651] px-4 py-1 text-xs font-semibold text-accent-foreground">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-[#0e7a58] px-4 py-1 text-xs font-semibold text-accent-foreground">
                   Most Popular
                 </div>
               )}

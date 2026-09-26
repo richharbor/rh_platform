@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import Icons from "../../global/icons";
-import { Button } from "../../ui/button";
-import { Particles } from "../../ui/particles";
-import RichHarbor from "@/assets/logo/Rich Harbor R.png";
 import RichHarbor2 from '@/assets/logo/RH-Logo.png'
 
 
@@ -128,112 +125,65 @@ export const FOOTER_LINKS = [
 
 const Footer = () => {
     return (
-        <footer className="w-full py-10 relative">
+        <footer className="relative w-full bg-rh-navy text-rh-paper">
             <Container>
-                <Wrapper className="relative flex flex-col md:flex-row justify-between pb-10 overflow-hidden footer">
-                    <Particles
-                        className="absolute inset-0 w-full -z-10"
-                        quantity={40}
-                        ease={10}
-                        color="#d4d4d8"
-                        refresh
-                    />
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-24 w-full mt-10 md:mt-0">
-                        <div className="col-span-2 flex flex-col items-start">
-                            <div className="flex items-center gap-2">
-                                <Link href="/" className="flex items-center gap-2">
-                                    <Image
-                                        src={RichHarbor2}
-                                        alt="Rich Harbor Logo"
-                                        className="h-22 w-auto"
-                                        
-                                    />
-                                </Link>
-                            </div>
-                            <p className="text-base max-w mt-4">
-                                Invest smart, grow steady, secure your future.
+                <Wrapper className="grid gap-12 py-16 md:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,0.8fr))] md:py-20">
+                    <div className="flex flex-col items-start">
+                        <Link href="/" className="flex items-center gap-2">
+                            <Image src={RichHarbor2} alt="Rich Harbor Logo" className="h-16 w-auto" />
+                        </Link>
+                        <p className="mt-6 max-w-sm font-display text-3xl leading-[1.02] tracking-tight">
+                            Invest smart, grow steady, secure your future<span className="text-rh-champagne">.</span>
+                        </p>
+                        <div className="mt-8 flex flex-col gap-3 text-[15px] text-rh-paper/70">
+                            <a href="mailto:info@richharbor.com" className="flex items-center gap-3 hover:text-rh-paper">
+                                <Mail size={15} className="text-rh-champagne" />
+                                info@richharbor.com
+                            </a>
+                            <a href="tel:+919211265558" className="flex items-center gap-3 hover:text-rh-paper">
+                                <Phone size={15} className="text-rh-champagne" />
+                                +91 92112 65558
+                            </a>
+                            <p className="flex items-center gap-3">
+                                <MapPin size={15} className="text-rh-champagne" />
+                                Gurugram, Haryana 122018, IN
                             </p>
-                            <div className="flex flex-col gap-3 mt-5">
-                                <a
-                                    href="mailto:info@richharbor.com"
-                                    className="flex gap-2 items-center"
-                                >
-                                    <Mail size={15} />
-                                    <p>info@richharbor.com</p>
-                                </a>
-                                <a href="tel:+919211265558" className="flex gap-2 items-center">
-                                    <Phone size={15} />
-                                    <p>+91 92112 65558</p>
-                                </a>
-                                <div className="flex gap-2 items-center">
-                                    <MapPin size={15} /> 
-                                    <p>GURUGRAM, Haryana 122018, IN</p>
-                                </div>
-                            </div>
-                            {/* <Button className="mt-8">
-                                <Link href="/app">
-                                    About Us
-                                </Link>
-                            </Button> */}
                         </div>
-                        {/* <Button className="mt-8">
-                            <Link href="/#aboutus">
-                                About Us
-                            </Link>
-                        </Button>
-                        <Button className="mt-8">
-                            <Link href="/contactus">
-                                Contact Us
-                            </Link>
-                        </Button> */}
-                        {FOOTER_LINKS?.map((section, index) => (
-                            <div key={index} className="flex flex-col gap-4">
-                                <h4 className="text-lg font-medium">
-                                    {section.title}
-                                </h4>
-                                <ul className="space-y-4 w-full">
-                                    {section.links.map((link, index) => (
-                                        <li key={index} className="text-md text-muted-foreground hover:text-foreground transition-all w-full">
-                                            <Link href={link.href} className="w-full">
-                                                {link.name}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
                     </div>
+                    {FOOTER_LINKS?.map((section) => (
+                        <div key={section.title} className="flex flex-col gap-5">
+                            <h4 className="font-mono text-[11px] uppercase tracking-[0.2em] text-rh-champagne">{section.title}</h4>
+                            <ul className="space-y-3">
+                                {section.links.map((link) => (
+                                    <li key={link.name}>
+                                        <Link href={link.href} className="text-[15px] text-rh-paper/70 transition-colors hover:text-rh-paper">
+                                            {link.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
                 </Wrapper>
             </Container>
-            <Container>
-                <Wrapper className=" flex items-center max-sm:flex-col gap-3 justify-between relative">
-                    <p className="text-sm text-secondary-foreground">
-                        &copy; {new Date().getFullYear()} RH. All rights reserved.
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <Link href={'/privacy-policy'} className=" text-sm text-secondary-foreground mr-5 hover:underline"> Privacy & Policy</Link>
-                        <Link href="https://www.instagram.com/richharborofficial/" target="_blank" className="p-1">
-                            <Icons.instagram className="w-10 h-10 text-muted-foreground hover:text-secondary-foreground" />
+            <Wrapper className="flex items-center justify-between gap-4 border-t border-rh-paper/10 py-6 max-sm:flex-col">
+                <p className="text-sm text-rh-paper/55">&copy; {new Date().getFullYear()} Rich Harbor. All rights reserved.</p>
+                <div className="flex items-center gap-1">
+                    <Link href="/privacy-policy" className="mr-4 text-sm text-rh-paper/55 hover:text-rh-paper">Privacy policy</Link>
+                    {[
+                        { href: "https://www.instagram.com/richharborofficial/", Icon: Icons.instagram, label: "Instagram" },
+                        { href: "https://x.com/Rich_harbor", Icon: Icons.x, label: "X" },
+                        { href: "https://www.linkedin.com/company/richharbor/?viewAsMember=true", Icon: Icons.linkedin, label: "LinkedIn" },
+                        { href: "https://www.facebook.com/profile.php?id=61580613956975", Icon: Icons.facebook, label: "Facebook" },
+                    ].map(({ href, Icon, label }) => (
+                        <Link key={label} href={href} target="_blank" aria-label={label} className="rounded-full p-2 text-rh-paper/55 transition-colors hover:bg-rh-paper/10 hover:text-rh-champagne">
+                            <Icon className="h-5 w-5" />
                         </Link>
-                        <Link href="https://x.com/Rich_harbor" target="blank" className="p-1">
-                            <Icons.x className="w-10 h-10 text-muted-foreground hover:text-secondary-foreground" />
-                        </Link>
-                        <Link href="https://www.linkedin.com/company/richharbor/?viewAsMember=true" target="_blank" className="p-1">
-                            <Icons.linkedin className="w-10 h-10 text-muted-foreground hover:text-secondary-foreground" />
-                        </Link>
-                        <Link href="https://www.facebook.com/profile.php?id=61580613956975" target="_blank" className="p-1">
-                            <Icons.facebook className="w-10 h-10 text-muted-foreground hover:text-secondary-foreground" />
-                        </Link>
-                    </div>
-                </Wrapper>
-            </Container>
-
-            {/* <div className="flex justify-center px-2 max-sm:flex-col py-5 max-sm:py-5 gap-10 max-sm:gap-3 mt-5 border-t">
-
-            </div> */}
+                    ))}
+                </div>
+            </Wrapper>
         </footer>
     )
 };
 
 export default Footer
-

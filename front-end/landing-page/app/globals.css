@@ -2,13 +2,27 @@
 @import "tw-animate-css";
 
 
+/*
+ * Rich Harbor brand: midnight navy, champagne gold, emerald, warm off-white —
+ * the same palette and type (Anton · Inter · JetBrains Mono) as the RFIN apps.
+ * The whole site is light: shadcn tokens map to paper / navy / gold, and the
+ * `rh-*` colours are used directly where a section needs a specific brand colour.
+ */
 @theme inline {
-  --font-batman: Batman, sans-serif;
+  --color-rh-paper: #f6f3ed;
+  --color-rh-navy: #111d38;
+  --color-rh-midnight: #0b1428;
+  --color-rh-gold: #a88142;
+  --color-rh-champagne: #d9bd82;
+  --color-rh-emerald: #0e7a58;
+  --color-rh-mute: #6d6860;
+  --font-display: var(--font-anton), "Anton", sans-serif;
+  --font-batman: var(--font-anton), "Anton", sans-serif;
   --color-rich-violet: var(--rich-violet);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -78,57 +92,58 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.3);
-  /* Light thumb */
+  background-color: rgba(168, 129, 66, 0.45);
+  /* Gold thumb — readable on paper and navy */
   border-radius: 9999px;
   /* Fully rounded */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(168, 129, 66, 0.7);
   /* Slightly darker on hover */
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(168, 129, 66, 0.45) transparent;
 }
 
 :root {
   --radius: 0.625rem;
-  --rich-violet: rgb(149, 115, 228);
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Legacy accent name kept for existing classes; it is brand gold now. */
+  --rich-violet: #a88142;
+  --background: #f6f3ed;
+  --foreground: #111d38;
+  --card: #fbfaf6;
+  --card-foreground: #111d38;
+  --popover: #fbfaf6;
+  --popover-foreground: #111d38;
+  --primary: #a88142;
+  --primary-foreground: #111d38;
+  --secondary: #ece6da;
+  --secondary-foreground: #111d38;
+  --muted: #ece6da;
+  --muted-foreground: #6d6860;
+  --accent: #e9e2d3;
+  --accent-foreground: #111d38;
+  --destructive: #c2372b;
+  --border: rgb(17 29 56 / 12%);
+  --input: rgb(17 29 56 / 18%);
+  --ring: #a88142;
+  --chart-1: #a88142;
+  --chart-2: #0e7a58;
+  --chart-3: #d9bd82;
+  --chart-4: #27457e;
+  --chart-5: #6d6860;
+  --sidebar: #fbfaf6;
+  --sidebar-foreground: #111d38;
+  --sidebar-primary: #a88142;
+  --sidebar-primary-foreground: #111d38;
+  --sidebar-accent: #e9e2d3;
+  --sidebar-accent-foreground: #111d38;
+  --sidebar-border: rgb(17 29 56 / 12%);
+  --sidebar-ring: #a88142;
 }
 
 /* Hide scrollbar for Chrome, Safari, Edge */
@@ -170,17 +185,10 @@
   }
 }
 
-@font-face {
-  font-family: 'Batman';
-  src: url('/fonts/batman.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @layer utilities {
-  /* Force rebuild */
+  /* Headings site-wide: was the Batman face, now the brand display face (Anton). */
   .font-batman {
-    font-family: "Batman", sans-serif;
+    font-family: var(--font-anton), "Anton", sans-serif;
+    letter-spacing: 0;
   }
 }

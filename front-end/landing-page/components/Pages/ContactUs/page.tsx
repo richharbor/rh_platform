@@ -120,10 +120,10 @@ export default function ContactForm() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-background px-2 py-5 mt-15 mx-auto max-w-2xl"
+      className="bg-background px-2 pt-32 pb-5 mx-auto max-w-2xl"
     >
       <h1
-        style={{ fontFamily: "Batman, sans-serif" }}
+        style={{ fontFamily: "var(--font-anton), Anton, sans-serif" }}
         className="text-2xl md:text-3xl lg:text-4xl  font-bold text-center mb-6"
       >
         Contact Us
@@ -254,7 +254,7 @@ export default function ContactForm() {
               Your data has been sent successfully.
             </DialogDescription>
           </DialogHeader>
-          <div className="my-5 text-green-500 w-full ">
+          <div className="my-5 text-rh-emerald w-full ">
             <CircleCheckBig className="mx-auto font-light" size={100} />
           </div>
           <Button onClick={() => setSuccOpen(false)}>Close</Button>

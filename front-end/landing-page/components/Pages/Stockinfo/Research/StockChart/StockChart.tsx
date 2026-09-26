@@ -22,7 +22,7 @@ export default function TradingViewWidget() {
   }, []);
 
   return (
-    <div className="w-full h-[400px] rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+    <div className="w-full h-[400px] rounded-2xl shadow-md border border-border overflow-hidden">
       <div id="tradingview_chart" className="w-full h-full" />
     </div>
   );

@@ -126,7 +126,7 @@ export default function SellSharesForm() {
       transition={{ duration: 0.5 }}
       className="bg-background px-2 max-sm:px-0 py-5 mt-15"
     >
-      <div className="py-20 mb-5 w-full rounded-2xl flex items-center justify-center relative px-10 max-sm:p-3 overflow-hidden bg-black">
+      <div className="py-20 mb-5 w-full rounded-2xl flex items-center justify-center relative px-10 max-sm:p-3 overflow-hidden bg-rh-navy">
         <motion.img
           src="https://static.seekingalpha.com/cdn/s3/uploads/getty_images/1500507449/image_1500507449.jpg?io=getty-c-w750"
           className="h-auto w-full object-center absolute inset-0 [mask-image:radial-gradient(circle,transparent,black_80%)] pointer-events-none -top-50"
@@ -136,7 +136,7 @@ export default function SellSharesForm() {
           alt="Investment background"
         />
         <h1
-          style={{ fontFamily: "Batman, sans-serif" }}
+          style={{ fontFamily: "var(--font-anton), Anton, sans-serif" }}
           className="text-2xl md:text-5xl lg:text-6xl font-bold text-center text-white relative z-2"
         >
           Liquidate Investments
@@ -290,7 +290,7 @@ export default function SellSharesForm() {
               Your form has been submitted successfully.
             </DialogDescription>
           </DialogHeader>
-          <div className="my-5 text-green-500 w-full">
+          <div className="my-5 text-rh-emerald w-full">
             <CircleCheckBig className="mx-auto" size={100} />
           </div>
           <Button onClick={() => setSuccessOpen(false)}>Close</Button>
@@ -313,12 +313,12 @@ export default function SellSharesForm() {
         </DialogContent>
       </Dialog>
 
-      <section className="relative text-gray-100 py-20 px-6 md:px-12 lg:px-20">
+      <section className="relative text-foreground/80 py-20 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-rich-violet font-batman">
             Liquidate your Unlisted & Startup Investments
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-14">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-14">
             Whether you’re looking to diversify your portfolio or seeking
             liquidity from an Early Stage Investment, Rich Harbor can help you
             get the liquidity you deserve. Liquidate your Unlisted & Startup
@@ -333,7 +333,7 @@ export default function SellSharesForm() {
               >
                 <div className="mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">{feature.description}</p>
+                <p className="text-muted-foreground text-sm">{feature.description}</p>
               </div>
             ))}
           </div>

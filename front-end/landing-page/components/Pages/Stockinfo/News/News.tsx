@@ -20,16 +20,16 @@ export default function News() {
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             className="flex flex-col gap-10 px-20 py-10 max-lg:px-5 max-md:px-5">
             <div>
-                <div className="flex gap-5 p-2 bg-white/10 rounded-lg w-fit">
-                    <button onClick={() => setNewsState('all')} className={`px-3 py-2 rounded-lg ${newsState === 'all' ? 'bg-white/30' : 'hover:bg-white/20'} `} >All News</button>
-                    <button onClick={() => setNewsState('bookmarks')} className={`px-3 py-2 rounded-lg ${newsState === 'bookmarks' ? 'bg-white/30' : 'hover:bg-white/20'}  `}>Your Bookmarks</button>
+                <div className="flex gap-5 p-2 bg-foreground/5 rounded-lg w-fit">
+                    <button onClick={() => setNewsState('all')} className={`px-3 py-2 rounded-lg ${newsState === 'all' ? 'bg-foreground/5' : 'hover:bg-foreground/5'} `} >All News</button>
+                    <button onClick={() => setNewsState('bookmarks')} className={`px-3 py-2 rounded-lg ${newsState === 'bookmarks' ? 'bg-foreground/5' : 'hover:bg-foreground/5'}  `}>Your Bookmarks</button>
                 </div>
             </div>
 
 
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-10 max-lg:gap-5">
                 {Array.from({ length: 2 * count }).map((_, i) => (
-                    <div key={i} onClick={() => console.log("clicked")} className="bg-[#0c0f1a] border border-white/10 rounded-2xl px-10 py-10 max-md:px-5 flex flex-col gap-3 w-fit text-white relative hover:border-rich-violet transition-all duration-200 ease-in-out cursor-pointer">
+                    <div key={i} onClick={() => console.log("clicked")} className="bg-card border border-border rounded-2xl px-10 py-10 max-md:px-5 flex flex-col gap-3 w-fit text-foreground relative hover:border-rich-violet transition-all duration-200 ease-in-out cursor-pointer">
                         {/* Header */}
                         <div className="flex items-center gap-3">
                             <Image
@@ -39,11 +39,11 @@ export default function News() {
                             />
                             <div className="flex flex-col text-sm">
                                 <span className="font-normal text-2xl max-md:text-lg">National Stock Exchange (NSE)</span>
-                                <span className="text-white/60">Unlisted Shares</span>
+                                <span className="text-muted-foreground">Unlisted Shares</span>
                             </div>
 
                             {/* Save Icon */}
-                            <button className="ml-auto text-white/70 hover:text-white">
+                            <button className="ml-auto text-muted-foreground hover:text-foreground">
                                 <Bookmark className="size-8" />
                             </button>
                         </div>
@@ -55,15 +55,15 @@ export default function News() {
                         </h2>
 
                         {/* Source */}
-                        <span className="text-sm text-white/60">Msn</span>
+                        <span className="text-sm text-muted-foreground">Msn</span>
 
                         {/* Footer */}
                         <div className=" flex justify-between items-center mt-15">
-                            <div className="flex items-center gap-10 text-sm text-white/50">
+                            <div className="flex items-center gap-10 text-sm text-muted-foreground">
                                 <p>2 min read</p>
                                 <p>31 Jul 2025</p>
                             </div>
-                            <button className=" text-2xl px-3 py-1 bg-white/10 hover:bg-white/20 transition rounded-lg">
+                            <button className=" text-2xl px-3 py-1 bg-foreground/5 hover:bg-foreground/5 transition rounded-lg">
                                 +
                             </button>
                         </div>

@@ -21,8 +21,6 @@ import {
     X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ShootingStars } from "@/components/ui/shooting-stars";
-import { StarsBackground } from "@/components/ui/stars-background";
 import Link from "next/link";
 import { useQueryWidgetStore } from "@/store/queryWidgetStore";
 
@@ -35,50 +33,50 @@ export default function TechSupport() {
             category: "Frontend",
             icon: Code2,
             technologies: ["React.js", "Next.js", "Angular.js", "Vue.js", "TypeScript"],
-            color: "text-cyan-500 bg-cyan-500/10",
-            borderColor: "border-cyan-500/20"
+            color: "text-rh-navy bg-rh-navy/10",
+            borderColor: "border-rh-navy/20"
         },
         {
             category: "Backend",
             icon: Server,
             technologies: ["Node.js", "FastAPI (Python)", "Express.js", "Django", "NestJS"],
-            color: "text-green-500 bg-green-500/10",
-            borderColor: "border-green-500/20"
+            color: "text-rh-emerald bg-rh-emerald/10",
+            borderColor: "border-rh-emerald/20"
         },
         {
             category: "Mobile Development",
             icon: Sparkles,
             technologies: ["React Native", "Flutter", "iOS (Swift)", "Android (Kotlin)"],
-            color: "text-pink-500 bg-pink-500/10",
-            borderColor: "border-pink-500/20"
+            color: "text-rh-gold bg-rh-gold/10",
+            borderColor: "border-rh-gold/20"
         },
         {
             category: "Database",
             icon: Database,
             technologies: ["PostgreSQL", "MongoDB", "MySQL", "Redis", "Elasticsearch"],
-            color: "text-blue-500 bg-blue-500/10",
-            borderColor: "border-blue-500/20"
+            color: "text-rh-navy bg-rh-navy/10",
+            borderColor: "border-rh-navy/20"
         },
         {
             category: "Cloud",
             icon: Cloud,
             technologies: ["AWS", "GCP", "Azure", "DigitalOcean", "Vercel"],
-            color: "text-orange-500 bg-orange-500/10",
-            borderColor: "border-orange-500/20"
+            color: "text-rh-gold bg-rh-gold/10",
+            borderColor: "border-rh-gold/20"
         },
         {
             category: "DevOps & CI/CD",
             icon: Boxes,
             technologies: ["Jenkins", "Docker", "Kubernetes", "GitHub Actions", "Terraform"],
-            color: "text-purple-500 bg-purple-500/10",
-            borderColor: "border-purple-500/20"
+            color: "text-rh-navy bg-rh-navy/10",
+            borderColor: "border-rh-navy/20"
         },
         {
             category: "Testing & QA",
             icon: Shield,
             technologies: ["Jest", "Cypress", "Playwright", "Selenium", "Postman"],
-            color: "text-yellow-500 bg-yellow-500/10",
-            borderColor: "border-yellow-500/20"
+            color: "text-rh-gold bg-rh-gold/10",
+            borderColor: "border-rh-gold/20"
         },
         {
             category: "Message Queues",
@@ -91,22 +89,22 @@ export default function TechSupport() {
             category: "Monitoring & Analytics",
             icon: TrendingUp,
             technologies: ["Grafana", "Prometheus", "Datadog", "New Relic", "Sentry"],
-            color: "text-indigo-500 bg-indigo-500/10",
-            borderColor: "border-indigo-500/20"
+            color: "text-rh-navy bg-rh-navy/10",
+            borderColor: "border-rh-navy/20"
         },
         {
             category: "Version Control",
             icon: Code2,
             technologies: ["Git", "GitHub", "GitLab", "Bitbucket"],
-            color: "text-teal-500 bg-teal-500/10",
-            borderColor: "border-teal-500/20"
+            color: "text-rh-emerald bg-rh-emerald/10",
+            borderColor: "border-rh-emerald/20"
         },
         {
             category: "API Technologies",
             icon: Server,
             technologies: ["REST", "GraphQL", "gRPC", "WebSockets", "Webhooks"],
-            color: "text-emerald-500 bg-emerald-500/10",
-            borderColor: "border-emerald-500/20"
+            color: "text-rh-emerald bg-rh-emerald/10",
+            borderColor: "border-rh-emerald/20"
         }
     ];
 
@@ -175,8 +173,6 @@ export default function TechSupport() {
 
     return (
         <div className="flex flex-col pt-5 sm:pt-20">
-            <ShootingStars className="fixed inset-0 -z-10" />
-            <StarsBackground className="fixed inset-0 -z-10" />
 
             <main className="flex-1">
                 {/* Hero Section */}
@@ -189,7 +185,7 @@ export default function TechSupport() {
                                 transition={{ delay: 0.2 }}
                                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-8"
                             >
-                                <Zap className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                <Zap className="w-4 h-4 text-rh-gold fill-yellow-500" />
                                 Enterprise Technology Solutions
                             </motion.div>
 
@@ -217,7 +213,7 @@ export default function TechSupport() {
                                         e.preventDefault();
                                         document.getElementById('tech-stack')?.scrollIntoView({ behavior: 'smooth' });
                                     }}
-                                    className="rounded-full md:text-[16px] font-semibold h-12 px-8 bg-transparent border-white/20 hover:bg-white/10 text-white backdrop-blur-sm"
+                                    className="rounded-full md:text-[16px] font-semibold h-12 px-8 bg-transparent border-border hover:bg-foreground/5 text-foreground backdrop-blur-sm"
                                 >
                                     View Our Stack
                                 </Button>
@@ -232,10 +228,10 @@ export default function TechSupport() {
 
                     <div className="max-w-7xl mx-auto px-6 relative z-10">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-white">
+                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-foreground">
                                 Our Technology Stack
                             </h2>
-                            <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                                 Expertise across the entire technology spectrum - from frontend to cloud infrastructure.
                             </p>
                         </div>
@@ -250,11 +246,11 @@ export default function TechSupport() {
                                     transition={{ delay: index * 0.1 }}
                                     className={`bg-card rounded-2xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group border ${stack.borderColor} hover:border-primary/50`}
                                 >
-                                    <div className={`w-14 h-14 rounded-xl ${stack.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-neutral-700`}>
+                                    <div className={`w-14 h-14 rounded-xl ${stack.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-border`}>
                                         <stack.icon className="w-7 h-7 stroke-[1.5]" />
                                     </div>
 
-                                    <h3 className="text-xl font-bold text-white mb-4 font-batman tracking-tight">
+                                    <h3 className="text-xl font-bold text-foreground mb-4 font-batman tracking-tight">
                                         {stack.category}
                                     </h3>
 
@@ -262,7 +258,7 @@ export default function TechSupport() {
                                         {stack.technologies.map((tech, i) => (
                                             <div key={i} className="flex items-center gap-2">
                                                 <CheckCircle2 className="w-4 h-4 text-primary" />
-                                                <span className="text-neutral-300 text-sm">{tech}</span>
+                                                <span className="text-foreground/80 text-sm">{tech}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -271,8 +267,8 @@ export default function TechSupport() {
                         </div>
 
                         <div className="mt-12 text-center">
-                            <p className="text-neutral-400 text-lg">
-                                <span className="text-white font-semibold">...and much more.</span> From development to deployment, we handle it all.
+                            <p className="text-muted-foreground text-lg">
+                                <span className="text-foreground font-semibold">...and much more.</span> From development to deployment, we handle it all.
                             </p>
                         </div>
                     </div>
@@ -282,10 +278,10 @@ export default function TechSupport() {
                 <section className="py-24 bg-secondary/20 relative overflow-hidden">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-white">
+                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-foreground">
                                 Comprehensive Services
                             </h2>
-                            <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                                 Full-cycle development services tailored to your business needs.
                             </p>
                         </div>
@@ -300,15 +296,15 @@ export default function TechSupport() {
                                     transition={{ delay: index * 0.1 }}
                                     className="bg-background rounded-2xl p-8 border border-border hover:border-primary/50 transition-all duration-300 group"
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-neutral-700">
+                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-border">
                                         <service.icon className="w-6 h-6 stroke-[1.5]" />
                                     </div>
 
-                                    <h3 className="text-xl font-bold text-white mb-3 font-batman">
+                                    <h3 className="text-xl font-bold text-foreground mb-3 font-batman">
                                         {service.title}
                                     </h3>
 
-                                    <p className="text-neutral-400 text-sm leading-relaxed">
+                                    <p className="text-muted-foreground text-sm leading-relaxed">
                                         {service.description}
                                     </p>
                                 </motion.div>
@@ -319,13 +315,13 @@ export default function TechSupport() {
 
                 {/* Why Choose Us Section */}
                 <section className="py-24 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/5 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rh-navy/5 via-transparent to-transparent pointer-events-none" />
 
                     <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
                         {/* Left Content */}
                         <div>
                             <h2 className="text-sm font-bold text-primary tracking-widest uppercase mb-3">Why Choose Us</h2>
-                            <h3 className="text-3xl md:text-5xl font-bold font-batman tracking-tight text-white mb-8">
+                            <h3 className="text-3xl md:text-5xl font-bold font-batman tracking-tight text-foreground mb-8">
                                 Your Trusted <span className="text-primary">Technology Partner</span>
                             </h3>
 
@@ -335,7 +331,7 @@ export default function TechSupport() {
                                         <div className="mt-1 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 group-hover:border-primary/50 transition-colors">
                                             <CheckCircle2 className="w-4 h-4 text-primary" />
                                         </div>
-                                        <p className="text-lg text-neutral-300 group-hover:text-white transition-colors cursor-default">
+                                        <p className="text-lg text-foreground/80 group-hover:text-foreground transition-colors cursor-default">
                                             {feature}
                                         </p>
                                     </div>
@@ -344,39 +340,39 @@ export default function TechSupport() {
                         </div>
 
                         {/* Right Visual */}
-                        <div className="relative h-[500px] w-full bg-neutral-900/50 rounded-3xl border border-neutral-800 p-8 flex items-center justify-center overflow-hidden group">
+                        <div className="relative h-[500px] w-full bg-card rounded-3xl border border-border p-8 flex items-center justify-center overflow-hidden group">
                             {/* Glowing Orbs */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
 
                             {/* Central Hub */}
-                            <div className="relative z-10 w-32 h-32 bg-neutral-950 rounded-2xl border border-neutral-800 flex items-center justify-center shadow-2xl">
+                            <div className="relative z-10 w-32 h-32 bg-card rounded-2xl border border-border flex items-center justify-center shadow-2xl">
                                 <Rocket className="w-12 h-12 text-primary" />
                             </div>
 
                             {/* Orbiting Tech Icons */}
                             <div className="absolute inset-0 animate-[spin_15s_linear_infinite]">
                                 {/* Top */}
-                                <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-12 h-12 bg-neutral-900 border border-neutral-700 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Code2 className="w-5 h-5 text-cyan-400" />
+                                <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center shadow-lg">
+                                    <Code2 className="w-5 h-5 text-rh-navy" />
                                 </div>
                                 {/* Right */}
-                                <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-12 h-12 bg-neutral-900 border border-neutral-700 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Cloud className="w-5 h-5 text-orange-400" />
+                                <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center shadow-lg">
+                                    <Cloud className="w-5 h-5 text-rh-gold" />
                                 </div>
                                 {/* Bottom */}
-                                <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-12 h-12 bg-neutral-900 border border-neutral-700 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Server className="w-5 h-5 text-green-400" />
+                                <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center shadow-lg">
+                                    <Server className="w-5 h-5 text-rh-emerald" />
                                 </div>
                                 {/* Left */}
-                                <div className="absolute top-1/2 left-[10%] -translate-y-1/2 w-12 h-12 bg-neutral-900 border border-neutral-700 rounded-xl flex items-center justify-center shadow-lg">
-                                    <Database className="w-5 h-5 text-blue-400" />
+                                <div className="absolute top-1/2 left-[10%] -translate-y-1/2 w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center shadow-lg">
+                                    <Database className="w-5 h-5 text-rh-navy" />
                                 </div>
                             </div>
 
                             {/* Connecting Lines */}
                             <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="50%" cy="50%" r="30%" fill="none" stroke="currentColor" strokeWidth="1" className="text-neutral-500" strokeDasharray="4 4" />
-                                <circle cx="50%" cy="50%" r="45%" fill="none" stroke="currentColor" strokeWidth="1" className="text-neutral-700" />
+                                <circle cx="50%" cy="50%" r="30%" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground" strokeDasharray="4 4" />
+                                <circle cx="50%" cy="50%" r="45%" fill="none" stroke="currentColor" strokeWidth="1" className="text-foreground" />
                             </svg>
                         </div>
                     </div>
@@ -386,10 +382,10 @@ export default function TechSupport() {
                 <section className="py-24 bg-secondary/20">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-white">
+                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-4 text-foreground">
                                 Who We Serve
                             </h2>
-                            <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
+                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                                 From early-stage startups to established enterprises - we scale with you.
                             </p>
                         </div>
@@ -404,15 +400,15 @@ export default function TechSupport() {
                                     transition={{ delay: index * 0.15 }}
                                     className="bg-background rounded-3xl p-8 border border-border hover:border-primary/50 transition-all duration-300 group"
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-neutral-700">
+                                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-border">
                                         <segment.icon className="w-8 h-8 stroke-[1.5]" />
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-white mb-3 font-batman">
+                                    <h3 className="text-2xl font-bold text-foreground mb-3 font-batman">
                                         {segment.title}
                                     </h3>
 
-                                    <p className="text-neutral-400 text-sm leading-relaxed mb-6">
+                                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                                         {segment.description}
                                     </p>
 
@@ -420,7 +416,7 @@ export default function TechSupport() {
                                         {segment.features.map((feature, i) => (
                                             <div key={i} className="flex items-center gap-2">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                                <span className="text-neutral-300 text-xs">{feature}</span>
+                                                <span className="text-foreground/80 text-xs">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -440,10 +436,10 @@ export default function TechSupport() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                         >
-                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-6 text-white">
+                            <h2 className="text-3xl md:text-5xl font-bold font-batman tracking-tight mb-6 text-foreground">
                                 Ready to Build Something Great?
                             </h2>
-                            <p className="text-neutral-400 text-lg mb-10 max-w-2xl mx-auto">
+                            <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto">
                                 Let's discuss your project and see how we can help bring your vision to life with our end-to-end tech expertise.
                             </p>
 
@@ -459,7 +455,7 @@ export default function TechSupport() {
                                     <Button
                                         size="lg"
                                         variant="outline"
-                                        className="rounded-full md:text-[16px] font-semibold h-12 px-8 bg-transparent border-white/20 hover:bg-white/10 text-white backdrop-blur-sm"
+                                        className="rounded-full md:text-[16px] font-semibold h-12 px-8 bg-transparent border-border hover:bg-foreground/5 text-foreground backdrop-blur-sm"
                                     >
                                         Contact Us
                                     </Button>
@@ -472,7 +468,7 @@ export default function TechSupport() {
 
             {/* Contact Dialog */}
             {showContactDialog && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowContactDialog(false)}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-rh-navy/60 backdrop-blur-sm" onClick={() => setShowContactDialog(false)}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -494,7 +490,7 @@ export default function TechSupport() {
                                 <Phone className="w-8 h-8 text-primary" />
                             </div>
 
-                            <h3 className="text-2xl font-bold font-batman text-white mb-2">
+                            <h3 className="text-2xl font-bold font-batman text-foreground mb-2">
                                 Let's Connect!
                             </h3>
                             <p className="text-muted-foreground mb-6">
@@ -504,7 +500,7 @@ export default function TechSupport() {
                             {/* Phone Number */}
                             <div className="bg-secondary/50 rounded-xl p-4 mb-6 border border-border">
                                 <p className="text-sm text-muted-foreground mb-1">Call or WhatsApp</p>
-                                <p className="text-2xl font-bold text-white tracking-wider">+91 8860761007</p>
+                                <p className="text-2xl font-bold text-foreground tracking-wider">+91 8860761007</p>
                             </div>
 
                             {/* Action Buttons */}
@@ -520,7 +516,7 @@ export default function TechSupport() {
                                     href="https://wa.me/919211265558?text=Hi%2C%20I%27m%20interested%20in%20your%20tech%20support%20services"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-colors"
+                                    className="flex-1 bg-rh-emerald hover:bg-[#0b6a4c] text-white rounded-full py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-colors"
                                 >
                                     <MessageCircle className="w-5 h-5" />
                                     WhatsApp

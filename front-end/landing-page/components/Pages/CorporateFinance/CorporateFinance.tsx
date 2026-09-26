@@ -26,7 +26,7 @@ export default function CorporateFinance() {
                             transition={{ delay: 0.2 }}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-8"
                         >
-                            <Zap className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                            <Zap className="w-4 h-4 text-rh-gold fill-yellow-500" />
                             Growth Capital Solutions
                         </motion.div>
 
@@ -76,25 +76,25 @@ export default function CorporateFinance() {
                                 title: "Revenue Based Financing",
                                 icon: TrendingUp,
                                 desc: "Flexible capital repaid as a percentage of your future revenue.",
-                                color: "text-blue-500 bg-blue-500/10"
+                                color: "text-rh-navy bg-rh-navy/10"
                             },
                             {
                                 title: "Fixed Term Growth Capital",
                                 icon: Building2,
                                 desc: "Capital with fixed repayment schedules for predictable cash flow management.",
-                                color: "text-green-500 bg-green-500/10"
+                                color: "text-rh-emerald bg-rh-emerald/10"
                             },
                             {
                                 title: "Supply Chain & Seller Financing",
                                 icon: ShoppingBag,
                                 desc: "Optimize working capital by financing your inventory and receivables.",
-                                color: "text-purple-500 bg-purple-500/10"
+                                color: "text-rh-navy bg-rh-navy/10"
                             },
                             {
                                 title: "Embedded Finance Solutions",
                                 icon: Briefcase,
                                 desc: "Integrate lending and financial services directly into your platform.",
-                                color: "text-orange-500 bg-orange-500/10"
+                                color: "text-rh-gold bg-rh-gold/10"
                             }
                         ].map((solution, index) => (
                             <motion.div
@@ -162,17 +162,17 @@ export default function CorporateFinance() {
                             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay" />
                             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
                             <div className="absolute bottom-10 left-10 right-10">
-                                <div className="p-6 rounded-2xl bg-background/10 backdrop-blur-md border border-white/10">
+                                <div className="p-6 rounded-2xl bg-background/10 backdrop-blur-md border border-border">
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                        <div className="w-12 h-12 rounded-full bg-rh-navy/20 flex items-center justify-center text-rh-navy">
                                             <TrendingUp size={24} />
                                         </div>
                                         <div>
-                                            <p className="text-sm text-white/60">Success Story</p>
-                                            <p className="font-bold text-white">200+ Businesses Funded</p>
+                                            <p className="text-sm text-muted-foreground">Success Story</p>
+                                            <p className="font-bold text-foreground">200+ Businesses Funded</p>
                                         </div>
                                     </div>
-                                    <p className="text-white/80 text-sm">"Richharbor provided the growth capital we needed to scale our inventory before the festive season."</p>
+                                    <p className="text-foreground/80 text-sm">"Richharbor provided the growth capital we needed to scale our inventory before the festive season."</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -181,10 +181,10 @@ export default function CorporateFinance() {
             </section>
 
             {/* Disclosure */}
-            <section className="py-12 bg-neutral-900 text-neutral-400">
+            <section className="py-12 bg-card text-muted-foreground">
                 <div className="container px-4 md:px-6 mx-auto">
-                    <div className="max-w-4xl mx-auto border border-neutral-800 bg-neutral-950/50 p-8 rounded-2xl backdrop-blur-sm">
-                        <h3 className="text-lg font-semibold text-neutral-200 mb-3 flex items-center gap-2">
+                    <div className="max-w-4xl mx-auto border border-border bg-card p-8 rounded-2xl backdrop-blur-sm">
+                        <h3 className="text-lg font-semibold text-foreground/80 mb-3 flex items-center gap-2">
                             Disclosure
                         </h3>
                         <p className="text-sm leading-relaxed">

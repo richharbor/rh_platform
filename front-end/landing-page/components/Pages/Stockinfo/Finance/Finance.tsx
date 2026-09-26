@@ -22,7 +22,7 @@ export default function Finance() {
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             className="flex gap-10 py-10 px-20 flex-wrap items-center justify-center">
             {anualReport.map((item, index) => (
-                <div className="py-10 px-10 border flex flex-col items-center gap-3 rounded-xl hover:bg-white/20 transition-all duration-200 ease-in-out" key={index}>
+                <div className="py-10 px-10 border flex flex-col items-center gap-3 rounded-xl hover:bg-foreground/5 transition-all duration-200 ease-in-out" key={index}>
                     <div className="">
                         <FileText />
                     </div>

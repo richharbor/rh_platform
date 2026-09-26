@@ -81,7 +81,7 @@ export default function ComparisonBlock() {
 
                                 <div className="flex items-center justify-center gap-1 md:gap-2 text-muted-foreground">
                                     {item.typical === "Mixed" || item.typical === "Varies" ? (
-                                        <HelpCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0 text-yellow-500/70" />
+                                        <HelpCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0 text-rh-gold/70" />
                                     ) : (
                                         <XCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0 text-destructive/70" />
                                     )}

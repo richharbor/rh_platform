@@ -106,7 +106,7 @@ export default function QueryWidget() {
                             whileHover={{ x: -5 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             onClick={open}
-                            className="bg-[#2a2a2a] text-white py-3 px-2 rounded-l-lg shadow-xl cursor-pointer flex flex-col items-center gap-2 border-l border-t border-b border-gray-700/50 backdrop-blur-md hover:bg-[#333] transition-colors"
+                            className="bg-rh-navy text-white py-3 px-2 rounded-l-lg shadow-xl cursor-pointer flex flex-col items-center gap-2 border-l border-t border-b border-rh-paper/15 backdrop-blur-md hover:bg-rh-midnight transition-colors"
                         >
                             <HelpCircle size={20} className="text-white/70" />
                             <span className="text-xs font-medium [writing-mode:vertical-rl] rotate-180 uppercase tracking-widest text-white/50">
@@ -126,7 +126,7 @@ export default function QueryWidget() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={close}
-                            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+                            className="fixed inset-0 bg-rh-navy/40 backdrop-blur-sm z-40"
                         />
 
                         {/* Drawer/Dialog */}
@@ -239,7 +239,7 @@ export default function QueryWidget() {
                             Your query has been submitted successfully.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="my-5 text-green-500 w-full ">
+                    <div className="my-5 text-rh-emerald w-full ">
                         <CircleCheckBig className="mx-auto font-light" size={100} />
                     </div>
                 </DialogContent>

@@ -9,7 +9,7 @@ export function TechDisplay() {
       <ContainerScroll
         titleComponent={
           <>
-            <h2 className="text-5xl max-md:text-4xl max-sm:text-2xl font-batman font-semibold text-white py-10 max-sm:py-2">
+            <h2 className="text-5xl max-md:text-4xl max-sm:text-2xl font-batman font-semibold text-foreground py-10 max-sm:py-2">
               The Future at Your Fingertips
             </h2>
           </>

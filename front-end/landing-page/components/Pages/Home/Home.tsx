@@ -1,45 +1,18 @@
 "use client";
 
-import { ShootingStars } from "@/components/ui/shooting-stars";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { StarsBackground } from "@/components/ui/stars-background";
-import { motion } from "framer-motion";
+import { useQueryWidgetStore } from "@/store/queryWidgetStore";
 import Faq from "./Faq/Faq";
-import TrustedBy from "./TrustedBy/TrustedBy";
-import GlobeComponent from "./Globe/Globe";
-import SamplePage from "./SamplePage/SamplePage";
-
-import ExtraFeatures from "./ExtraFeatures/ExtraFeatures";
-import ReadyToBoost from "./ReadyToBoost/ReadyToBoost";
-import Integration2 from "./Integration2/integration";
-import Features2 from "./Features2/Features2";
-import Transform from "./Transfrom/Transform";
-import OurProduct from "./OurProduct/OurProduct";
-import TechPlatform from "./TechPlatform/TechPlatform";
-import HotSelling from "./HotSelling/HotSelling";
-import JoinLeague from "./JoinLeague/JoinLeague";
-import Glipms from "./TechPlatform/Glimps";
-import EliteClub from "./EliteClub/EliteClub";
 import TrustStrip from "./TrustStrip";
 import CoreOfferings from "./CoreOfferings";
 import HowItWorks from "./HowItWorks";
 import WhyRichHarbor from "./WhyRichHarbor";
 import WhoWeServe from "./WhoWeServe";
-import Testimonials from "./Testimonials";
 import FinalCTA from "./FinalCTA";
-import Tagline from "./Tagline/Tagline";
-import TomorrowBigBets from "./TomorrowBigBets/TomorrowBigBets";
-import AboutUs from "./AboutUs/AboutUs";
-import ProductShowcase from "./ProductShowcase/ProductShowcase";
-import PromisingOnes from "./PromissingOnes/PromissingOnes";
-import { useAuthStore } from "@/store/authStore";
-import { useEffect } from "react";
 import { Testimonials2 } from "./Testimonials2/Testimonials2";
-import ProductSlider from "./ProductSlider/ProductSlider";
 import WhatsAppBanner from "./WhatsAppBanner/WhatsAppBanner";
-import { useQueryWidgetStore } from "@/store/queryWidgetStore";
-
+import { accentAt, buttonClass, Eyebrow, Headline, pad, Section } from "./brand";
 
 const faq = [
   {
@@ -64,134 +37,79 @@ const faq = [
   }
 ];
 
-
+/** The four doors into the platform, shown as tiles in the hero. */
+const DOORS = [
+  { label: "Invest", detail: "Unlisted & pre-IPO shares", href: "/unlisted-shares" },
+  { label: "Trade", detail: "Bulk deals in listed shares", href: "/bulk-deals" },
+  { label: "Borrow", detail: "Retail, SME & corporate credit", href: "/loans" },
+  { label: "Protect", detail: "Life, health, motor, business", href: "/insurance" },
+];
 
 export default function HomePage() {
-
-  const { authUser, checkAuth } = useAuthStore();
   const { open: openQueryWidget } = useQueryWidgetStore();
 
-
-  // useEffect(()=>{
-  //   checkAuth();
-  // },[])
-
-
-
   return (
-
-    <div className="flex flex-col pt-5 sm:pt-20">
-      <ShootingStars className="fixed inset-0 -z-10" />
-      <StarsBackground className="fixed inset-0 -z-10" />
-
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="w-full pt-5 overflow-hidden">
-          <div className="container px-2 md:px-6 relative mx-auto">
-            <div
-
-              className="text-center max-w-5xl mx-auto  pt-10"
-            >
-              <h1
-
-                className="text-2xl font-batman sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70"
+    <div className="flex w-full flex-col pt-28 sm:pt-32">
+      <main className="flex flex-1 flex-col gap-24 pb-24 text-rh-navy md:gap-32">
+        {/* Hero */}
+        <Section className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+          <div className="space-y-7">
+            <Eyebrow>Unlisted shares · Private markets · Credit · Insurance</Eyebrow>
+            <Headline as="h1" className="text-[44px] sm:text-6xl lg:text-7xl xl:text-[84px]">
+              Access unlisted shares, capital &amp; financial solutions
+              <span className="block text-rh-gold">— transparently.</span>
+            </Headline>
+            <p className="max-w-xl text-base leading-relaxed text-rh-mute sm:text-lg">
+              Richharbor is a unified financial execution platform for unlisted shares, private markets, loans,
+              insurance and structured credit — backed by institutional processes, compliance and secure execution.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                className={buttonClass("navy")}
+                onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
               >
-                Access Unlisted Shares, Capital & Financial Solutions — Transparently
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-                {/* <Link href={"/unlisted-shares"}>Unlisted Shares</Link> | <Link href={"/bulk-deals"}>Listed Bulk Deals</Link> | <Link href={"/private-markets"}>Private Markets</Link> | <Link href={"/loans"}>Loans</Link> | <Link href={"/insurance"}>Insurance</Link> | <Link href={"/corporate-finance"}>Growth Capital</Link> */}
-                Richharbor is a unified financial execution platform enabling access to unlisted shares, private markets, loans, insurance, and structured credit — backed by institutional processes, compliance, and secure execution.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10 mb-8">
-                <Button
-                  size="lg"
-                  className="rounded-full md:text-[16px] font-semibold h-12 px-8"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  Explore Opportunities
-                </Button>
-                <Button size="lg" variant="outline" onClick={openQueryWidget} className="rounded-full md:text-[16px] font-semibold h-12 px-8 bg-transparent border-white/20 hover:bg-white/10 text-white backdrop-blur-sm">
-                  Submit Your Requirement
-                </Button>
-              </div>
+                Explore opportunities <ArrowDown className="size-4" />
+              </button>
+              <button type="button" className={buttonClass("outline")} onClick={openQueryWidget}>
+                Submit your requirement
+              </button>
             </div>
-
-            <div className="w-full">
-              <div className="relative -top:5 sm:-top-20 w-full">
-                <GlobeComponent />
-
-                {/* <div className="absolute top-5/6 left-0 w-full z-10 transform -translate-y-1/2">
-                  <SamplePage />
-                </div> */}
-              </div>
-            </div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-rh-mute">
+              Execution &amp; facilitation · not investment advice
+            </p>
           </div>
-        </section>
 
-
-
-
-
-
-
-
-
-
-        <ProductSlider />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {DOORS.map((d, i) => (
+              <Link
+                key={d.href}
+                href={d.href}
+                className={`group flex min-h-40 flex-col justify-between rounded-3xl p-5 transition-transform hover:-translate-y-1 sm:min-h-48 sm:p-6 ${accentAt(i).tile}`}
+              >
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-sm">{pad(i + 1)}</span>
+                  <ArrowUpRight className="size-5 opacity-60 transition-opacity group-hover:opacity-100" />
+                </div>
+                <div>
+                  <p className="font-display text-4xl leading-none sm:text-5xl">{d.label}</p>
+                  <p className="mt-2 text-[13px] leading-snug opacity-80">{d.detail}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Section>
 
         <TrustStrip />
         <WhatsAppBanner />
-
         <CoreOfferings />
-
         <HowItWorks />
-
         <WhyRichHarbor />
-
         <WhoWeServe />
-        {/* <Testimonials /> */}
-
-
-
-
-
-
-
-
-
-        {/* <Tagline /> */}
-        {/* <OurProduct /> */}
-        {/* <ProductShowcase /> */}
-        {/* <AboutUs /> */}
-
-        {/* <Features2 /> */}
-        {/* <ReadyToBoost /> */}
-        {/* <EliteClub /> */}
-
-        {/* <Integration2 /> */}
-        {/* <Transform /> */}
-        {/* <TechPlatform /> */}
-
-
         <Testimonials2 />
-        {/* <TomorrowBigBets /> */}
-        {/* <JoinLeague /> */}
-        {/* <Integrations /> */}
-
-
-
-
-        <Faq items={faq} />
+        <Faq items={faq} tone="light" />
         <FinalCTA />
-
-
-
       </main>
-
-    </div >
+    </div>
   );
 }

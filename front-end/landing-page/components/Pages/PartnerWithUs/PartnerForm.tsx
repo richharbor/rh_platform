@@ -372,10 +372,10 @@ export function PartnerForm() {
                         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
                         <Button type="submit" size="lg" className="w-full h-12 text-base rounded-xl font-semibold relative overflow-hidden group" disabled={submitting}>
-                            <span className="relative z-10 transition-colors group-hover:text-white">
+                            <span className="relative z-10 transition-colors group-hover:text-foreground">
                                 {submitting ? "Submitting..." : "Get Free Partner Access"}
                             </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-rich-violet to-[#704bd2] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </Button>
 
                         <p className="text-xs text-center text-muted-foreground mt-4">
@@ -385,7 +385,7 @@ export function PartnerForm() {
                 </motion.div>
 
                 {/* Decorative background elements */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-purple-500/10 via-transparent to-blue-500/10 blur-3xl -z-10 rounded-full" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-rh-navy/10 via-transparent to-rh-navy/10 blur-3xl -z-10 rounded-full" />
             </div>
 
             <Dialog open={succOpen} onOpenChange={setSuccOpen}>
@@ -396,7 +396,7 @@ export function PartnerForm() {
                             Your partnership request has been submitted successfully.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="my-5 text-green-500 w-full ">
+                    <div className="my-5 text-rh-emerald w-full ">
                         <CircleCheckBig className="mx-auto font-light" size={100} />
                     </div>
                 </DialogContent>

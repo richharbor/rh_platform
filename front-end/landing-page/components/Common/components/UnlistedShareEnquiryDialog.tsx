@@ -128,7 +128,7 @@ export default function UnlistedShareEnquiryDialog({ open, onOpenChange, default
                             onChange={handleChange}
                             placeholder="Enter share name"
                             readOnly={!!defaultShareName}
-                            className={defaultShareName ? "bg-gray-100 cursor-not-allowed" : ""}
+                            className={defaultShareName ? "bg-secondary cursor-not-allowed" : ""}
                         />
                     </div>
 

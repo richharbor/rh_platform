@@ -35,7 +35,7 @@ export default function MobileNumberPage({ mobileNumber, setMobileNumber, setSte
 
     return (
         <div className="px-10 py-10 flex flex-col gap-5">
-            <p className="text-white/50">Welcome to Rich Harbor!</p>
+            <p className="text-muted-foreground">Welcome to Rich Harbor!</p>
             <h1 className="text-4xl max-md:text-3xl max-sm:text-2xl font-bold ">Let's start with your mobile number</h1>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -50,7 +50,7 @@ export default function MobileNumberPage({ mobileNumber, setMobileNumber, setSte
                     <Button type="submit">{loading ?<Loader2 className="animate-spin" /> :"Get OTP"  }</Button>
                 </div>
             </form>
-            <p className="text-white/50">By proceeding, I accept the <a href="#" className="underline"> Terms & Conditions</a>, and agree to receive messages</p>
+            <p className="text-muted-foreground">By proceeding, I accept the <a href="#" className="underline"> Terms & Conditions</a>, and agree to receive messages</p>
         </div>
     )
 }

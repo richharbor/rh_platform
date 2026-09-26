@@ -35,7 +35,7 @@ export default function WhyChooseUs() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount:0.5 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="text-2xl font-batman mx-20 max-sm:mx-5 md:text-4xl text-center lg:text-5xl font-medium !leading-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-neutral-400"
+                className="text-2xl font-batman mx-20 max-sm:mx-5 md:text-4xl text-center lg:text-5xl font-medium !leading-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-foreground/70"
             >Why Partner With Us?</motion.h2>
             <div className="grid grid-cols-4 gap-5 z-10 max-md:grid-cols-2 max-sm:grid-cols-1 ">
                 {cardContent.map((item, index) => (
@@ -52,7 +52,7 @@ export default function WhyChooseUs() {
                                     {item.icon}
                                 </div>
                                 <h2 className="text-xl font-bold max-sm:text-normal text-center">{item.title}</h2>
-                                <p className="text-center text-white/50 max-sm:text-sm">{item.content}</p>
+                                <p className="text-center text-muted-foreground max-sm:text-sm">{item.content}</p>
                             </div>
                         </CometCard>
                     </motion.div>
