@@ -1,0 +1,85 @@
+{
+  "research": [
+    {
+      "id": "r-nse",
+      "companyId": "nse",
+      "title": "NSE: derivatives volume vs. regulatory tightening",
+      "kind": "Research note",
+      "minutes": 6,
+      "summary": "Earnings are concentrated in equity derivatives; SEBI's F&O changes cut FY26 volumes ~18% but margins held above 60%.",
+      "points": [
+        "Revenue up 12% despite lower contract volumes",
+        "IPO filing expected after the co-location matter closes",
+        "Indicative price implies ~45x trailing earnings"
+      ]
+    },
+    {
+      "id": "r-zepto",
+      "companyId": "zepto",
+      "title": "Zepto: path to contribution-margin breakeven",
+      "kind": "Research note",
+      "minutes": 5,
+      "summary": "Dark-store maturity is driving margin gains; the question is how long funding lasts before profitability.",
+      "points": [
+        "Older stores contribution-positive",
+        "Cash burn roughly halved year on year",
+        "Valuation relies on the latest private round"
+      ]
+    },
+    {
+      "id": "r-phonepe",
+      "companyId": "phonepe",
+      "title": "PhonePe: first profitable year",
+      "kind": "Research note",
+      "minutes": 4,
+      "summary": "Lending and insurance distribution now fund the zero-MDR payments business.",
+      "points": [
+        "FY26 profit \u20b9190 Cr on \u20b99,480 Cr revenue",
+        "UPI market-share cap is the key regulatory risk",
+        "ROFR applies on transfers"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "e-indicative",
+      "title": "Indicative vs. confirmed prices",
+      "minutes": 2,
+      "summary": "Why private-market numbers come in four kinds and never mean the same thing."
+    },
+    {
+      "id": "e-rofr",
+      "title": "What ROFR means for your sale",
+      "minutes": 3,
+      "summary": "A company's right of first refusal can delay or block a transfer \u2014 here's how it works."
+    },
+    {
+      "id": "e-term",
+      "title": "How much term cover do you need?",
+      "minutes": 3,
+      "summary": "A simple way to size cover: income, liabilities and dependants."
+    },
+    {
+      "id": "e-concentration",
+      "title": "Concentration risk in plain words",
+      "minutes": 2,
+      "summary": "Why more than half your portfolio in one sector deserves a second look."
+    }
+  ],
+  "events": [
+    {
+      "id": "ev-preipo",
+      "title": "Pre-IPO outlook: Q4 2026",
+      "date": "2026-10-08",
+      "format": "Live webinar",
+      "host": "RFIN research desk"
+    },
+    {
+      "id": "ev-tax",
+      "title": "Capital gains on unlisted shares",
+      "date": "2026-10-22",
+      "format": "Live webinar",
+      "host": "Partner CA panel"
+    }
+  ]
+}

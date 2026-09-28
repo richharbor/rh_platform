@@ -1,0 +1,22 @@
+{
+  "tiers": [
+    { "id": "bronze", "name": "Bronze", "minPoints": 0, "perks": ["Welcome reward", "Lucky-draw entries"] },
+    { "id": "silver", "name": "Silver", "minPoints": 2000, "perks": ["Priority support", "Gift cards on eligible transactions"] },
+    { "id": "gold", "name": "Gold", "minPoints": 5000, "perks": ["Dedicated advisor", "Early access to new supply"] },
+    { "id": "platinum", "name": "Platinum", "minPoints": 10000, "perks": ["Fee waivers on select products", "Research briefings"] },
+    { "id": "elite", "name": "Elite", "minPoints": 25000, "perks": ["Relationship manager", "Invite-only events"] }
+  ],
+  "transactionPoints": 250,
+  "firstTransactionBenefit": {
+    "title": "Shopping voucher",
+    "issuer": "Harbor Rewards",
+    "value": 50000,
+    "validityDays": 90,
+    "terms": "Single use. Valid on partner stores for 90 days from issue. Not exchangeable for cash."
+  },
+  "referral": {
+    "reward": 25000,
+    "rule": "You earn ₹250 when the person you refer completes their first eligible transaction on RFIN."
+  },
+  "note": "Tier thresholds and rewards are configuration, subject to compliance approval — never hard-coded in screens (report #65, #69)."
+}

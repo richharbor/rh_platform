@@ -1,22 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const adminController = require("../controllers/adminController");
-const { authenticate, authorize } = require("../middleware/auth");
 
-// All admin routes require authentication and superadmin role
+const authenticate = require("../middlewares/authenticate");
+const requirePermission = require("../middlewares/requirePermission");
+const { inviteAdmin, listAdmins, updateAdmin, removeAdmin } = require("../controllers/adminController");
+const { listRoles, createRole, updateRole, deleteRole } = require("../controllers/roleController");
+
 router.use(authenticate);
-router.use(authorize("superadmin"));
 
-// Application management
-router.get("/applications", adminController.getApplications);
-router.get("/applications/stats", adminController.getApplicationStats);
-router.get("/applications/:applicationId", adminController.getApplicationById);
-router.patch(
-  "/applications/:applicationId/status",
-  adminController.changeApplicationStatus
-);
-router.post("/applications/bulk-status", adminController.bulkChangeStatus);
+// Team management — Settings > Team
+router.get("/", requirePermission("admin_management", "view"), listAdmins);
+router.post("/invite", requirePermission("admin_management", "invite"), inviteAdmin);
+router.patch("/:id", requirePermission("admin_management", "invite"), updateAdmin);
+router.delete("/:id", requirePermission("admin_management", "remove"), removeAdmin);
 
-// router.post("/invite-partner", adminController.invitePartner);
+// Role management — Settings > Roles
+router.get("/roles/all", requirePermission("admin_management", "manage_roles"), listRoles);
+router.post("/roles", requirePermission("admin_management", "manage_roles"), createRole);
+router.patch("/roles/:id", requirePermission("admin_management", "manage_roles"), updateRole);
+router.delete("/roles/:id", requirePermission("admin_management", "manage_roles"), deleteRole);
 
 module.exports = router;

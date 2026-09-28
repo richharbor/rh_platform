@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Disallowed URLs
+
+Sitemap: https://richharbor.com/sitemap.xml

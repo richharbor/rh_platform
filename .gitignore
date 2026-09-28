@@ -32,3 +32,6 @@ dist/
 *.tfstate.backup
 .terraform.lock.hcl
 *.pem
+
+
+/front-end/rfin-nexus-main

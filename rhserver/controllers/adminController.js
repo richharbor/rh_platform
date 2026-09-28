@@ -1,382 +1,114 @@
-const {
-  Users,
-  Roles,
-  OnboardingApplications,
-  UserRoles,
-  sequelize,
-} = require("../models");
+const { v4: uuidv4 } = require("uuid");
+const db = require("../models");
+const asyncWrapper = require("../utils/asyncWrapper");
+const sendEmail = require("../service/email/sendEmail");
+const inviteEmailTemplate = require("../service/email/inviteEmailTemplate");
+const { getPaginationParams, getMeta } = require("../utils/pagination");
 
-// Get all onboarding applications (with filters)
-const getApplications = async (req, res) => {
-  try {
-    const { status = "all", page = 1, limit = 10 } = req.query;
-    console.log(req.user);
+const { admin: Admin, role: Role } = db;
 
-    const whereCondition = {};
-    if (status !== "all") {
-      whereCondition.status = status;
-    }
+const INVITE_TOKEN_TTL_DAYS = parseInt(process.env.INVITE_TOKEN_TTL_DAYS || "7", 10);
 
-    const offset = (page - 1) * limit;
+function generateInviteEmailHtml(inviteLink) {
+  let html = inviteEmailTemplate();
+  return html.replace(/\{\{inviteLink\}\}/g, inviteLink);
+}
 
-    const { count, rows } = await OnboardingApplications.findAndCountAll({
-      where: whereCondition,
-      include: [
-        {
-          model: Users,
-          as: "user",
-          attributes: [
-            "id",
-            "email",
-            "firstName",
-            "lastName",
-            "phoneNumber",
-            "emailVerified",
-            "createdBy",
-          ],
-          include: [
-            {
-              model: Users,
-              as: "creator",
-              attributes: ["id", "firstName", "lastName", "email"],
-            },
-          ],
-        },
-        {
-          model: Roles,
-          as: "requestedRole",
-          attributes: ["id", "name"],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-    });
-
-    //   Convert Sequelize instances to plain JSON objects to break circular refs
-    const plainApplications = rows.map((row) => row.get({ plain: true }));
-
-    //   Add creatorName cleanly
-    const formattedApplications = plainApplications.map((app) => {
-      const user = app.user || {};
-      const creator = user.creator
-        ? `${user.creator.firstName} ${user.creator.lastName}`.trim()
-        : null;
-
-      return {
-        ...app,
-        user: {
-          ...user,
-          creatorName: creator,
-        },
-      };
-    });
-
-    res.json({
-      applications: formattedApplications,
-      pagination: {
-        total: count,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        totalPages: Math.ceil(count / limit),
-      },
-    });
-  } catch (error) {
-    console.error("Get applications error:", error);
-    res.status(500).json({ error: "Failed to fetch applications" });
+// POST /admin/invite — Settings > Team > Invite. Creates an `invited`
+// admin with no password and emails an accept-invite link via Google SMTP.
+const inviteAdmin = asyncWrapper(async (req, res) => {
+  const { name, email, role_id } = req.body;
+  if (!name || !email || !role_id) {
+    return res.status(400).json({ error: "name, email and role_id are required" });
   }
-};
 
-// Get single application details
-const getApplicationById = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
+  const existing = await Admin.findOne({ where: { email } });
+  if (existing) return res.status(400).json({ error: "Email already exists" });
 
-    const application = await OnboardingApplications.findByPk(applicationId, {
-      include: [
-        {
-          model: Users,
-          as: "user",
-          attributes: { exclude: ["password"] },
-        },
-        {
-          model: Roles,
-          as: "requestedRole",
-        },
-      ],
-    });
+  const role = await Role.findByPk(role_id);
+  if (!role) return res.status(400).json({ error: "Role not found" });
 
-    if (!application) {
-      return res.status(404).json({ error: "Application not found" });
-    }
+  const token = uuidv4();
+  const expiresAt = new Date(Date.now() + INVITE_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
 
-    res.json(application);
-  } catch (error) {
-    console.error("Get application error:", error);
-    res.status(500).json({ error: "Failed to fetch application" });
+  const created = await Admin.create({
+    name,
+    email,
+    role_id,
+    status: "invited",
+    invite_token: token,
+    invite_token_expires_at: expiresAt,
+    invited_by: req.admin ? req.admin.id : null,
+  });
+
+  const inviteLink = `${process.env.ADMIN_FRONTEND_URL}/auth/invite?token=${token}`;
+  const emailHtml = generateInviteEmailHtml(inviteLink);
+
+  const result = await sendEmail({
+    to: email,
+    subject: "You're invited to Rich Harbor Admin",
+    html: emailHtml,
+    fromName: "Rich Harbor",
+    meta: { source: "admin_invite", sourceId: created.id },
+  });
+
+  res.status(200).json({
+    message: result === "success" ? "Invite sent" : "Admin created, but invite email failed to send",
+    inviteLink,
+    admin: { id: created.id, name: created.name, email: created.email },
+  });
+});
+
+// GET /admin — Settings > Team list.
+const listAdmins = asyncWrapper(async (req, res) => {
+  const { page, limit, offset } = getPaginationParams(req.query, 20, 100);
+
+  const { rows, count } = await Admin.findAndCountAll({
+    attributes: { exclude: ["password_hash", "invite_token"] },
+    include: [{ model: Role, as: "role" }],
+    order: [["createdAt", "DESC"]],
+    limit,
+    offset,
+  });
+
+  res.status(200).json({ admins: rows, meta: getMeta(count, page, limit) });
+});
+
+// PATCH /admin/:id — update name/role/status.
+const updateAdmin = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { name, role_id, status } = req.body;
+
+  const adminRecord = await Admin.findByPk(id);
+  if (!adminRecord) return res.status(404).json({ error: "Admin not found" });
+
+  if (role_id) {
+    const role = await Role.findByPk(role_id);
+    if (!role) return res.status(400).json({ error: "Role not found" });
+    adminRecord.role_id = role_id;
   }
-};
+  if (name) adminRecord.name = name;
+  if (status) adminRecord.status = status;
 
-// Change application status (approve/reject)
-const changeApplicationStatus = async (req, res) => {
-  const transaction = await sequelize.transaction();
+  await adminRecord.save();
 
-  try {
-    const { applicationId } = req.params;
-    const { status, reviewNotes, reason } = req.body;
+  res.status(200).json({ message: "Admin updated successfully", admin: adminRecord });
+});
 
-    // Validate status
-    if (!["approved", "rejected"].includes(status)) {
-      await transaction.rollback();
-      return res
-        .status(400)
-        .json({ error: "Invalid status. Must be approved or rejected" });
-    }
+// DELETE /admin/:id — removes a team member. Cannot remove yourself.
+const removeAdmin = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
 
-    // Find application
-    const application = await OnboardingApplications.findOne({
-      where: { userId: applicationId },
-      include: [
-        { model: Users, as: "user" },
-        { model: Roles, as: "requestedRole" },
-      ],
-      transaction, // include transaction here
-    });
-
-    if (!application) {
-      await transaction.rollback();
-      return res.status(404).json({ error: "Application not found" });
-    }
-
-    if (application.status !== "pending") {
-      await transaction.rollback();
-      return res.status(400).json({
-        error: `Application already ${application.status}. Cannot change status.`,
-      });
-    }
-
-    // Update application status
-    await application.update(
-      {
-        status,
-        reviewedBy: req.user.id,
-        reviewedAt: new Date(),
-        reviewNotes: reviewNotes || reason,
-      },
-      { transaction }
-    );
-
-    if (status === "approved") {
-      // Activate user account
-      await application.user.update(
-        {
-          isActive: true,
-          emailVerified: true,
-        },
-        { transaction }
-      );
-
-      // Check if user already has this role
-      const existingRole = await UserRoles.findOne({
-        where: {
-          userId: application.userId,
-          roleId: application.requestedRoleId,
-        },
-        transaction,
-      });
-
-      if (!existingRole) {
-        // Assign the requested role
-        await UserRoles.create(
-          {
-            userId: application.userId,
-            roleId: application.requestedRoleId,
-            isActive: true,
-            isPrimary: true,
-            assignedBy: req.user.id,
-            assignedAt: new Date(),
-          },
-          { transaction }
-        );
-      } else {
-        // Reactivate existing role
-        await existingRole.update(
-          {
-            isActive: true,
-            isPrimary: true,
-          },
-          { transaction }
-        );
-      }
-
-      // TODO: Send approval email
-      // await sendApprovalEmail(application.user.email, application.requestedRole.name);
-    } else {
-      // Status is rejected
-      // Keep user inactive
-      // TODO: Send rejection email with reason
-      // await sendRejectionEmail(application.user.email, reason);
-    }
-
-    await transaction.commit();
-
-    res.json({
-      message: `Application ${status} successfully`,
-      application: {
-        id: application.id,
-        status: application.status,
-        reviewedBy: application.reviewedBy,
-        reviewedAt: application.reviewedAt,
-        reviewNotes: application.reviewNotes,
-      },
-    });
-  } catch (error) {
-    await transaction.rollback();
-    console.error("Change application status error:", error);
-    res.status(500).json({ error: "Failed to update application status" });
+  if (req.admin && String(req.admin.id) === String(id)) {
+    return res.status(400).json({ error: "You cannot remove your own account" });
   }
-};
 
-// Bulk status change
-const bulkChangeStatus = async (req, res) => {
-  const transaction = await sequelize.transaction();
+  const adminRecord = await Admin.findByPk(id);
+  if (!adminRecord) return res.status(404).json({ error: "Admin not found" });
 
-  try {
-    const { applicationIds, status, reviewNotes } = req.body;
+  await adminRecord.destroy();
 
-    if (!Array.isArray(applicationIds) || applicationIds.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Application IDs must be provided as array" });
-    }
+  res.status(200).json({ message: "Admin removed successfully" });
+});
 
-    if (!["approved", "rejected"].includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
-    }
-
-    const applications = await OnboardingApplications.findAll({
-      where: {
-        id: applicationIds,
-        status: "pending",
-      },
-      include: [
-        { model: Users, as: "user" },
-        { model: Roles, as: "requestedRole" },
-      ],
-      transaction,
-    });
-
-    if (applications.length === 0) {
-      await transaction.rollback();
-      return res.status(404).json({ error: "No pending applications found" });
-    }
-
-    const results = [];
-
-    for (const application of applications) {
-      // Update application
-      await application.update(
-        {
-          status,
-          reviewedBy: req.user.id,
-          reviewedAt: new Date(),
-          reviewNotes,
-        },
-        { transaction }
-      );
-
-      if (status === "approved") {
-        // Activate user
-        await application.user.update(
-          {
-            isActive: true,
-            emailVerified: true,
-          },
-          { transaction }
-        );
-
-        // Assign role
-        const [userRole, created] = await UserRoles.findOrCreate({
-          where: {
-            userId: application.userId,
-            roleId: application.requestedRoleId,
-          },
-          defaults: {
-            isActive: true,
-            isPrimary: true,
-            assignedBy: req.user.id,
-            assignedAt: new Date(),
-          },
-          transaction,
-        });
-
-        if (!created) {
-          await userRole.update(
-            {
-              isActive: true,
-              isPrimary: true,
-            },
-            { transaction }
-          );
-        }
-      }
-
-      results.push({
-        applicationId: application.id,
-        userId: application.userId,
-        status: application.status,
-      });
-    }
-
-    await transaction.commit();
-
-    res.json({
-      message: `${results.length} applications ${status} successfully`,
-      results,
-    });
-  } catch (error) {
-    await transaction.rollback();
-    console.error("Bulk status change error:", error);
-    res.status(500).json({ error: "Failed to update applications" });
-  }
-};
-
-// Get statistics
-const getApplicationStats = async (req, res) => {
-  try {
-    const stats = await OnboardingApplications.findAll({
-      attributes: [
-        "status",
-        [sequelize.fn("COUNT", sequelize.col("id")), "count"],
-      ],
-      group: ["status"],
-    });
-
-    const formattedStats = {
-      total: 0,
-      pending: 0,
-      approved: 0,
-      rejected: 0,
-      draft: 0,
-    };
-
-    stats.forEach((stat) => {
-      const count = parseInt(stat.dataValues.count);
-      formattedStats[stat.status] = count;
-      formattedStats.total += count;
-    });
-
-    res.json(formattedStats);
-  } catch (error) {
-    console.error("Get stats error:", error);
-    res.status(500).json({ error: "Failed to fetch statistics" });
-  }
-};
-
-module.exports = {
-  getApplications,
-  getApplicationById,
-  changeApplicationStatus,
-  bulkChangeStatus,
-  getApplicationStats,
-};
+module.exports = { inviteAdmin, listAdmins, updateAdmin, removeAdmin };

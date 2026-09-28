@@ -1,0 +1,351 @@
+{
+  "modules": {
+    "dashboard": [
+      "view"
+    ],
+    "explore": [
+      "view",
+      "search"
+    ],
+    "products": [
+      "view",
+      "compare",
+      "check_eligibility"
+    ],
+    "applications": [
+      "create",
+      "pay"
+    ],
+    "orders": [
+      "view",
+      "retry_payment"
+    ],
+    "kyc": [
+      "view",
+      "upload"
+    ],
+    "bank": [
+      "view",
+      "add"
+    ],
+    "rewards": [
+      "view"
+    ],
+    "private_markets": [
+      "view",
+      "buy",
+      "sell"
+    ],
+    "partner_dashboard": [
+      "view"
+    ],
+    "leads": [
+      "view",
+      "create",
+      "update"
+    ],
+    "clients": [
+      "view"
+    ],
+    "earnings": [
+      "view"
+    ],
+    "profile": [
+      "view",
+      "switch_mode"
+    ],
+    "notifications": [
+      "view",
+      "manage"
+    ],
+    "documents": [
+      "view"
+    ],
+    "support": [
+      "view",
+      "create"
+    ],
+    "referrals": [
+      "view",
+      "create"
+    ],
+    "partner_onboarding": [
+      "view",
+      "submit"
+    ],
+    "cases": [
+      "view"
+    ],
+    "payouts": [
+      "view",
+      "request"
+    ],
+    "resources": [
+      "view"
+    ],
+    "opportunities": [
+      "view"
+    ],
+    "customer360": [
+      "view",
+      "edit"
+    ],
+    "goals": [
+      "view",
+      "manage"
+    ],
+    "family": [
+      "view",
+      "manage"
+    ],
+    "insights": [
+      "view"
+    ],
+    "alerts": [
+      "view",
+      "manage"
+    ],
+    "assistant": [
+      "use"
+    ],
+    "partner_insights": [
+      "view"
+    ]
+  },
+  "roles": {
+    "buyer": {
+      "dashboard": [
+        "view"
+      ],
+      "explore": [
+        "view",
+        "search"
+      ],
+      "products": [
+        "view",
+        "compare",
+        "check_eligibility"
+      ],
+      "applications": [
+        "create",
+        "pay"
+      ],
+      "orders": [
+        "view",
+        "retry_payment"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "rewards": [
+        "view"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ],
+      "private_markets": [
+        "view",
+        "buy"
+      ],
+      "notifications": [
+        "view",
+        "manage"
+      ],
+      "documents": [
+        "view"
+      ],
+      "support": [
+        "view",
+        "create"
+      ],
+      "referrals": [
+        "view",
+        "create"
+      ],
+      "partner_onboarding": [
+        "view",
+        "submit"
+      ],
+      "customer360": [
+        "view",
+        "edit"
+      ],
+      "goals": [
+        "view",
+        "manage"
+      ],
+      "family": [
+        "view",
+        "manage"
+      ],
+      "insights": [
+        "view"
+      ],
+      "alerts": [
+        "view",
+        "manage"
+      ],
+      "assistant": [
+        "use"
+      ]
+    },
+    "seller": {
+      "dashboard": [
+        "view"
+      ],
+      "explore": [
+        "view",
+        "search"
+      ],
+      "products": [
+        "view",
+        "compare",
+        "check_eligibility"
+      ],
+      "applications": [
+        "create",
+        "pay"
+      ],
+      "orders": [
+        "view",
+        "retry_payment"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "rewards": [
+        "view"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ],
+      "private_markets": [
+        "view",
+        "sell"
+      ],
+      "notifications": [
+        "view",
+        "manage"
+      ],
+      "documents": [
+        "view"
+      ],
+      "support": [
+        "view",
+        "create"
+      ],
+      "referrals": [
+        "view",
+        "create"
+      ],
+      "partner_onboarding": [
+        "view",
+        "submit"
+      ],
+      "customer360": [
+        "view",
+        "edit"
+      ],
+      "goals": [
+        "view",
+        "manage"
+      ],
+      "family": [
+        "view",
+        "manage"
+      ],
+      "insights": [
+        "view"
+      ],
+      "alerts": [
+        "view",
+        "manage"
+      ],
+      "assistant": [
+        "use"
+      ]
+    },
+    "partner": {
+      "partner_dashboard": [
+        "view"
+      ],
+      "leads": [
+        "view",
+        "create",
+        "update"
+      ],
+      "clients": [
+        "view"
+      ],
+      "earnings": [
+        "view"
+      ],
+      "kyc": [
+        "view",
+        "upload"
+      ],
+      "bank": [
+        "view",
+        "add"
+      ],
+      "profile": [
+        "view",
+        "switch_mode"
+      ],
+      "notifications": [
+        "view",
+        "manage"
+      ],
+      "documents": [
+        "view"
+      ],
+      "support": [
+        "view",
+        "create"
+      ],
+      "referrals": [
+        "view",
+        "create"
+      ],
+      "partner_onboarding": [
+        "view",
+        "submit"
+      ],
+      "cases": [
+        "view"
+      ],
+      "payouts": [
+        "view",
+        "request"
+      ],
+      "resources": [
+        "view"
+      ],
+      "opportunities": [
+        "view"
+      ],
+      "assistant": [
+        "use"
+      ],
+      "partner_insights": [
+        "view"
+      ],
+      "customer360": [
+        "view",
+        "edit"
+      ]
+    }
+  }
+}
