@@ -153,9 +153,9 @@ export default function BlogV2CreateForm({
                   required
                   className={
                     slugAvailable === false
-                      ? "border-red-500 focus-visible:ring-red-500 pr-10"
+                      ? "border-destructive focus-visible:ring-destructive pr-10"
                       : slugAvailable === true
-                        ? "border-green-500 focus-visible:ring-green-500 pr-10"
+                        ? "border-rfin-emerald focus-visible:ring-rfin-emerald pr-10"
                         : "pr-10"
                   }
                 />
@@ -163,14 +163,14 @@ export default function BlogV2CreateForm({
                   {checkingSlug ? (
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : slugAvailable === true ? (
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="w-4 h-4 text-rfin-emerald" />
                   ) : slugAvailable === false ? (
-                    <X className="w-4 h-4 text-red-500" />
+                    <X className="w-4 h-4 text-destructive" />
                   ) : null}
                 </div>
               </div>
               {slugAvailable === false && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-destructive">
                   This slug is already taken.
                 </p>
               )}

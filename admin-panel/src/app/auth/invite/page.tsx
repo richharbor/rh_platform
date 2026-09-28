@@ -2,23 +2,15 @@
 import type React from "react";
 import { Suspense } from "react";
 import { Invite } from "@/components/Auth/Invite";
-import { GalleryVerticalEnd } from "lucide-react";
+import { AuthShell } from "@/components/Auth/AuthShell";
 
 const InvitePage = () => {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <div className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GalleryVerticalEnd className="size-4" />
-          </div>
-          Admin Panel
-        </div>
-        <Suspense fallback={null}>
-          <Invite />
-        </Suspense>
-      </div>
-    </div>
+    <AuthShell eyebrow="Invitation" title="Welcome aboard." lede="Set a password to activate your admin account. Your role decides what you can see and change.">
+      <Suspense fallback={null}>
+        <Invite />
+      </Suspense>
+    </AuthShell>
   );
 };
 

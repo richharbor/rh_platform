@@ -1207,11 +1207,11 @@ export function BlogPost({ blog }: { blog: BlogData }) {
   return (
     <Card className="max-w-4xl mx-auto mt-2 mb-10 space-y-6">
       <CardContent>
-        <div className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+        <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
           {blog.category}
         </div>
         <h1 className="text-3xl font-bold mb-1">{blog.title}</h1>
-        <div className="text-sm text-gray-600 mb-6">
+        <div className="text-sm text-muted-foreground mb-6">
           By {blog.author} • {new Date(blog.publishedDate).toLocaleDateString()}
         </div>
 
@@ -1220,7 +1220,7 @@ export function BlogPost({ blog }: { blog: BlogData }) {
             return (
               <div
                 key={index}
-                className="ql-editor1 text-black prose max-w-full overflow-x-auto text-base "
+                className="ql-editor1 text-foreground prose max-w-full overflow-x-auto text-base "
                 dangerouslySetInnerHTML={{
                   __html: removeEmptyParagraphs(
                     sanitizeQuillHTML(block.content),
@@ -1240,7 +1240,7 @@ export function BlogPost({ blog }: { blog: BlogData }) {
                   className="mx-auto rounded-lg shadow-sm"
                 />
                 {block.credit && (
-                  <p className="text-xs text-gray-400 mt-1">{block.credit}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{block.credit}</p>
                 )}
               </div>
             );
@@ -1257,7 +1257,7 @@ export function BlogPost({ blog }: { blog: BlogData }) {
                   <source src={block.src} type="video/mp4" />
                 </video>
                 {block.credit && (
-                  <p className="text-xs text-gray-400 mt-1">{block.credit}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{block.credit}</p>
                 )}
               </div>
             );

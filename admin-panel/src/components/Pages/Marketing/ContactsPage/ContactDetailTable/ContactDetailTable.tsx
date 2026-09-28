@@ -33,15 +33,15 @@ export default function ContactDetailTable({
       <TableBody>
         {contacts.map((contact, idx) => (
           <TableRow key={contact.id}>
-            <TableCell className="text-gray-400 text-sm">
+            <TableCell className="text-muted-foreground text-sm">
               {contactsPage * pageSize + idx + 1}
             </TableCell>
             <TableCell className="font-medium">{contact.name}</TableCell>
-            <TableCell className="text-gray-600">
-              {contact.email ?? <span className="text-gray-300 italic">—</span>}
+            <TableCell className="text-muted-foreground">
+              {contact.email ?? <span className="text-muted-foreground italic">—</span>}
             </TableCell>
-            <TableCell className="text-gray-600">
-              {contact.phone ?? <span className="text-gray-300 italic">—</span>}
+            <TableCell className="text-muted-foreground">
+              {contact.phone ?? <span className="text-muted-foreground italic">—</span>}
             </TableCell>
           </TableRow>
         ))}

@@ -144,7 +144,7 @@ export default function Team() {
       <div className="px-5 h-16 flex justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <SidebarTrigger size={"lg"} />
-          <p className="text-lg font-semibold">Team</p>
+          <h1 className="font-display text-2xl leading-none tracking-tight">Team</h1>
         </div>
 
         <Button
@@ -232,7 +232,7 @@ export default function Team() {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDeleteUser}
-                  className="bg-red-600 hover:bg-red-700"
+                  className="bg-destructive hover:bg-destructive/90"
                 >
                   Remove
                 </AlertDialogAction>

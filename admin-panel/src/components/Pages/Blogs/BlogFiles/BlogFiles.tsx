@@ -132,7 +132,7 @@ const BlogFiles = () => {
       <div className="px-5 h-16 flex justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <SidebarTrigger size={"lg"} />
-          <p className="text-lg font-semibold">Blog Files</p>
+          <h1 className="font-display text-2xl leading-none tracking-tight">Blog Files</h1>
         </div>
       </div>
       <div className="my-4 mr-5 flex justify-between items-center">
@@ -152,7 +152,7 @@ const BlogFiles = () => {
                 size="icon"
                 onClick={handlePreviewFileDelete}
               >
-                <Trash2 className="h-4 w-4 text-red-500" />
+                <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </div>
 
@@ -166,7 +166,7 @@ const BlogFiles = () => {
             </Button>
 
             {uploadedFilename && (
-              <p className="text-sm text-green-600">
+              <p className="text-sm text-rfin-emerald">
                 Uploaded: {uploadedFilename}
               </p>
             )}
@@ -213,7 +213,7 @@ const BlogFiles = () => {
                         onClick={() => handleCopy(file.url, index)}
                       >
                         {copiedIndex === index ? (
-                          <Check className="h-4 w-4 text-green-500" />
+                          <Check className="h-4 w-4 text-rfin-emerald" />
                         ) : (
                           <Copy className="h-4 w-4" />
                         )}

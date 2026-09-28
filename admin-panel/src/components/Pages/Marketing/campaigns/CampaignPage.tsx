@@ -109,7 +109,7 @@ const CampaignPage = () => {
     <div className="space-y-6 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex px-8 py-5 items-center justify-between">
-        <h1 className="border-b text-2xl font-semibold">Campaigns</h1>
+        <h1 className="border-b font-display text-3xl leading-none tracking-tight">Campaigns</h1>
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>

@@ -79,7 +79,7 @@ export default function Roles() {
       <div className="px-5 h-16 flex justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <SidebarTrigger size={"lg"} />
-          <p className="text-lg font-semibold">Roles</p>
+          <h1 className="font-display text-2xl leading-none tracking-tight">Roles</h1>
         </div>
 
         <Button
@@ -160,7 +160,7 @@ export default function Roles() {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDeleteRole}
-                  className="bg-red-600 hover:bg-red-700"
+                  className="bg-destructive hover:bg-destructive/90"
                 >
                   Delete
                 </AlertDialogAction>

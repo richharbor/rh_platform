@@ -89,7 +89,7 @@ const PreviewPage = () => {
 
     if (error) {
         return (
-            <div className="p-10 text-center text-red-500 min-h-screen flex justify-center items-center">
+            <div className="p-10 text-center text-destructive min-h-screen flex justify-center items-center">
                 {error}
             </div>
         );

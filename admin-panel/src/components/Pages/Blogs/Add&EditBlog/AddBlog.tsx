@@ -14,7 +14,7 @@ const AddBlog = ({
   return (
     <div className="flex flex-col h-screen">
       <div className="px-5 h-16 flex justify-between items-center border-b">
-        <p className="text-lg font-semibold">{heading}</p>
+        <h1 className="font-display text-2xl leading-none tracking-tight">{heading}</h1>
       </div>
       <div className="flex flex-col h-full flex-1 overflow-auto">
         <BlogForm routeSegment={routeSegment} />

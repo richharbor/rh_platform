@@ -46,7 +46,7 @@ export default function ContactListStep({
             className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer group ${
               isSelected
                 ? "bg-primary/5 border-primary ring-1 ring-primary/20"
-                : "bg-white border-border hover:border-muted-foreground/30 hover:bg-muted/30"
+                : "bg-card border-border hover:border-muted-foreground/30 hover:bg-muted/30"
             }`}
           >
             <div className="mt-1">

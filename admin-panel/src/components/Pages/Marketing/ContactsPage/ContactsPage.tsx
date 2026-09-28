@@ -172,22 +172,22 @@ export default function ContactsPage() {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <div className="px-5 h-16 flex items-center justify-between border-b sticky top-0 bg-white z-10">
+      <div className="px-5 h-16 flex items-center justify-between border-b sticky top-0 bg-background z-10">
         <div className="flex items-center gap-2">
           <SidebarTrigger size="lg" />
           {selectedList ? (
             <>
               <button
                 onClick={handleBack}
-                className="ml-2 flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                className="ml-2 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Contact List</span>
               </button>
-              <span className="text-gray-300 mx-1">/</span>
-              <h1 className="text-lg font-semibold text-gray-800">
+              <span className="text-muted-foreground mx-1">/</span>
+              <h1 className="font-display text-2xl leading-none tracking-tight">
                 {selectedList.name}
               </h1>
               <Badge variant="secondary" className="ml-2">
@@ -195,7 +195,7 @@ export default function ContactsPage() {
               </Badge>
             </>
           ) : (
-            <h1 className="ml-4 text-lg font-semibold text-gray-800">
+            <h1 className="ml-2 font-display text-2xl leading-none tracking-tight">
               Contact List
             </h1>
           )}
@@ -225,7 +225,7 @@ export default function ContactsPage() {
             {loading ? (
               <HoverLoading title="Loading..." />
             ) : contactLists.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
+              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground gap-3">
                 <Users className="w-12 h-12 opacity-30" />
                 <p className="text-sm">
                   No contact lists yet. Upload a CSV to get started.
@@ -255,7 +255,7 @@ export default function ContactsPage() {
             {detailLoading ? (
               <HoverLoading title="Loading contacts..." />
             ) : contacts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-400 gap-3">
+              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground gap-3">
                 <FileText className="w-12 h-12 opacity-30" />
                 <p className="text-sm">No contacts found in this list.</p>
               </div>
@@ -269,7 +269,7 @@ export default function ContactsPage() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
+                  <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
                     <span>
                       Showing {contactsPage * PAGE_SIZE + 1}–
                       {Math.min((contactsPage + 1) * PAGE_SIZE, contactsTotal)}{" "}
@@ -320,7 +320,7 @@ export default function ContactsPage() {
               ) : (
                 "Provide a name for the list and upload a CSV file with columns:"
               )}{" "}
-              <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">
+              <code className="text-xs bg-secondary px-1 py-0.5 rounded">
                 name, email, phone
               </code>
             </DialogDescription>
@@ -352,7 +352,7 @@ export default function ContactsPage() {
                 onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
               />
               {uploadFile && (
-                <p className="text-xs text-gray-500 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <FileText className="w-3.5 h-3.5" />
                   {uploadFile.name} ({(uploadFile.size / 1024).toFixed(1)} KB)
                 </p>

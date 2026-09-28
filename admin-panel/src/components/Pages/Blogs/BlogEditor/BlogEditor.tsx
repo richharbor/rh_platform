@@ -36,7 +36,7 @@ export default function BlogEditor({ content, onChange, id }: BlogEditorProps) {
   }, []);
 
   if (!mounted) {
-    return <div className="h-64 border rounded-md bg-gray-50"></div>;
+    return <div className="h-64 border rounded-md bg-secondary"></div>;
   }
 
   return (

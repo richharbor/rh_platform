@@ -136,9 +136,9 @@ export default function BlogV2DetailForm({
                   placeholder="how-to-crack-pm-interviews"
                   className={`text-sm pr-10 ${
                     slugAvailable === false
-                      ? "border-red-500 focus-visible:ring-red-500"
+                      ? "border-destructive focus-visible:ring-destructive"
                       : slugAvailable === true
-                        ? "border-green-500 focus-visible:ring-green-500"
+                        ? "border-rfin-emerald focus-visible:ring-rfin-emerald"
                         : ""
                   }`}
                 />
@@ -146,14 +146,14 @@ export default function BlogV2DetailForm({
                   {checkingSlug ? (
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : slugAvailable === true ? (
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="w-4 h-4 text-rfin-emerald" />
                   ) : slugAvailable === false ? (
-                    <X className="w-4 h-4 text-red-500" />
+                    <X className="w-4 h-4 text-destructive" />
                   ) : null}
                 </div>
               </div>
               {slugAvailable === false && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   This slug is already taken.
                 </p>
               )}

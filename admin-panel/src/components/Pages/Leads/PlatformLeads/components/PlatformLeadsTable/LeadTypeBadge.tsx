@@ -13,19 +13,19 @@ type BadgeConfig = {
 const STATIC_TYPE_MAP: Record<string, BadgeConfig> = {
   "request-callback": {
     label: "Request Callback",
-    className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    className: "bg-rfin-champagne/30 text-rfin-gold-deep border-rfin-champagne",
   },
   "contact-us": {
     label: "Contact Us",
-    className: "bg-gray-100 text-gray-700 border-gray-200",
+    className: "bg-secondary text-foreground border-border",
   },
   "gen-ai-contact-us": {
     label: "Gen AI Contact Form",
-    className: "bg-gray-100 text-gray-700 border-gray-200",
+    className: "bg-secondary text-foreground border-border",
   },
   "ai-for-product-leaders-contact-us": {
     label: "AI For Product Leaders Contact Form",
-    className: "bg-gray-100 text-gray-700 border-gray-200",
+    className: "bg-secondary text-foreground border-border",
   },
 };
 
@@ -33,28 +33,28 @@ function resolveBadge(type: string): BadgeConfig {
   if (!type) {
     return {
       label: "Unknown",
-      className: "bg-gray-100 text-gray-700 border-gray-200",
+      className: "bg-secondary text-foreground border-border",
     };
   }
   
   if (type.includes("enrollment")) {
     return {
       label: "Enrollment Form",
-      className: "bg-green-100 text-green-800 border-green-200",
+      className: "bg-rfin-emerald/10 text-rfin-emerald border-rfin-emerald/25",
     };
   }
 
   if (type.includes("download")) {
     return {
       label: "Download Curriculum",
-      className: "bg-blue-100 text-blue-800 border-blue-200",
+      className: "bg-rfin-navy/10 text-rfin-navy border-rfin-navy/20",
     };
   }
 
   return (
     STATIC_TYPE_MAP[type] || {
       label: type,
-      className: "bg-gray-100 text-gray-700 border-gray-200",
+      className: "bg-secondary text-foreground border-border",
     }
   );
 }
