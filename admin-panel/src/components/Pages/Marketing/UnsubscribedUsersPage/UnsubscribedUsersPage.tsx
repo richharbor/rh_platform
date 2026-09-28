@@ -79,13 +79,13 @@ export default function UnsubscribedUsersPage() {
     }
   };
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-background">
       {/* Header section */}
-      <div className="px-5 h-16 flex items-center justify-between border-b sticky top-0 bg-white z-10">
+      <div className="px-5 h-16 flex items-center justify-between border-b sticky top-0 bg-background z-10">
         {/* Left side */}
         <div className="flex items-center">
           <SidebarTrigger size={"lg"} />
-          <h1 className="ml-4 text-lg font-semibold text-gray-800 py-4">
+          <h1 className="ml-2 py-4 font-display text-2xl leading-none tracking-tight">
             Unsubscribed Users
           </h1>
         </div>
@@ -95,7 +95,7 @@ export default function UnsubscribedUsersPage() {
           <button
             onClick={handleDownload}
             disabled={downloading || loading || filteredUsers.length === 0}
-            className="px-4 py-2 cursor-pointer text-sm font-medium text-white bg-black rounded-md transition disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 cursor-pointer text-sm font-medium text-primary-foreground bg-primary rounded-full transition disabled:opacity-50 flex items-center gap-2"
           >
             {downloading ? (
               <>
@@ -118,15 +118,15 @@ export default function UnsubscribedUsersPage() {
         ) : (
           <div className="border rounded-lg overflow-hidden">
             <Table>
-              <TableHeader className="bg-gray-50">
+              <TableHeader className="bg-secondary">
                 <TableRow>
-                  <TableHead className="font-semibold text-gray-700">
+                  <TableHead className="font-semibold text-foreground">
                     Email Address
                   </TableHead>
-                  <TableHead className="font-semibold text-gray-700">
+                  <TableHead className="font-semibold text-foreground">
                     Reason
                   </TableHead>
-                  <TableHead className="font-semibold text-gray-700">
+                  <TableHead className="font-semibold text-foreground">
                     Date
                   </TableHead>
                 </TableRow>
@@ -136,16 +136,16 @@ export default function UnsubscribedUsersPage() {
                   filteredUsers.map((user) => (
                     <TableRow
                       key={user.id}
-                      className="cursor-pointer hover:bg-gray-50/50 transition-colors"
+                      className="cursor-pointer hover:bg-accent/50 transition-colors"
                       onClick={() => setSelectedUser(user)}
                     >
-                      <TableCell className="font-medium text-gray-900">
+                      <TableCell className="font-medium text-foreground">
                         {user.email}
                       </TableCell>
-                      <TableCell className="text-gray-600 max-w-xs truncate">
+                      <TableCell className="text-muted-foreground max-w-xs truncate">
                         {truncateReason(user.reason)}
                       </TableCell>
-                      <TableCell className="text-gray-500 whitespace-nowrap">
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
                         {user.createdAt
                           ? format(
                               new Date(user.createdAt),
@@ -159,7 +159,7 @@ export default function UnsubscribedUsersPage() {
                   <TableRow>
                     <TableCell
                       colSpan={3}
-                      className="text-center py-10 text-gray-500"
+                      className="text-center py-10 text-muted-foreground"
                     >
                       {users.length === 0
                         ? "No unsubscribed users found."
@@ -177,22 +177,22 @@ export default function UnsubscribedUsersPage() {
         open={!!selectedUser}
         onOpenChange={(open) => !open && setSelectedUser(null)}
       >
-        <DialogContent className="sm:max-w-md bg-white">
+        <DialogContent className="sm:max-w-md bg-card">
           <DialogHeader>
             <DialogTitle>Unsubscribe Reason</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <p className="text-sm font-semibold text-gray-500">User Email</p>
-              <p className="text-sm text-gray-900">{selectedUser?.email}</p>
+              <p className="text-sm font-semibold text-muted-foreground">User Email</p>
+              <p className="text-sm text-foreground">{selectedUser?.email}</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-500">Full Reason</p>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+              <p className="text-sm font-semibold text-muted-foreground">Full Reason</p>
+              <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                 {selectedUser?.reason || "No reason specified."}
               </p>
             </div>
-            <div className="flex justify-between border-t pt-4 text-xs text-gray-400">
+            <div className="flex justify-between border-t pt-4 text-xs text-muted-foreground">
               <p>
                 Date:{" "}
                 {selectedUser?.createdAt

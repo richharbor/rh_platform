@@ -117,8 +117,8 @@ export function Invite({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Set Your Password</CardTitle>
+        <CardHeader>
+          <CardTitle className="font-display text-3xl leading-none tracking-tight">Set your password</CardTitle>
           <CardDescription>
             You're almost there! Just one step left.
           </CardDescription>
@@ -149,7 +149,7 @@ export function Invite({
                           type="email"
                           {...field}
                           readOnly
-                          className="cursor-not-allowed bg-gray-100"
+                          className="cursor-not-allowed bg-secondary"
                         />
                       </FormControl>
                       <FormMessage />

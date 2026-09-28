@@ -60,12 +60,16 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+              <a href={`/${roleSegment}/blogs`}>
+                <div className="relative flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <span className="font-display text-lg leading-none">R</span>
+                  <span className="absolute bottom-1.5 right-1.5 size-1.5 rounded-full bg-rfin-champagne" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-bold">Admin Panel</span>
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="truncate font-display text-xl tracking-tight">
+                    Rich Harbor<span className="text-rfin-gold">.</span>
+                  </span>
+                  <span className="rfin-eyebrow truncate text-[10px] text-muted-foreground">Admin</span>
                 </div>
               </a>
             </SidebarMenuButton>

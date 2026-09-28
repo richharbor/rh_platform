@@ -81,8 +81,8 @@ export function Login({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+        <CardHeader>
+          <CardTitle className="font-display text-3xl leading-none tracking-tight">Welcome back</CardTitle>
           <CardDescription>Log in to the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,7 +135,7 @@ export function Login({
                           <button
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                           >
                             {showPassword ? (
                               <EyeOff size={18} />

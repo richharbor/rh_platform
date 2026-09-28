@@ -137,7 +137,7 @@ const LeadDetailsDialog = ({ lead, open, onClose }: Props) => {
                         href={data.linkedin}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 hover:underline inline-flex items-center gap-1 font-medium"
+                        className="text-rfin-navy hover:underline inline-flex items-center gap-1 font-medium"
                       >
                         {data.linkedin}
                       </a>

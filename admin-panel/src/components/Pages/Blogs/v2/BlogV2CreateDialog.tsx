@@ -126,7 +126,7 @@ export default function BlogV2CreateDialog({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="title">
-              Title <span className="text-red-500">*</span>
+              Title <span className="text-destructive">*</span>
             </Label>
             <Input
               id="title"
@@ -163,7 +163,7 @@ export default function BlogV2CreateDialog({
           <div className="space-y-2">
             <Label htmlFor="url">
               Blog URL (slug — auto-filled from the title, editable){" "}
-              <span className="text-red-500">*</span>
+              <span className="text-destructive">*</span>
             </Label>
             <div className="relative">
               <Input
@@ -175,9 +175,9 @@ export default function BlogV2CreateDialog({
                 required
                 className={
                   slugAvailable === false
-                    ? "border-red-500 focus-visible:ring-red-500 pr-10"
+                    ? "border-destructive focus-visible:ring-destructive pr-10"
                     : slugAvailable === true
-                      ? "border-green-500 focus-visible:ring-green-500 pr-10"
+                      ? "border-rfin-emerald focus-visible:ring-rfin-emerald pr-10"
                       : "pr-10"
                 }
               />
@@ -185,14 +185,14 @@ export default function BlogV2CreateDialog({
                 {checkingSlug ? (
                   <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                 ) : slugAvailable === true ? (
-                  <Check className="w-4 h-4 text-green-500" />
+                  <Check className="w-4 h-4 text-rfin-emerald" />
                 ) : slugAvailable === false ? (
-                  <X className="w-4 h-4 text-red-500" />
+                  <X className="w-4 h-4 text-destructive" />
                 ) : null}
               </div>
             </div>
             {slugAvailable === false && (
-              <p className="text-sm text-red-500">
+              <p className="text-sm text-destructive">
                 This slug is already taken.
               </p>
             )}
@@ -200,7 +200,7 @@ export default function BlogV2CreateDialog({
 
           <div className="space-y-2">
             <Label htmlFor="subTitle">
-              Subtitle <span className="text-red-500">*</span>
+              Subtitle <span className="text-destructive">*</span>
             </Label>
             <Input
               id="subTitle"

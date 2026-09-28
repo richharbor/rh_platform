@@ -387,7 +387,7 @@ const AssigneeLeadsPage = () => {
       <div className="px-5 h-16 flex justify-between items-center border-b">
         <div className="flex items-center gap-2">
           <ArrowLeft onClick={() => router.back()} className="cursor-pointer" />
-          <p className="text-lg font-semibold">Assignee Leads</p>
+          <h1 className="font-display text-2xl leading-none tracking-tight">Assignee Leads</h1>
         </div>
       </div>
 
@@ -441,7 +441,7 @@ const AssigneeLeadsPage = () => {
                 <CardTitle className="text-sm font-medium">Hot Leads</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-destructive">
                   {stats.hotLeads}
                 </div>
               </CardContent>
@@ -451,7 +451,7 @@ const AssigneeLeadsPage = () => {
                 <CardTitle className="text-sm font-medium">Paid</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-rfin-emerald">
                   {stats.paid}
                 </div>
               </CardContent>
@@ -461,7 +461,7 @@ const AssigneeLeadsPage = () => {
                 <CardTitle className="text-sm font-medium">Positive</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-rfin-navy">
                   {stats.positive}
                 </div>
               </CardContent>

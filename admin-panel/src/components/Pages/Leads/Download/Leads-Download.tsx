@@ -232,14 +232,14 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
 
           {/* ERROR */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
+            <div className="bg-destructive/10 border border-destructive/40 rounded-lg p-3 text-sm text-destructive">
               {error}
             </div>
           )}
 
           {/* INFO */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm text-blue-800">
+          <div className="bg-rfin-navy/10 border border-rfin-navy/20 rounded-lg p-3">
+            <p className="text-sm text-rfin-navy">
               {selectedType === "all"
                 ? "All platform leads will be merged into one Excel sheet."
                 : "This type will be exported into one Excel sheet."}
@@ -250,7 +250,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
         <DialogFooter className="mt-4 flex justify-end gap-3">
           <DialogClose asChild>
             <button
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              className="px-4 py-2 text-foreground hover:bg-accent rounded-lg"
               disabled={loading}
             >
               Cancel
@@ -260,7 +260,7 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
           <button
             onClick={downloadData}
             disabled={loading || !selectedType}
-            className="bg-[#335DC8] hover:bg-[#2a4da3] text-white px-4 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <>

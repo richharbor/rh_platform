@@ -299,7 +299,7 @@ export default function BlogsTable({
           {blogs.map((blog) => (
             <TableRow
               key={blog.id}
-              className={`${blog.type === "draft" ? "bg-green-50" : ""}`}
+              className={`${blog.type === "draft" ? "bg-rfin-emerald/10" : ""}`}
             >
               <TableCell>
                 <img
@@ -317,8 +317,8 @@ export default function BlogsTable({
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                             blog.version === 2
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-slate-100 text-slate-600"
+                              ? "bg-rfin-navy/10 text-rfin-navy"
+                              : "bg-secondary text-muted-foreground"
                           }`}
                         >
                           {blog.version === 2 ? "V2" : "V1"}
@@ -339,7 +339,7 @@ export default function BlogsTable({
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Clock className="h-4 w-4 text-orange-400 shrink-0 cursor-pointer" />
+                          <Clock className="h-4 w-4 text-rfin-gold shrink-0 cursor-pointer" />
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
@@ -350,11 +350,11 @@ export default function BlogsTable({
                     </TooltipProvider>
                   )}
                   {blog.type === "publish" ? (
-                    <p className="px-2 py-1 rounded-lg w-20 text-center bg-green-100 text-green-800">
+                    <p className="px-2 py-1 rounded-lg w-20 text-center bg-rfin-emerald/10 text-rfin-emerald">
                       Published
                     </p>
                   ) : (
-                    <p className="px-2 py-1 rounded-lg w-20 text-center bg-orange-100 text-orange-800">
+                    <p className="px-2 py-1 rounded-lg w-20 text-center bg-rfin-champagne/30 text-rfin-gold-deep">
                       Draft
                     </p>
                   )}
@@ -439,13 +439,13 @@ export default function BlogsTable({
                         <DropdownMenuItem
                           onClick={() => handleCancelSchedule(blog.id)}
                         >
-                          <XCircle className="text-red-600 h-4 w-4" /> Cancel
+                          <XCircle className="text-destructive h-4 w-4" /> Cancel
                           Schedule
                         </DropdownMenuItem>
                       )}
 
                       <DropdownMenuItem onClick={() => handleDelete(blog.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        <Trash2 className="h-4 w-4 text-destructive" />
                         <span>Delete</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -514,8 +514,8 @@ export default function BlogsTable({
               }}
               className={`text-white ${
                 selectedBlogStatus === "publish"
-                  ? "bg-orange-600 hover:bg-orange-700"
-                  : "bg-green-600 hover:bg-green-700"
+                  ? "bg-rfin-gold hover:bg-rfin-gold/90"
+                  : "bg-rfin-emerald hover:bg-rfin-emerald/90"
               }`}
             >
               {selectedBlogStatus === "publish" ? "Draft" : "Publish"}
@@ -552,7 +552,7 @@ export default function BlogsTable({
             <AlertDialogAction
               onClick={handleSchedulePublish}
               disabled={!publishAt}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Schedule
             </AlertDialogAction>

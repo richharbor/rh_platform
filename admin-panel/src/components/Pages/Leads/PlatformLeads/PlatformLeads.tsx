@@ -400,12 +400,12 @@ const PlatformLeads: React.FC = () => {
         <div className="px-5 h-16 flex justify-between items-center border-b">
           <div className="flex items-center gap-2">
             <SidebarTrigger size={"lg"} />
-            <p className="text-lg font-semibold">Platform Leads</p>
+            <h1 className="font-display text-2xl leading-none tracking-tight">Platform Leads</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button
               onClick={() => router.push(`/${roleSegment}/leads/assignee`)}
-              className="bg-[#335DC8] hover:bg-[#335DC8] text-white flex items-center gap-2"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             >
               <BarChart3 className="w-4 h-4" />
               Sales Info
@@ -413,7 +413,7 @@ const PlatformLeads: React.FC = () => {
 
             <Button
               onClick={() => setDownloadDialogOpen(true)}
-              className="bg-[#335DC8] hover:bg-[#335DC8] text-white flex items-center gap-2"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Download
@@ -421,7 +421,7 @@ const PlatformLeads: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col h-full flex-1 overflow-auto p-5 bg-gray-50">
+        <div className="flex flex-col h-full flex-1 overflow-auto p-5 bg-background">
           <div className="w-full">
             {/* FILTER SECTION */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -607,7 +607,7 @@ const PlatformLeads: React.FC = () => {
             </div>
 
             {/* TABLE */}
-            <div className="overflow-hidden rounded-md border bg-white">
+            <div className="overflow-hidden rounded-md border bg-card">
               <PlatformLeadsTable
                 data={data}
                 rowSelection={rowSelection}
@@ -627,7 +627,7 @@ const PlatformLeads: React.FC = () => {
                 skeletonRows={limit}
               />
               {!loading && data.length === 0 && (
-                <div className="p-6 text-center text-sm text-gray-500">
+                <div className="p-6 text-center text-sm text-muted-foreground">
                   No results found
                 </div>
               )}

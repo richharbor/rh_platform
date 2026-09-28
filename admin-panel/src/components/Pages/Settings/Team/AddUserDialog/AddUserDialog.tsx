@@ -129,9 +129,9 @@ export default function AddUserDialog({
               placeholder="Name"
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              className={errors.name ? "border-red-500" : ""}
+              className={errors.name ? "border-destructive" : ""}
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="email">Email</Label>
@@ -140,10 +140,10 @@ export default function AddUserDialog({
               placeholder="Email"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
-              className={errors.email ? "border-red-500" : ""}
+              className={errors.email ? "border-destructive" : ""}
               disabled={editMode}
             />
-            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="role">Role</Label>

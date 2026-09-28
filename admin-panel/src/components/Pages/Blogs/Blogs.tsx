@@ -144,7 +144,7 @@ export default function Blogs({
   return (
     <div className="flex flex-col h-screen">
       <div className="px-5 h-16 flex justify-between items-center gap-3 border-b">
-        <p className="text-lg font-semibold shrink-0">{heading}</p>
+        <h1 className="font-display text-2xl leading-none tracking-tight shrink-0">{heading}</h1>
 
         <div className="flex items-center gap-3">
           <div className="relative w-64 max-w-[60vw]">

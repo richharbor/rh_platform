@@ -53,7 +53,9 @@ export function NavMain({
           const childActive =
             item.items?.some((si) => matchPath(si.url)) ?? false;
           const open = itemIsActive || childActive || !!item.isActive;
-          const activeClass = "bg-slate-100 text-black";
+          // Active page: solid navy, as in the RFIN desktop sidebar.
+          const activeClass =
+            "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground";
 
           return (
             <Collapsible key={item.title} asChild defaultOpen={open} >
@@ -64,7 +66,7 @@ export function NavMain({
                     <SidebarMenuButton
                       tooltip={item.title}
                       className={`px-3 py-2 rounded-md ${
-                        open ? activeClass : "hover:bg-gray-100"
+                        open ? "font-semibold" : "hover:bg-sidebar-accent"
                       }`}
                     >
                       <div className="flex items-center justify-between w-full min-w-0">
@@ -117,7 +119,7 @@ export function NavMain({
                               <Link
                                 href={subItem.url}
                                 className={`block w-full px-3 py-2 rounded-md ${
-                                  subActive ? "bg-slate-100 text-black" : ""
+                                  subActive ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground" : ""
                                 }`}
                                 aria-current={subActive ? "page" : undefined}
                               >

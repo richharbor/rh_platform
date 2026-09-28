@@ -220,7 +220,7 @@ export default function PlatformLeadsTable({
                         {onDelete && (
                             <Button
                                 variant="ghost"
-                                className="text-red-600"
+                                className="text-destructive"
                                 onClick={() => onDelete(lead)}
                             >
                                 <Trash2 className="w-4 h-4" />

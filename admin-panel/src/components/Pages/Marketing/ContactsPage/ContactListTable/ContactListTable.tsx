@@ -36,12 +36,12 @@ export default function ContactListTable({
         {contactLists.map((list) => (
           <TableRow
             key={list.id}
-            className="cursor-pointer hover:bg-gray-50"
+            className="cursor-pointer hover:bg-accent"
             onClick={() => onSelectList(list)}
           >
             <TableCell className="font-medium">{list.name}</TableCell>
             <TableCell>
-              <div className="flex items-center gap-1 text-gray-600">
+              <div className="flex items-center gap-1 text-muted-foreground">
                 <Users className="w-3.5 h-3.5" />
                 {list.contactCount ?? 0}
               </div>
@@ -51,7 +51,7 @@ export default function ContactListTable({
                 {list.isActive ? "Active" : "Inactive"}
               </Badge>
             </TableCell>
-            <TableCell className="text-gray-500 text-sm">
+            <TableCell className="text-muted-foreground text-sm">
               {new Date(list.createdAt).toLocaleDateString("en-IN", {
                 day: "2-digit",
                 month: "short",

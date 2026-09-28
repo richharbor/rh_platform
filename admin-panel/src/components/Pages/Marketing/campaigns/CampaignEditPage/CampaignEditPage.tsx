@@ -48,14 +48,14 @@ const senderOptions = [
 
 // ── Status badge colour mapping ──────────────────────────────────────────────
 const statusConfig: Record<string, { label: string; className: string }> = {
-    draft: { label: "Draft", className: "bg-zinc-100 text-zinc-600 border-zinc-200" },
-    scheduled: { label: "Scheduled", className: "bg-blue-100 text-blue-700 border-blue-200" },
-    sending: { label: "Sending", className: "bg-amber-100 text-amber-700 border-amber-200" },
-    sent: { label: "Sent", className: "bg-green-100 text-green-700 border-green-200" },
+    draft: { label: "Draft", className: "bg-secondary text-muted-foreground border-border" },
+    scheduled: { label: "Scheduled", className: "bg-rfin-navy/10 text-rfin-navy border-rfin-navy/20" },
+    sending: { label: "Sending", className: "bg-rfin-champagne/30 text-rfin-gold-deep border-rfin-champagne" },
+    sent: { label: "Sent", className: "bg-rfin-emerald/10 text-rfin-emerald border-rfin-emerald/25" },
 };
 
 export const StatusBadge = ({ status }: { status: CampaignStatus }) => {
-    const cfg = statusConfig[status] ?? { label: status, className: "bg-zinc-100 text-zinc-600 border-zinc-200" };
+    const cfg = statusConfig[status] ?? { label: status, className: "bg-secondary text-muted-foreground border-border" };
     return (
         <Badge
             variant="outline"
@@ -207,7 +207,7 @@ const CampaignEditPage = () => {
                     {!editingName ? (
                         <div className="flex items-center gap-3">
 
-                            <h1 className="text-2xl font-semibold">
+                            <h1 className="font-display text-2xl leading-none tracking-tight">
                                 {campaignName}
                             </h1>
 
@@ -223,7 +223,7 @@ const CampaignEditPage = () => {
 
                             {/* ── Scheduled-at pill (only when status = scheduled) ── */}
                             {campaign.status === "scheduled" && campaign.scheduled_at && (
-                                <div className="flex items-center gap-1.5 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-3 py-0.5">
+                                <div className="flex items-center gap-1.5 text-sm text-rfin-navy bg-rfin-navy/10 border border-rfin-navy/20 rounded-full px-3 py-0.5">
                                     <CalendarClock className="h-3.5 w-3.5" />
                                     <span>{formatScheduledAt(campaign.scheduled_at)}</span>
                                 </div>
@@ -301,18 +301,18 @@ const CampaignEditPage = () => {
 
             {/* Validation Card */}
             {showValidation && (
-                <Card className="mx-8 border-red-300 bg-red-50">
+                <Card className="mx-8 border-destructive/40 bg-destructive/10">
                     <CardContent className="py-5">
 
-                        <div className="font-semibold text-red-700">
+                        <div className="font-semibold text-destructive">
                             Campaign is not ready yet
                         </div>
 
-                        <p className="text-sm text-red-600 mt-1">
+                        <p className="text-sm text-destructive mt-1">
                             Please complete the following sections before sending.
                         </p>
 
-                        <ul className="mt-3 list-disc list-inside text-sm text-red-700">
+                        <ul className="mt-3 list-disc list-inside text-sm text-destructive">
                             {missingSections.map((section) => (
                                 <li key={section}>{section}</li>
                             ))}
@@ -344,9 +344,9 @@ const CampaignEditPage = () => {
                     <CardHeader className="flex flex-row items-center gap-3">
 
                         {campaign.sender_email ? (
-                            <CheckCircle2 className="text-green-500" />
+                            <CheckCircle2 className="text-rfin-emerald" />
                         ) : (
-                            <XCircle className="text-red-500" />
+                            <XCircle className="text-destructive" />
                         )}
 
                         <div className="text-lg font-semibold">
@@ -435,9 +435,9 @@ const CampaignEditPage = () => {
                     <CardHeader className="flex items-center gap-3">
 
                         {campaign.recipient_filters ? (
-                            <CheckCircle2 className="text-green-500" />
+                            <CheckCircle2 className="text-rfin-emerald" />
                         ) : (
-                            <XCircle className="text-red-500" />
+                            <XCircle className="text-destructive" />
                         )}
 
                         <div className="text-lg font-semibold">
@@ -476,9 +476,9 @@ const CampaignEditPage = () => {
                     <CardHeader className="flex items-center gap-3">
 
                         {campaign.subject ? (
-                            <CheckCircle2 className="text-green-500" />
+                            <CheckCircle2 className="text-rfin-emerald" />
                         ) : (
-                            <XCircle className="text-red-500" />
+                            <XCircle className="text-destructive" />
                         )}
 
                         <div className="text-lg font-semibold">
@@ -544,9 +544,9 @@ const CampaignEditPage = () => {
                     <CardHeader className="flex items-center gap-3">
 
                         {campaign.content ? (
-                            <CheckCircle2 className="text-green-500" />
+                            <CheckCircle2 className="text-rfin-emerald" />
                         ) : (
-                            <XCircle className="text-red-500" />
+                            <XCircle className="text-destructive" />
                         )}
 
                         <div className="text-lg font-semibold">
@@ -711,10 +711,10 @@ const CampaignEditPage = () => {
                                             setScheduleError("");
                                         }}
                                         disabled={scheduleLoading}
-                                        className={scheduleError === "missing-date" ? "border-red-400 focus-visible:ring-red-400" : ""}
+                                        className={scheduleError === "missing-date" ? "border-destructive focus-visible:ring-destructive" : ""}
                                     />
                                     {scheduleError === "missing-date" && (
-                                        <p className="text-xs text-red-500 mt-1">Please select a date.</p>
+                                        <p className="text-xs text-destructive mt-1">Please select a date.</p>
                                     )}
                                 </div>
 
@@ -729,13 +729,13 @@ const CampaignEditPage = () => {
                                             setScheduleError("");
                                         }}
                                         disabled={scheduleLoading}
-                                        className={scheduleError === "missing-time" || scheduleError === "Scheduled time must be in the future." ? "border-red-400 focus-visible:ring-red-400" : ""}
+                                        className={scheduleError === "missing-time" || scheduleError === "Scheduled time must be in the future." ? "border-destructive focus-visible:ring-destructive" : ""}
                                     />
                                     {scheduleError === "missing-time" && (
-                                        <p className="text-xs text-red-500 mt-1">Please select a time.</p>
+                                        <p className="text-xs text-destructive mt-1">Please select a time.</p>
                                     )}
                                     {scheduleError === "Scheduled time must be in the future." && (
-                                        <p className="text-xs text-red-500 mt-1">Scheduled time must be in the future.</p>
+                                        <p className="text-xs text-destructive mt-1">Scheduled time must be in the future.</p>
                                     )}
                                 </div>
 

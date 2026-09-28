@@ -188,7 +188,7 @@ export default function BlogV2Editor({
           <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <p className="text-lg font-semibold truncate">
+          <p className="font-display text-2xl leading-none tracking-tight truncate">
             {details.title || "Edit Blog"}
           </p>
         </div>
